@@ -16,7 +16,7 @@ Object.entries(Charts).forEach(([key, ChartModule]) => {
 
   document.body.appendChild(block)
 
-  const module = new ChartModule.default(chart, mock(), {})
+  const module = new ChartModule.default(chart, mock(), { relation: "relation" })
 
   btn.addEventListener("click", () => module.setData(mock()))
 });

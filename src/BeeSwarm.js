@@ -4,10 +4,11 @@ import { scaleBand, scaleTime, scalePow, scaleOrdinal } from "d3-scale";
 import { forceSimulation, forceX, forceY, forceCollide } from "d3-force";
 import { axisBottom, axisLeft } from "d3-axis";
 import { extent } from "d3-array";
-import { timeFormat, timeFormatDefaultLocale, timeFormatLocale } from "d3-time-format";
+import { timeFormat, timeFormatDefaultLocale } from "d3-time-format";
 import { max } from "d3-array";
 import { easeLinear } from "d3-ease";
 import { timeMonth } from "d3-time";
+import "./BeeSwarm.css"
 
 const LOCALES = {
   "en-US": () => import("d3-time-format/locale/en-US.json"),
@@ -25,6 +26,7 @@ export default class BeeSwarm {
     this.xAxisProp = options.x || "date";
     this.yAxisProp = options.y || "group";
     this.rAxisProp = options.r || "radius";
+    this.relationProp = options.relation;
 
     // band item height
     this.MIN_BLOCK_SIZE = options.minBlockSize || 100;
@@ -89,41 +91,16 @@ export default class BeeSwarm {
 
     this.g
       .selectAll("circle.beeswarm-circle")
-      .data(this.data, (d) => d.id)
+      .data(this.data, d => d.id)
       .join((enter) =>
         enter
           .append("circle")
-          .attr("class", d => "beeswarm-circle")
-          // .attr(
-          //   "class",
-          //   (d) => `beeswarm-circle beeswarm-circle-${slugString(d.id)} beeswarm-circle-${d.slug_contract_type}`
-          // )
-          // .attr("id", (d) => d.slug)
+          .attr("class", d => this.relationProp ? `beeswarm-circle beeswarm-circle-${d[this.relationProp]}` : "beeswarm-circle")
           .attr("r", (d) => this.scaleRadius(d[this.rAxisProp]))
           .attr("fill", (d) => this.scaleColor(d[this.yAxisProp]))
       )
-      .on("mouseover", (event, d) => {
-        selectAll("circle.beeswarm-circle").transition().duration(200).style("opacity", 0.1);
-        selectAll(`#${event.slug}`)
-          .filter((e, d) => e.slug !== d.slug)
-          .transition()
-          .duration(200)
-          .ease(easeLinear)
-          .style("opacity", 1);
-
-        const {x, y} = this.relativeCoords(event);
-        this.tooltipContainer
-          .style("top", `${y}px`)
-          .style("left", `${x}px`)
-          .html(this.tooltip(d))
-          .transition()
-          .duration(400)
-          .style("opacity", 1);
-      })
-      .on("mouseout", () => {
-        this.tooltipContainer.style("opacity", 1).transition().duration(400).style("opacity", 0);
-        selectAll("circle.beeswarm-circle").transition().duration(450).style("opacity", 1);
-      });
+      .on("mouseover", this.onMouseOver.bind(this))
+      .on("mouseout", this.onMouseOut.bind(this));
   }
 
   xAxis(g) {
@@ -144,7 +121,6 @@ export default class BeeSwarm {
 
     // change line style defaults
     g.selectAll("line").remove();
-    g.selectAll("text").attr("fill", "var(--grey-line)");
   }
 
   yAxis(g) {
@@ -234,6 +210,35 @@ export default class BeeSwarm {
       .domain([0, max(this.data, (d) => d[this.rAxisProp])]);
   }
 
+  onMouseOver(event, d) {
+    if (this.relationProp) {
+      selectAll("circle.beeswarm-circle")
+        .transition()
+        .duration(200)
+        .style("opacity", 0.1)
+        .filter((e) => e[this.relationProp] === d[this.relationProp])
+        .transition()
+        .duration(200)
+        .ease(easeLinear)
+        .style("opacity", 1);
+    }
+
+    const tooltip = this.tooltipContainer.html(this.tooltip(d))
+
+    const { x, y } = this.relativeCoords(event);
+    tooltip
+      .style("top", `${y}px`)
+      .style("left", `${x}px`)
+      .transition()
+      .duration(400)
+      .style("opacity", 1);
+  }
+
+  onMouseOut() {
+    this.tooltipContainer.style("opacity", 1).transition().duration(400).style("opacity", 0);
+    selectAll("circle.beeswarm-circle").transition().duration(450).style("opacity", 1);
+  }
+
   parse(data) {
     // 1. remove those elements with no X axis data
     // 2. enforces the datatypes:
@@ -309,7 +314,9 @@ export default class BeeSwarm {
 
   relativeCoords({ clientX, clientY }) {
     const { left, top } = this.container.getBoundingClientRect();
-    const x = (clientX - left < this.width / 2) ? clientX - left + 150 : clientX - left - 150
+    const { width } = this.tooltipContainer.node().getBoundingClientRect()
+    const offset = 100 + width / 2
+    const x = (clientX - left < this.width / 2) ? clientX - left + offset : clientX - left - offset
     return { x, y: clientY - top };
   }
 }
