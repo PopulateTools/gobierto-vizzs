@@ -126,27 +126,6 @@ export default class BeeSwarm {
       });
   }
 
-  // transformData(data) {
-  //   const maxFinalAmount = max(data, (d) => d.final_amount_no_taxes);
-  //   const rangeMax = data.length > 600 ? 15 : 28;
-
-  //   const radiusScale = scalePow().exponent(0.5).range([3, rangeMax]).domain([0, maxFinalAmount]);
-
-  //   data.forEach((d) => {
-  //     d.slug_contract_type = slugString(d.contract_type);
-  //     if (d.assignee) {
-  //       //Normalize assignee to create a slug for select ID's on mouseover
-  //       d.slug = slugString(d.assignee);
-  //     }
-
-  //     d.radius = radiusScale(d[this.radiusProperty]);
-  //   });
-
-  //   return data
-  //     .filter(({ final_amount_no_taxes, [this.xAxisProp]: date }) => final_amount_no_taxes !== 0 && !!date.getDate())
-  //     .sort(({ contract_type: a = "" }, { contract_type: b = "" }) => a.localeCompare(b));
-  // }
-
   xAxis(g) {
     const hasMultipleYears = Array.from(new Set(this.data.map((d) => d[this.xAxisProp].getFullYear()))).length > 2;
 
