@@ -26,6 +26,7 @@ export default class BeeSwarm {
     this.xAxisProp = options.x || "date";
     this.yAxisProp = options.y || "group";
     this.rAxisProp = options.r || "radius";
+    this.idProp = options.id || "id";
     this.relationProp = options.relation;
 
     // band item height
@@ -91,7 +92,7 @@ export default class BeeSwarm {
 
     this.g
       .selectAll("circle.beeswarm-circle")
-      .data(this.data, d => d.id)
+      .data(this.data, d => d[this.idProp])
       .join((enter) =>
         enter
           .append("circle")
@@ -263,7 +264,7 @@ export default class BeeSwarm {
 
   defaultTooltip(d) {
     return `
-      <div class="beeswarm-tooltip-id">${d.id}</div>
+      <div class="beeswarm-tooltip-id">${d[this.idProp]}</div>
       <div class="beeswarm-tooltip-values">
         <span class="beeswarm-tooltip-date">${d[this.xAxisProp].toLocaleDateString()}</span>
         &nbsp;
