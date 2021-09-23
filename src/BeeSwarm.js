@@ -134,7 +134,7 @@ export default class BeeSwarm {
     g.attr("font-family", null).attr("font-size", null).attr("text-anchor", "start");
 
     // change line style defaults
-    g.selectAll("line").attr("transform", `translate(${this.margin.left} 0)`).attr("stroke-dasharray", 1).attr("stroke", "var(--grey-line)");
+    g.selectAll("line").attr("transform", `translate(${this.margin.left} 0)`).attr("stroke-dasharray", 1).attr("stroke", "var(--bs-grey)");
 
     // change line style defaults
     g.selectAll("text")
@@ -176,16 +176,18 @@ export default class BeeSwarm {
     this.scaleColor = scaleOrdinal()
       .domain(Array.from(new Set(this.data.map((d) => d[this.yAxisProp]))))
       .range([
-        "var(--color-1)",
-        "var(--color-2)",
-        "var(--color-3)",
-        "var(--color-4)",
-        "var(--color-5)",
-        "var(--color-6)",
-        "var(--color-7)",
-        "var(--color-8)",
-        "var(--color-9)",
-        "var(--color-10)",
+        "var(--bs-color-1)",
+        "var(--bs-color-2)",
+        "var(--bs-color-3)",
+        "var(--bs-color-4)",
+        "var(--bs-color-5)",
+        "var(--bs-color-6)",
+        "var(--bs-color-7)",
+        "var(--bs-color-8)",
+        "var(--bs-color-9)",
+        "var(--bs-color-10)",
+        "var(--bs-color-11)",
+        "var(--bs-color-12)",
       ]);
   }
 

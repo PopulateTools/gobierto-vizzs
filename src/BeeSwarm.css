@@ -1,22 +1,20 @@
-
 :root {
-  --grey-line: #c4c4c4;
-  --white: #fff;
-  --black: #000;
-  --border-color-grey: #ccc;
-  --shadow: 0 0 3px rgba(0, 0, 0, .2);
-  --color-1: #008e9c;
-  --color-2: #12365b;
-  --color-3: #ff776d;
-  --color-4: #f8b205;
-  --color-5: #a6cee3;
-  --color-6: #1f78b4;
-  --color-7: #b2df8a;
-  --color-8: #33a02c;
-  --color-9: #fb9a99;
-  --color-10: #e31a1c;
-  --color-11: #fdbf6f;
-  --color-12: #ff7f00;
+  --bs-grey: #c4c4c4;
+  --bs-white: #fff;
+  --bs-black: #000;
+  --bs-shadow: 0 0 3px rgba(0, 0, 0, .2);
+  --bs-color-1: #008e9c;
+  --bs-color-2: #12365b;
+  --bs-color-3: #ff776d;
+  --bs-color-4: #f8b205;
+  --bs-color-5: #a6cee3;
+  --bs-color-6: #1f78b4;
+  --bs-color-7: #b2df8a;
+  --bs-color-8: #33a02c;
+  --bs-color-9: #fb9a99;
+  --bs-color-10: #e31a1c;
+  --bs-color-11: #fdbf6f;
+  --bs-color-12: #ff7f00;
 }
 
 .beeswarm-container {
@@ -24,7 +22,7 @@
 }
 
 .beeswarm-plot .axis-x {
-  color: var(--grey-line);
+  color: var(--bs-grey);
   font-size: 0.875rem;
 }
 
@@ -42,11 +40,11 @@
   height: auto;
   z-index: 1;
   right: 1rem;
-  color: var(--black);
-  background-color: var(--white);
+  color: var(--bs-black);
+  background-color: var(--bs-white);
   border-radius: 4px;
-  border: 1px solid var(--border-color-grey);
-  box-shadow: var(--shadow);
+  border: 1px solid var(--bs-grey);
+  box-shadow: var(--bs-shadow);
   transform: translate(-50%, -50%);
 }
 
@@ -54,7 +52,7 @@
   text-transform: uppercase;
   font-size: 1rem;
   font-weight: bold;
-  border-bottom: 1px solid var(--border-color-grey);
+  border-bottom: 1px solid var(--bs-grey);
 }
 
 .beeswarm-tooltip-values {
@@ -65,7 +63,7 @@
 }
 
 .beeswarm-tooltip-date {
-  color: var(--border-color-grey);
+  color: var(--bs-grey);
   font-size: 0.75rem;
   text-align: center;
 }
