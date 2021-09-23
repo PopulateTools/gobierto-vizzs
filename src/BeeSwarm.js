@@ -19,7 +19,7 @@ export default class BeeSwarm {
   constructor(container, data, options = {}) {
     this.container = container;
     this.tooltip = options.tooltip || this.defaultTooltip
-    this.margin = { top: 50, bottom: 50, left: 120, right: 30, ...options.margin };
+    this.margin = { top: 50, bottom: 50, left: 120, right: 0, ...options.margin };
     this.locale = options.locale || window.navigator.language
 
     // main properties to display
@@ -50,7 +50,7 @@ export default class BeeSwarm {
   }
 
   setupElements() {
-    this.svg = select(this.container).attr("class", "beeswarm-container").append("svg").attr("class", "beeswarm-plot");
+    this.svg = select(this.container).classed("beeswarm-container", true).append("svg").attr("class", "beeswarm-plot");
     this.g = this.svg.append("g").attr("transform", `translate(${this.margin.left} ${this.margin.top})`);
     this.g.append("g").attr("class", "axis axis-x");
     this.g.append("g").attr("class", "axis axis-y");
@@ -203,7 +203,7 @@ export default class BeeSwarm {
 
     this.scaleX = scaleTime()
       .domain(extent(this.data, (d) => d[this.xAxisProp]))
-      .rangeRound([0, this.width]);
+      .rangeRound([20, this.width - 20]);
 
     this.scaleRadius = scalePow()
       .exponent(0.25)
