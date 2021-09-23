@@ -40,30 +40,26 @@ bee.setData(newData)
 | **margin** | _Object_ | `{ top: 50, bottom: 50, left: 120, right: 30 }` | Set the margin around the chart. You can change all or just what you want. |
 | **locale** | _String_ | `window.navigator.language` | 4-letters specification of the locale. |
 | **minBlockSize** | _Number_ | 100 | Height of each category. If there are many elements, it's strongly recommended it to increase this value. |
-| **tooltip** | _Function_ | [^1] | Custom HTML content to render in the tooltip on mouseenter. |
+| **tooltip** | _Function_ | [<sup>1</sup>](#1) | Custom HTML content to render in the tooltip on mouseenter. |
 
-[^1]:
- ```js
-  defaultTooltip(d) {
-   return `
-    <div class="beeswarm-tooltip-id">${d[this.idProp]}</div>
-    <div class="beeswarm-tooltip-values">
-      <span class="beeswarm-tooltip-date">${d[this.xAxisProp].toLocaleDateString()}</span>
-      &nbsp;
-      <span class="beeswarm-tooltip-radius">${d[this.rAxisProp].toLocaleString()}</span>
-    </div>
-    `;
-  }
- ```
+<span id="1"></span>
+```js
+ defaultTooltip(d) {
+  return `
+   <div class="beeswarm-tooltip-id">${d[this.idProp]}</div>
+   <div class="beeswarm-tooltip-values">
+     <span class="beeswarm-tooltip-date">${d[this.xAxisProp].toLocaleDateString()}</span>
+     &nbsp;
+     <span class="beeswarm-tooltip-radius">${d[this.rAxisProp].toLocaleString()}</span>
+   </div>
+   `;
+ }
+```
 ### Styling
 
 The chart uses CSS custom variables to define the palette, you may overwrite them:
 ```css
 :root {
-  --bs-grey: #c4c4c4;
-  --bs-white: #fff;
-  --bs-black: #000;
-  --bs-shadow: 0 0 3px rgba(0, 0, 0, .2);
   --bs-color-1: #008e9c;
   --bs-color-2: #12365b;
   --bs-color-3: #ff776d;
