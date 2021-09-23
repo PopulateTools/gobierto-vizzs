@@ -1,1 +1,1 @@
-export { BeeSwarm } from "./src/BeeSwarm"
+export { default as BeeSwarm } from "./src/BeeSwarm"
