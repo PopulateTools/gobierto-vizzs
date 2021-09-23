@@ -19,7 +19,7 @@ export default class BeeSwarm {
   constructor(container, data, options = {}) {
     this.container = container;
     this.tooltip = options.tooltip || this.defaultTooltip
-    this.margin = { top: 50, bottom: 50, left: 120, right: 0, ...options.margin };
+    this.margin = { top: 50, bottom: 50, left: 120, right: 30, ...options.margin };
     this.locale = options.locale || window.navigator.language
 
     // main properties to display
@@ -206,8 +206,8 @@ export default class BeeSwarm {
       .rangeRound([20, this.width - 20]);
 
     this.scaleRadius = scalePow()
-      .exponent(0.25)
-      .range([2, 15])
+      .exponent(0.5)
+      .range([2, 20])
       .domain([0, max(this.data, (d) => d[this.rAxisProp])]);
   }
 
