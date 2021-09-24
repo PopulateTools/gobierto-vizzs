@@ -1,5 +1,5 @@
 import "./index.css"
-import * as Charts from "../../src/*.js"
+import * as Charts from "../../index.js"
 import { mock } from "./random";
 
 Object.entries(Charts).forEach(([key, ChartModule]) => {
@@ -26,7 +26,7 @@ Object.entries(Charts).forEach(([key, ChartModule]) => {
 
   document.body.appendChild(block)
 
-  const module = new ChartModule.default(chart, mock(), { relation: "relation" })
+  const module = new ChartModule(chart, mock(), { relation: "relation" })
 
   btn.addEventListener("click", () => module.setData(mock()))
 });
