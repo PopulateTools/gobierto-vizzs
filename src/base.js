@@ -26,7 +26,15 @@ export default class Base {
   }
 
   // defined in the inherited classes
-  resizeListener() {}
+  getDimensions() {}
+
+  // defined in the inherited classes
+  build() {}
+
+  resizeListener() {
+    this.getDimensions();
+    this.build();
+  }
 
   remove() {
     window.removeEventListener("resize", this.resizeListener.bind(this));

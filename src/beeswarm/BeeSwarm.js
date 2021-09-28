@@ -258,11 +258,6 @@ export default class BeeSwarm extends Base {
       `;
   }
 
-  resizeListener() {
-    this.getDimensions();
-    this.build(this.data);
-  }
-
   relativeCoords({ clientX, clientY }) {
     const { left, top } = this.container.getBoundingClientRect();
     const { width } = this.tooltipContainer.node().getBoundingClientRect()
