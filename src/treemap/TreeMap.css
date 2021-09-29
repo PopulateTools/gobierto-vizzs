@@ -1,0 +1,18 @@
+:root {
+  --tm-grey: #c4c4c4;
+  --tm-white: #fff;
+  --tm-black: #000;
+  --tm-shadow: 0 0 3px rgba(0, 0, 0, .2);
+  --tm-color-1: #008e9c;
+  --tm-color-2: #12365b;
+  --tm-color-3: #ff776d;
+  --tm-color-4: #f8b205;
+  --tm-color-5: #a6cee3;
+  --tm-color-6: #1f78b4;
+  --tm-color-7: #b2df8a;
+  --tm-color-8: #33a02c;
+  --tm-color-9: #fb9a99;
+  --tm-color-10: #e31a1c;
+  --tm-color-11: #fdbf6f;
+  --tm-color-12: #ff7f00;
+}
