@@ -21,7 +21,7 @@ export default class BeeSwarm extends Base {
     // main properties to display
     this.xAxisProp = options.x || "date";
     this.yAxisProp = options.y || "group";
-    this.rAxisProp = options.r || "radius";
+    this.valueProp = options.r || "value";
     this.idProp = options.id || "id";
     this.relationProp = options.relation;
 
@@ -75,7 +75,7 @@ export default class BeeSwarm extends Base {
       )
       .force(
         "collide",
-        forceCollide().radius((d) => this.scaleRadius(d[this.rAxisProp]) + 1)
+        forceCollide().radius((d) => this.scaleRadius(d[this.valueProp]) + 1)
       )
       .on("tick", () =>
         this.g
@@ -91,7 +91,7 @@ export default class BeeSwarm extends Base {
         enter
           .append("circle")
           .attr("class", d => this.relationProp ? `beeswarm-circle beeswarm-circle-${d[this.relationProp]}` : "beeswarm-circle")
-          .attr("r", (d) => this.scaleRadius(d[this.rAxisProp]))
+          .attr("r", (d) => this.scaleRadius(d[this.valueProp]))
           .attr("fill", (d) => this.scaleColor(d[this.yAxisProp]))
       )
       .on("mouseover", this.onMouseOver.bind(this))
@@ -193,7 +193,7 @@ export default class BeeSwarm extends Base {
     this.scaleRadius = scalePow()
       .exponent(0.5)
       .range([2, 20])
-      .domain([0, max(this.data, (d) => d[this.rAxisProp])]);
+      .domain([0, max(this.data, (d) => d[this.valueProp])]);
   }
 
   onMouseOver(event, d) {
@@ -239,7 +239,7 @@ export default class BeeSwarm extends Base {
               {
                 ...d,
                 [this.xAxisProp]: new Date(d[this.xAxisProp]),
-                [this.rAxisProp]: +d[this.rAxisProp],
+                [this.valueProp]: +d[this.valueProp],
               },
             ]
           : []),
@@ -253,7 +253,7 @@ export default class BeeSwarm extends Base {
       <div class="beeswarm-tooltip-values">
         <span class="beeswarm-tooltip-date">${d[this.xAxisProp].toLocaleDateString()}</span>
         &nbsp;
-        <span class="beeswarm-tooltip-radius">${d[this.rAxisProp].toLocaleString()}</span>
+        <span class="beeswarm-tooltip-radius">${d[this.valueProp].toLocaleString()}</span>
       </div>
       `;
   }

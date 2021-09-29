@@ -34,7 +34,7 @@ bee.setData(newData)
 |---|---|---|---|
 | **x** | _String_ | "date" | Property name of the X-axis. It must contain a date-like value. |
 | **y** | _String_ | "group" | Property name of the Y-axis. Categories to be grouped by. |
-| **r** | _String_ | "radius" | Property name of the radius. Quantitative value. |
+| **value** | _String_ | "value" | Property name of the radius. Quantitative value. |
 | **id** | _String_ | "id" | Property name of the id or title. Better if unique. |
 | **relation** | _String_ | - | Property name of the relationship. In order to display some internal relationships between circles of different categories. Only make sense on mouse over. |
 | **margin** | _Object_ | `{ top: 50, bottom: 50, left: 120, right: 30 }` | Set the margin around the chart. You can change all or just what you want. |
