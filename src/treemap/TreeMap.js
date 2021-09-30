@@ -1,22 +1,26 @@
 import Base from "../base";
-import { select, selectAll, mouse } from "d3-selection";
-import { treemap, stratify, hierarchy, treemapBinary } from "d3-hierarchy";
+import { select } from "d3-selection";
+import { treemap, hierarchy, treemapBinary } from "d3-hierarchy";
 import { scaleLinear, scaleOrdinal } from "d3-scale";
-import { easeLinear } from "d3-ease";
 import { interpolate } from "d3-interpolate";
-import { flatRollup, mean, median, rollups,rollup, sum } from "d3-array";
-// import { nest } from "d3-collection";
+import { group, rollup, sum } from "d3-array";
+import "d3-transition";
+
 import "./TreeMap.css"
 
 export default class TreeMap extends Base {
   constructor(container, data, options = {}) {
     super(container, data, options);
 
-    this.margin = { top: 0, bottom: 0, left: 0, right: 0, ...options.margin };
+    this.breadcrumb = options.breadcrumb || this.defaultBreadcrumb;
+    this.itemTemplate = options.itemTemplate || this.defaultItemTemplate;
+    this.tooltip = options.tooltip || this.defaultTooltip;
+    this.margin = { top: 30, bottom: 0, left: 0, right: 0, ...options.margin };
 
     // main properties to display
     this.groupProp = options.group || "group";
     this.valueProp = options.value || "value";
+    this.idProp = options.id || "id";
 
     // chart size
     this.getDimensions();
@@ -45,65 +49,62 @@ export default class TreeMap extends Base {
         "viewBox",
         `0 0 ${this.width + this.margin.left + this.margin.right} ${this.height + this.margin.top + this.margin.bottom}`
       );
+    this.tooltipContainer = select(this.container).append("div").attr("class", "treemap-tooltip")
   }
 
   build() {
+    // TODO: el resize se jode
     const render = (group, root) => {
-      // TODO: incluir el root cuando esté controlado para el breadcrumb
-      const node = group.selectAll("g").data(root.children).join("g");
-      // const node = group.selectAll("g").data(root.children.concat(root)).join("g");
+      const node = group.selectAll("g").data(root.children.concat(root)).join("g");
 
       node
-        // .filter((d) => (d === root ? d.parent : d.children))
+        .on("mouseover", this.onMouseOver.bind(this))
+        .on("mouseout", this.onMouseOut.bind(this))
+        .filter((d) => (d === root ? d.parent : d.children))
         .attr("cursor", "pointer")
-        .on("click", (event, d) => (d === root ? zoomout(root) : zoomin(d)));
-
-      // node.append("title").text((d) => `${this.name(d)}\n${d.value}`);
+        .on("click", (_, d) => (d === root ? zoomout(root) : zoomin(d)))
 
       node
         .append("rect")
-        .attr("id", (d, i) => (d.leafUid = `tm-leaf-${i}`))
-        .attr("fill", (d) => { while (d.depth > 1) d = d.parent; return this.scaleColor(d.data.name) })
+        .attr("id", (d, i) => (d.leafUid = `tm-leaf-${this.seed()}`))
+        .attr("fill", (d) => {
+          if (d === root) return "transparent";
+          while (d.depth > 1) d = d.parent;
+          return this.scaleColor(d.data[this.idProp]);
+        })
         .attr("stroke", "#fff");
 
-      node.append("clipPath")
-          .attr("id", (d, i) => (d.clipUid = `tm-clip-${i}`))
-          .append("use")
-          .attr("xlink:href", d => new URL(`#${d.leafUid}`, location));
+      node
+        .append("clipPath")
+        .attr("id", (d, i) => (d.clipUid = `tm-clip-${this.seed()}`))
+        .append("use")
+        .attr("xlink:href", (d) => new URL(`#${d.leafUid}`, location));
 
       node
-        .append("text")
+        .append("foreignObject")
         .attr("clip-path", (d) => d.clipUid)
-        .attr("font-weight", (d) => (d === root ? "bold" : null))
-        .selectAll("tspan")
-        .data((d) => (d === root ? name(d) : d.data.name).split(/(?=[A-Z][^A-Z])/g).concat(d[this.valueProp]))
-        .join("tspan")
-        .attr("x", 3)
-        .attr("y", (d, i, nodes) => `${(i === nodes.length - 1) * 0.3 + 1.1 + i * 0.9}em`)
-        .attr("fill-opacity", (d, i, nodes) => (i === nodes.length - 1 ? 0.7 : null))
-        .attr("font-weight", (d, i, nodes) => (i === nodes.length - 1 ? "normal" : null))
-        .text((d) => d);
+        .append("xhtml:div")
+        .attr("class", (d) => (d === root ? "treemap-breadcrumb" : "treemap-item"))
+        .html((d) => (d === root ? this.breadcrumb(this.nodePath(d)) : this.itemTemplate(d)));
 
       group.call(position, root);
     };
 
     const position = (group, root) => {
-      group
+      const g = group
         .selectAll("g")
         .attr("transform", (d) =>
-          d === root ? `translate(0, 0)` : `translate(${this.scaleX(d.x0)},${this.scaleY(d.y0)})`
+          d === root ? `translate(0, 0)` : `translate(${this.scaleX(d.x0)} ${this.scaleY(d.y0) + this.margin.top})`
         )
-        .select("rect")
-        .attr("width", (d) => (d === root ? this.width : this.scaleX(d.x1) - this.scaleX(d.x0)))
-        .attr("height", (d) => (d === root ? 30 : this.scaleY(d.y1) - this.scaleY(d.y0)));
-    };
 
-    const name = (d) => {
-      return d
-        .ancestors()
-        .reverse()
-        .map((d) => d.data.name)
-        .join("/");
+        g.select("rect")
+          .attr("width", (d) => (d === root ? this.width : this.scaleX(d.x1) - this.scaleX(d.x0)))
+          .attr("height", (d) => (d === root ? this.margin.top : this.scaleY(d.y1) - this.scaleY(d.y0)));
+
+        g.select("foreignObject")
+          .attr("width", (d) => (d === root ? this.width : this.scaleX(d.x1) - this.scaleX(d.x0)))
+          .attr("height", (d) => (d === root ? this.margin.top : this.scaleY(d.y1) - this.scaleY(d.y0)));
+
     };
 
     const zoomin = (d) => {
@@ -146,17 +147,8 @@ export default class TreeMap extends Base {
         .call((t) => group1.transition(t).call(position, d.parent));
     };
 
-    // const tile = (node, x0, y0, x1, y1) => {
-    //   treemapBinary(node, 0, 0, this.width, this.height);
-    //   for (const child of node.children) {
-    //     child.x0 = x0 + child.x0 / this.width * (x1 - x0);
-    //     child.x1 = x0 + child.x1 / this.width * (x1 - x0);
-    //     child.y0 = y0 + child.y0 / this.height * (y1 - y0);
-    //     child.y1 = y0 + child.y1 / this.height * (y1 - y0);
-    //   }
-    // }
-
-    const root = treemap()(
+    // tile function required to place the "groupData" (see parse func.)
+    const root = treemap().tile(this.tile.bind(this))(
       hierarchy(this.data)
         .sum((d) => d[this.valueProp])
         .sort((a, b) => b[this.valueProp] - a[this.valueProp])
@@ -197,19 +189,89 @@ export default class TreeMap extends Base {
     ]);
   }
 
+  onMouseOver({ clientX, clientY }, d) {
+    if (d.parent && d.data.children) {
+      const tooltip = this.tooltipContainer.html(this.tooltip(d))
+      const { left, top } = this.container.getBoundingClientRect();
+
+      tooltip
+        .style("top", `${clientY - top}px`)
+        .style("left", `${clientX - left}px`)
+        .transition()
+        .duration(400)
+        .style("opacity", 1);
+    } else {
+      this.hideTooltip()
+    }
+  }
+
+  onMouseOut() {
+    this.hideTooltip()
+  }
+
+  hideTooltip() {
+    this.tooltipContainer.style("opacity", 1).transition().duration(400).style("opacity", 0);
+  }
+
   parse(data) {
     const reduce = (v) => sum(v, (d) => d[this.valueProp]);
     const groupBys = Array.isArray(this.groupProp)
       ? this.groupProp.map((prop) => (d) => d[prop])
       : [(d) => d[this.groupProp]];
-    // Always must return an object
-    return { name: "root", children: this.nest(rollup(data, reduce, ...groupBys)) };
+
+    // since rollup "reduces" the data, it only works for creating the categories
+    const rollupData = rollup(data, reduce, ...groupBys)
+    // still needing which items belongs to what category, so appends also the group function
+    const groupData = group(data, ...groupBys)
+    // hierarchies always require an object
+    return { [this.idProp]: "root", children: this.nest(rollupData, groupData) };
   }
 
-  nest(data) {
+  tile(node, x0, y0, x1, y1) {
+    treemapBinary(node, 0, 0, this.width, this.height);
+    for (const child of node.children) {
+      child.x0 = x0 + child.x0 / this.width * (x1 - x0);
+      child.x1 = x0 + child.x1 / this.width * (x1 - x0);
+      child.y0 = y0 + child.y0 / this.height * (y1 - y0);
+      child.y1 = y0 + child.y1 / this.height * (y1 - y0);
+    }
+  }
+
+  nest(rollup, group) {
     // https://observablehq.com/@bayre/unrolling-a-d3-rollup
-    return Array.from(data, ([key, value]) =>
-      value instanceof Map ? { name: key, children: this.nest(value) } : { name: key, value: value }
+    return Array.from(rollup, ([key, value]) =>
+      value instanceof Map
+        ? { [this.idProp]: key, children: this.nest(value, group.get(key)) }
+        // : { [this.idProp]: key, value }
+        : { [this.idProp]: key, value, children: group.get(key) }
     );
+  }
+
+  nodePath(d) {
+    return d
+      .ancestors()
+      .reverse()
+      .map((d) => d.data[this.idProp]);
+  }
+
+  defaultBreadcrumb(d) {
+    return d.map((pathName) => `<span>${pathName}</span>`).join("&nbsp;/&nbsp;");
+  }
+
+  defaultItemTemplate(d) {
+    return [
+      `<div><strong>${d.data[this.idProp]}</strong></div>`,
+      `<div>${d.value.toLocaleString()}</div>`,
+      d.children && `<div>${d.children?.length}</div>`,
+    ].join("");
+  }
+
+  defaultTooltip(d) {
+    return d.data.children.map(x => `
+      <div class="treemap-tooltip-block">
+        <div class="treemap-tooltip-id">${x[this.idProp]}</div>
+        <div class="treemap-tooltip-values">${x[this.valueProp].toLocaleString()}</div>
+      </div>
+    `).join("");
   }
 }

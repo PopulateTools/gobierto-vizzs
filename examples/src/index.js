@@ -30,7 +30,8 @@ Object.entries(Charts).forEach(([key, ChartModule]) => {
   document.body.appendChild(block)
 
   // const module = new ChartModule(chart, mock(), { relation: "relation" })
-  const module = new ChartModule(chart, mock(), { relation: "relation", group: ["group", "relation"] })
+  // const module = new ChartModule(chart, mock(), { relation: "relation", group: ["group"] })
+  const module = new ChartModule(chart, mock(), { relation: "relation", group: ["group", "relation"], id: "title" })
 
   btn.addEventListener("click", () => module.setData(mock()))
 });
