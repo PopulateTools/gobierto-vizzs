@@ -21,7 +21,7 @@ export default class BeeSwarm extends Base {
     // main properties to display
     this.xAxisProp = options.x || "date";
     this.yAxisProp = options.y || "group";
-    this.valueProp = options.r || "value";
+    this.valueProp = options.value || "value";
     this.idProp = options.id || "id";
     this.relationProp = options.relation;
 
