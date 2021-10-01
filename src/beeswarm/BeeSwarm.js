@@ -1,31 +1,27 @@
+import Base from "../base";
 import { select, selectAll } from "d3-selection";
 import "d3-transition";
 import { scaleBand, scaleTime, scalePow, scaleOrdinal } from "d3-scale";
 import { forceSimulation, forceX, forceY, forceCollide } from "d3-force";
 import { axisBottom, axisLeft } from "d3-axis";
 import { extent } from "d3-array";
-import { timeFormat, timeFormatDefaultLocale } from "d3-time-format";
+import { timeFormat } from "d3-time-format";
 import { max } from "d3-array";
 import { easeLinear } from "d3-ease";
 import { timeMonth } from "d3-time";
 import "./BeeSwarm.css"
 
-const LOCALES = {
-  "en-US": () => import("d3-time-format/locale/en-US.json"),
-  "es-ES": () => import("d3-time-format/locale/es-ES.json"),
-}
-
-export default class BeeSwarm {
+export default class BeeSwarm extends Base {
   constructor(container, data, options = {}) {
-    this.container = container;
+    super(container, data, options)
+
     this.tooltip = options.tooltip || this.defaultTooltip
     this.margin = { top: 50, bottom: 50, left: 120, right: 30, ...options.margin };
-    this.locale = options.locale || window.navigator.language
 
     // main properties to display
     this.xAxisProp = options.x || "date";
     this.yAxisProp = options.y || "group";
-    this.rAxisProp = options.r || "radius";
+    this.valueProp = options.value || "value";
     this.idProp = options.id || "id";
     this.relationProp = options.relation;
 
@@ -40,8 +36,6 @@ export default class BeeSwarm {
     if (data.length) {
       this.setData(data)
     }
-
-    window.addEventListener("resize", this.resizeListener.bind(this));
   }
 
   getDimensions() {
@@ -81,7 +75,7 @@ export default class BeeSwarm {
       )
       .force(
         "collide",
-        forceCollide().radius((d) => this.scaleRadius(d[this.rAxisProp]) + 1)
+        forceCollide().radius((d) => this.scaleRadius(d[this.valueProp]) + 1)
       )
       .on("tick", () =>
         this.g
@@ -97,7 +91,7 @@ export default class BeeSwarm {
         enter
           .append("circle")
           .attr("class", d => this.relationProp ? `beeswarm-circle beeswarm-circle-${d[this.relationProp]}` : "beeswarm-circle")
-          .attr("r", (d) => this.scaleRadius(d[this.rAxisProp]))
+          .attr("r", (d) => this.scaleRadius(d[this.valueProp]))
           .attr("fill", (d) => this.scaleColor(d[this.yAxisProp]))
       )
       .on("mouseover", this.onMouseOver.bind(this))
@@ -146,17 +140,6 @@ export default class BeeSwarm {
         const dy = (0.32 - (currentNode.children.length - 1)) / 2
         return `${dy}em`
       });
-  }
-
-  async setLocale() {
-    if (!Object.keys(LOCALES).includes(this.locale)) {
-      // request the locale when it does not exists by default
-      const i18n = await fetch(`https://unpkg.com/d3-time-format/locale/${this.locale}.json`).then(r => r.json())
-      timeFormatDefaultLocale(i18n)
-    } else {
-      const i18n = await LOCALES[this.locale]()
-      timeFormatDefaultLocale(i18n)
-    }
   }
 
   async setData(data) {
@@ -210,7 +193,7 @@ export default class BeeSwarm {
     this.scaleRadius = scalePow()
       .exponent(0.5)
       .range([2, 20])
-      .domain([0, max(this.data, (d) => d[this.rAxisProp])]);
+      .domain([0, max(this.data, (d) => d[this.valueProp])]);
   }
 
   onMouseOver(event, d) {
@@ -256,7 +239,7 @@ export default class BeeSwarm {
               {
                 ...d,
                 [this.xAxisProp]: new Date(d[this.xAxisProp]),
-                [this.rAxisProp]: +d[this.rAxisProp],
+                [this.valueProp]: +d[this.valueProp],
               },
             ]
           : []),
@@ -270,49 +253,9 @@ export default class BeeSwarm {
       <div class="beeswarm-tooltip-values">
         <span class="beeswarm-tooltip-date">${d[this.xAxisProp].toLocaleDateString()}</span>
         &nbsp;
-        <span class="beeswarm-tooltip-radius">${d[this.rAxisProp].toLocaleString()}</span>
+        <span class="beeswarm-tooltip-radius">${d[this.valueProp].toLocaleString()}</span>
       </div>
       `;
-  }
-
-  resizeListener() {
-    this.getDimensions();
-    this.build(this.data);
-  }
-
-  remove() {
-    window.removeEventListener("resize", this.resizeListener.bind(this));
-  }
-
-  wrap(text, width) {
-    text.each(function () {
-      var text = select(this),
-        words = text.text().split(/\s+/).reverse(),
-        word,
-        line = [],
-        lineHeight = 1,
-        y = text.attr("y"),
-        dy = 0,
-        tspan = text
-          .text(null)
-          .append("tspan")
-          .attr("x", 0)
-      while ((word = words.pop())) {
-        line.push(word);
-        tspan.text(line.join(" "));
-        if (tspan.node().getComputedTextLength() > width) {
-          line.pop();
-          tspan.text(line.join(" "));
-          line = [word];
-          tspan = text
-            .append("tspan")
-            .attr("x", 0)
-            .attr("y", y)
-            .attr("dy", lineHeight + dy + "em")
-            .text(word);
-        }
-      }
-    });
   }
 
   relativeCoords({ clientX, clientY }) {

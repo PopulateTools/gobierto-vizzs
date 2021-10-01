@@ -1,13 +1,17 @@
 import Faker from "faker";
 
 export function mock() {
-  const groups = Array.from({ length: Faker.datatype.number({ min: 3, max: 9 }) }, () => Faker.vehicle.manufacturer())
-  const relations = Array.from({ length: Faker.datatype.number(50) }, () => Faker.name.firstName())
-  return Array.from({ length: 600 }, () => ({
+  const groups = Array.from({ length: Faker.datatype.number({ min: 3, max: 9 }) }, () => Faker.address.country())
+  const relations = Array.from({ length: Faker.datatype.number({ min: 1500, max: 5000 }) }, () => Faker.vehicle.manufacturer())
+  return Array.from({ length: 100 }, (_, i) => ({
     date: Math.random() > 0.98 ? null : Faker.date.past(),
-    radius: Math.random() > 0.9 ? Faker.datatype.number(1e5) : Faker.datatype.number(1e4),
+    value: Math.random() > 0.9 ? Faker.datatype.number(1e5) : Faker.datatype.number(1e4),
+    title: Faker.lorem.words(5),
+    relation: Faker.random.arrayElement(relations),
     group: Faker.random.arrayElement(groups),
-    id: Faker.lorem.words(5),
-    relation: Faker.random.arrayElement(relations)
-  }));
+    group2: Faker.random.arrayElement(groups),
+    group3: Faker.random.arrayElement(groups),
+    group4: Faker.random.arrayElement(groups),
+    id: i,
+  }))
 }
