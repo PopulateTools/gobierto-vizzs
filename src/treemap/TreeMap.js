@@ -29,7 +29,6 @@ export default class TreeMap extends Base {
     this.setupElements();
 
     if (data.length) {
-      // TODO: probar cuando cambian los datos
       this.setColorScale();
       this.setData(data);
     }
