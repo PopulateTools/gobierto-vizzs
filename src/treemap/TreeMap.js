@@ -21,6 +21,7 @@ export default class TreeMap extends Base {
     this.groupProp = options.group || "group";
     this.valueProp = options.value || "value";
     this.idProp = options.id || "id";
+    this.rootTitle = options.rootTitle || "root";
 
     // chart size
     this.getDimensions();
@@ -49,17 +50,17 @@ export default class TreeMap extends Base {
         "viewBox",
         `0 0 ${this.width + this.margin.left + this.margin.right} ${this.height + this.margin.top + this.margin.bottom}`
       );
+    this.g = this.svg.append("g")
     this.tooltipContainer = select(this.container).append("div").attr("class", "treemap-tooltip")
   }
 
   build() {
-    // TODO: el resize se jode
     const render = (group, root) => {
       const node = group.selectAll("g").data(root.children.concat(root)).join("g");
 
       node
-        .on("mouseover", this.onMouseOver.bind(this))
-        .on("mouseout", this.onMouseOut.bind(this))
+        .on("mousemove", this.onMouseMove.bind(this))
+        .on("mouseleave", this.debounce(this.onMouseLeave.bind(this), 250))
         .filter((d) => (d === root ? d.parent : d.children))
         .attr("cursor", "pointer")
         .on("click", (_, d) => (d === root ? zoomout(root) : zoomin(d)))
@@ -156,7 +157,7 @@ export default class TreeMap extends Base {
 
     this.setScales();
 
-    let group = this.svg.append("g").call(render, root);
+    let group = this.g.call(render, root);
   }
 
   async setData(data) {
@@ -189,28 +190,33 @@ export default class TreeMap extends Base {
     ]);
   }
 
-  onMouseOver({ clientX, clientY }, d) {
-    if (d.parent && d.data.children) {
-      const tooltip = this.tooltipContainer.html(this.tooltip(d))
-      const { left, top } = this.container.getBoundingClientRect();
+  onMouseMove({ clientX, clientY }, d) {
+    if (!this.cursorInsideTooltip && d.parent && d.data.children) {
+      const tooltip = this.tooltipContainer.style("pointer-events", "auto").html(this.tooltip(d))
+      const { width: containerWidth, height: containerHeight, left, top } = this.container.getBoundingClientRect();
+      const { width: tooltipWidth, height: tooltipHeight } = tooltip.node().getBoundingClientRect();
+
+      const isHorizontalInverted = clientX - left + tooltipWidth > containerWidth
+      const isVerticalInverted = clientY - top + tooltipHeight > containerHeight
 
       tooltip
-        .style("top", `${clientY - top}px`)
-        .style("left", `${clientX - left}px`)
-        .transition()
-        .duration(400)
-        .style("opacity", 1);
-    } else {
-      this.hideTooltip()
+        .style("top", isVerticalInverted ? `${clientY - top - tooltipHeight}px` : `${clientY - top}px`)
+        .style("left", isHorizontalInverted ? `${clientX - left - tooltipWidth}px` : `${clientX - left}px`)
+        .call(t => t.transition().duration(400).style("opacity", 1))
+        .on("mouseover", () => (this.cursorInsideTooltip = true))
+        .on("mouseleave", () => (this.cursorInsideTooltip = false))
     }
   }
 
-  onMouseOut() {
-    this.hideTooltip()
-  }
-
-  hideTooltip() {
-    this.tooltipContainer.style("opacity", 1).transition().duration(400).style("opacity", 0);
+  onMouseLeave() {
+    if (!this.cursorInsideTooltip) {
+      this.tooltipContainer
+        .style("pointer-events", "none")
+        .style("opacity", 1)
+        .transition()
+        .duration(400)
+        .style("opacity", 0);
+    }
   }
 
   parse(data) {
@@ -224,7 +230,7 @@ export default class TreeMap extends Base {
     // still needing which items belongs to what category, so appends also the group function
     const groupData = group(data, ...groupBys)
     // hierarchies always require an object
-    return { [this.idProp]: "root", children: this.nest(rollupData, groupData) };
+    return { [this.idProp]: this.rootTitle, children: this.nest(rollupData, groupData) };
   }
 
   tile(node, x0, y0, x1, y1) {
@@ -242,7 +248,6 @@ export default class TreeMap extends Base {
     return Array.from(rollup, ([key, value]) =>
       value instanceof Map
         ? { [this.idProp]: key, children: this.nest(value, group.get(key)) }
-        // : { [this.idProp]: key, value }
         : { [this.idProp]: key, value, children: group.get(key) }
     );
   }
@@ -271,6 +276,7 @@ export default class TreeMap extends Base {
       <div class="treemap-tooltip-block">
         <div class="treemap-tooltip-id">${x[this.idProp]}</div>
         <div class="treemap-tooltip-values">${x[this.valueProp].toLocaleString()}</div>
+        <p class="text-xs">Quieren decir que tenía el sobrenombre de Quijada, o Quesada, que en esto hay alguna diferencia en los autores que deste caso escriben; aunque por conjeturas verosímiles se deja entender que se llamaba Quijana. </p>
       </div>
     `).join("");
   }

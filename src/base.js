@@ -74,4 +74,15 @@ export default class Base {
   seed(len = 24) {
     return [...Array(len)].map(() => Math.random().toString(36)[2]).join('')
   }
+
+  debounce(func, timeout) {
+    let timer = undefined;
+    return (...args) => {
+      const next = () => func(...args);
+      if (timer) {
+        clearTimeout(timer);
+      }
+      timer = setTimeout(next, timeout > 0 ? timeout : 300);
+    };
+  }
 }
