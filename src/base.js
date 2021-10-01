@@ -2,7 +2,6 @@ import { select } from "d3-selection";
 import { timeFormatDefaultLocale } from "d3-time-format";
 
 const LOCALES = {
-  "en-US": () => import("d3-time-format/locale/en-US.json"),
   "es-ES": () => import("d3-time-format/locale/es-ES.json"),
 }
 
@@ -16,9 +15,15 @@ export default class Base {
 
   async setLocale() {
     if (!Object.keys(LOCALES).includes(this.locale)) {
-      // request the locale when it does not exists by default
-      const i18n = await fetch(`https://unpkg.com/d3-time-format/locale/${this.locale}.json`).then(r => r.json())
-      timeFormatDefaultLocale(i18n)
+      // unpkg does not keep non-regional locales (2-letters code), so it's worthless make the request
+      if (this.locale.length > 2) {
+        // request the locale when it does not exists by default
+        const i18n = await fetch(`https://unpkg.com/d3-time-format/locale/${this.locale}.json`).then(r => r.json()).catch(() => {})
+
+        if (i18n) {
+          timeFormatDefaultLocale(i18n)
+        }
+      }
     } else {
       const i18n = await LOCALES[this.locale]()
       timeFormatDefaultLocale(i18n)
