@@ -275,7 +275,6 @@ export default class TreeMap extends Base {
       <div class="treemap-tooltip-block">
         <div class="treemap-tooltip-id">${x[this.idProp]}</div>
         <div class="treemap-tooltip-values">${x[this.valueProp].toLocaleString()}</div>
-        <p class="text-xs">Quieren decir que tenía el sobrenombre de Quijada, o Quesada, que en esto hay alguna diferencia en los autores que deste caso escriben; aunque por conjeturas verosímiles se deja entender que se llamaba Quijana. </p>
       </div>
     `).join("");
   }
