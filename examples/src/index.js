@@ -1,8 +1,9 @@
 import "./index.css"
 import * as Charts from "../../index.js"
-import { mock } from "./random";
+import { toJSON } from "../../index.js"
+import { mockJSON, mockCSV } from "./random";
 
-Object.entries(Charts).forEach(([key, ChartModule]) => {
+function DOM([key, ChartModule]) {
   const head = document.createElement("div")
   const block = document.createElement("div")
   const a = document.createElement("a")
@@ -29,7 +30,10 @@ Object.entries(Charts).forEach(([key, ChartModule]) => {
 
   document.body.appendChild(block)
 
-  const module = new ChartModule(chart, mock(), { relation: "relation", group: ["group", "relation"], id: "title" })
+  const module = new ChartModule(chart, mockJSON(), { relation: "relation", group: ["group", "relation"], id: "title" })
 
-  btn.addEventListener("click", () => module.setData(mock()))
-});
+  btn.addEventListener("click", () => module.setData(mockJSON()))
+}
+
+// do not display toJSON helper
+Object.entries(Charts).forEach(x => !/^to/.test(x[0]) && DOM(x));
