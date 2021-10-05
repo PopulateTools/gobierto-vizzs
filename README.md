@@ -306,9 +306,9 @@ In order to render the chart locale-sensitive stuff, enforce the graph language 
 const tree = new TreeMap(chart, data, { locale: "it-IT" })
 ```
 
-## Helpers
+## Helpers
 
-### toJSON
+### toJSON
 
 Convenience method to transform a CSV text into a JSON structure
 ```js
