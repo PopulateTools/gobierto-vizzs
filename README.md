@@ -13,6 +13,15 @@ npm start
 
 # API
 
+* [BeeSwarm](#beeswarm)
+  + [Styling](#styling)
+  + [BeeSwarm examples](#beeswarm-examples)
+* [TreeMap](#treemap)
+  + [Styling](#styling-1)
+  + [TreeMap examples](#treemap-examples)
+* [Helpers](#helpers)
+  + [toJSON](#tojson)
+
 ## BeeSwarm
 
 ```js
