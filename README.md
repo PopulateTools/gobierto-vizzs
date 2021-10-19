@@ -54,14 +54,14 @@ bee.setData(newData)
 <span id="1"></span>
 ```js
 defaultTooltip(d) {
-return `
-  <div class="beeswarm-tooltip-id">${d[this.idProp]}</div>
-  <div class="beeswarm-tooltip-values">
-    <span class="beeswarm-tooltip-date">${d[this.xAxisProp].toLocaleDateString()}</span>
-    &nbsp;
-    <span class="beeswarm-tooltip-radius">${d[this.rAxisProp].toLocaleString()}</span>
-  </div>
-  `;
+  return `
+    <div class="beeswarm-tooltip-id">${d[this.idProp]}</div>
+    <div class="beeswarm-tooltip-values">
+      <span class="beeswarm-tooltip-date">${d[this.xAxisProp].toLocaleDateString()}</span>
+      &nbsp;
+      <span class="beeswarm-tooltip-radius">${d[this.rAxisProp].toLocaleString()}</span>
+    </div>
+    `;
 }
 ```
 
@@ -191,14 +191,12 @@ tree.setData(newData)
 <span id="1"></span>
 ```js
 defaultTooltip(d) {
-return `
-  <div class="beeswarm-tooltip-id">${d[this.idProp]}</div>
-  <div class="beeswarm-tooltip-values">
-    <span class="beeswarm-tooltip-date">${d[this.xAxisProp].toLocaleDateString()}</span>
-    &nbsp;
-    <span class="beeswarm-tooltip-radius">${d[this.rAxisProp].toLocaleString()}</span>
-  </div>
-  `;
+  return d.data.children.map(x => `
+    <div class="treemap-tooltip-block">
+      <div class="treemap-tooltip-id">${x[this.idProp]}</div>
+      <div class="treemap-tooltip-values">${x[this.valueProp].toLocaleString()}</div>
+    </div>
+  `).join("");
 }
 ```
 
