@@ -1,9 +1,8 @@
 import "./index.css"
-import * as Charts from "../../index.js"
-import { toJSON } from "../../index.js"
-import { mockJSON, mockCSV } from "./random";
+import { BeeSwarm, TreeMap } from "../../index.js"
+import { mockJSON } from "./random";
 
-function DOM([key, ChartModule]) {
+function DOM([key, ChartModule, ...opts]) {
   const head = document.createElement("div")
   const block = document.createElement("div")
   const a = document.createElement("a")
@@ -30,10 +29,13 @@ function DOM([key, ChartModule]) {
 
   document.body.appendChild(block)
 
-  const module = new ChartModule(chart, mockJSON(), { relation: "relation", group: ["group", "relation"], id: "title" })
+  const module = new ChartModule(chart, mockJSON(), ...opts)
 
   btn.addEventListener("click", () => module.setData(mockJSON()))
 }
 
-// do not display toJSON helper
-Object.entries(Charts).forEach(x => !/^to/.test(x[0]) && DOM(x));
+[
+  // [title, Chart, options]
+  ["BeeSwarm", BeeSwarm, { relation: "relation", id: "title" }],
+  ["TreeMap", TreeMap, { group: ["group", "relation"], id: "title" }],
+].map(DOM);

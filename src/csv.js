@@ -1,5 +1,5 @@
-import { csvParse } from "d3-dsv";
+import { dsvFormat } from "d3-dsv";
 
-export default function toJSON(data) {
-  return csvParse(data)
+export default function toJSON(data, separator = ",") {
+  return dsvFormat(separator).parse(data)
 }

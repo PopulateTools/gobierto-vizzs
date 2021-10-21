@@ -179,7 +179,7 @@ tree.setData(newData)
 | name | type | default | description |
 |---|---|---|---|
 | **group** | _String_, _Array<_String_>_ | "group" | Property/ies name/s of the different levels of the tree |
-| **value** | _String_ | "value" | Property name of the aggregator. The tree will be adding such value for each item in each category |
+| **value** | _String_ | - | Property name of the aggregator. The tree will be adding such value for each item in each category. If none is passed, the treemap will group by number of children |
 | **id** | _String_ | "id" | Property name to build the tree object. It works as a title for the different groups |
 | **rootTitle** | _String_ | "root" | Display name of the first level of the tree |
 | **margin** | _Object_ | `{ top: 50, bottom: 50, left: 120, right: 30 }` | Set the margin around the chart. You can change all or just what you want. |
@@ -193,8 +193,10 @@ tree.setData(newData)
 defaultTooltip(d) {
   return d.data.children.map(x => `
     <div class="treemap-tooltip-block">
-      <div class="treemap-tooltip-id">${x[this.idProp]}</div>
-      <div class="treemap-tooltip-values">${x[this.valueProp].toLocaleString()}</div>
+      ${[
+        `<div class="treemap-tooltip-id">${x[this.idProp]}</div>`,
+        x[this.valueProp] && `<div class="treemap-tooltip-values">${x[this.valueProp].toLocaleString()}</div>`
+      ].join("")}
     </div>
   `).join("");
 }
@@ -247,18 +249,37 @@ import { TreeMap } from "gobierto-vizzs"
 const chart = document.body
 const data = [
   {
-    "value": 40218,
     "id": "id nobis possimus incidunt dolorum",
     "group": "Lebanon",
   },
   {
-    "value": 5398,
     "id": "adipisci fugiat quidem alias molestiae",
     "group": "Ireland",
   },
   ...
 ]
 const tree = new TreeMap(chart, data)
+```
+
+Instead of the children, if you want to sum the values of a different property, you can set the `value` prop accordingly
+```js
+import { TreeMap } from "gobierto-vizzs"
+
+const chart = document.body
+const data = [
+  {
+    "id": "id nobis possimus incidunt dolorum",
+    "group": "Lebanon",
+    "population": 6e6
+  },
+  {
+    "id": "adipisci fugiat quidem alias molestiae",
+    "group": "Ireland",
+    "population": 5e6
+  },
+  ...
+]
+const tree = new TreeMap(chart, data, { value: "population" })
 ```
 
 But if you want more depth levels, and use different keys, try this instead
@@ -317,9 +338,16 @@ const tree = new TreeMap(chart, data, { locale: "it-IT" })
 
 ### toJSON
 
-Convenience method to transform a CSV text into a JSON structure
+Convenience method to transform a CSV text into a JSON structure, assuming the CSV separator is a comma `,`
 ```js
 import { toJSON } from "gobierto-vizzs"
 
 const data = toJSON(CSV_STRING)
+```
+
+You can use a different separator as well
+```js
+import { toJSON } from "gobierto-vizzs"
+
+const data = toJSON(CSV_STRING, ";")
 ```

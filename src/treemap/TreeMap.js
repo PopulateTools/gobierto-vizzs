@@ -19,7 +19,7 @@ export default class TreeMap extends Base {
 
     // main properties to display
     this.groupProp = options.group || "group";
-    this.valueProp = options.value || "value";
+    this.valueProp = options.value; // if no value, use length to compute size
     this.idProp = options.id || "id";
     this.rootTitle = options.rootTitle || "root";
 
@@ -36,7 +36,7 @@ export default class TreeMap extends Base {
 
   getDimensions() {
     const { width, height } = this.container.getBoundingClientRect();
-    const minHeight = height > 0 ? height : width / (16 / 9)
+    const minHeight = height > 0 ? height : width / (16 / 9);
 
     this.width = width - this.margin.left - this.margin.right;
     this.height = minHeight - this.margin.top - this.margin.bottom;
@@ -51,8 +51,8 @@ export default class TreeMap extends Base {
         "viewBox",
         `0 0 ${this.width + this.margin.left + this.margin.right} ${this.height + this.margin.top + this.margin.bottom}`
       );
-    this.g = this.svg.append("g")
-    this.tooltipContainer = select(this.container).append("div").attr("class", "treemap-tooltip")
+    this.g = this.svg.append("g");
+    this.tooltipContainer = select(this.container).append("div").attr("class", "treemap-tooltip");
   }
 
   build() {
@@ -64,7 +64,7 @@ export default class TreeMap extends Base {
         .on("mouseleave", this.debounce(this.onMouseLeave.bind(this), 250))
         .filter((d) => (d === root ? d.parent : d.children))
         .attr("cursor", "pointer")
-        .on("click", (_, d) => (d === root ? zoomout(root) : zoomin(d)))
+        .on("click", (_, d) => (d === root ? zoomout(root) : zoomin(d)));
 
       node
         .append("rect")
@@ -97,16 +97,15 @@ export default class TreeMap extends Base {
         .selectAll("g")
         .attr("transform", (d) =>
           d === root ? `translate(0, 0)` : `translate(${this.scaleX(d.x0)} ${this.scaleY(d.y0) + this.margin.top})`
-        )
+        );
 
-        g.select("rect")
-          .attr("width", (d) => (d === root ? this.width : this.scaleX(d.x1) - this.scaleX(d.x0)))
-          .attr("height", (d) => (d === root ? this.margin.top : this.scaleY(d.y1) - this.scaleY(d.y0)));
+      g.select("rect")
+        .attr("width", (d) => (d === root ? this.width : this.scaleX(d.x1) - this.scaleX(d.x0)))
+        .attr("height", (d) => (d === root ? this.margin.top : this.scaleY(d.y1) - this.scaleY(d.y0)));
 
-        g.select("foreignObject")
-          .attr("width", (d) => (d === root ? this.width : this.scaleX(d.x1) - this.scaleX(d.x0)))
-          .attr("height", (d) => (d === root ? this.margin.top : this.scaleY(d.y1) - this.scaleY(d.y0)));
-
+      g.select("foreignObject")
+        .attr("width", (d) => (d === root ? this.width : this.scaleX(d.x1) - this.scaleX(d.x0)))
+        .attr("height", (d) => (d === root ? this.margin.top : this.scaleY(d.y1) - this.scaleY(d.y0)));
     };
 
     const zoomin = (d) => {
@@ -149,12 +148,17 @@ export default class TreeMap extends Base {
         .call((t) => group1.transition(t).call(position, d.parent));
     };
 
+    // if there's no value to sum, just count the node
+    const valueFn = this.valueProp
+      ? hierarchy(this.data)
+          .sum((d) => d[this.valueProp])
+          .sort((a, b) => b.value - a.value)
+      : hierarchy(this.data)
+          .count()
+          .sort((a, b) => b.value - a.value);
+
     // tile function required to place the "groupData" (see parse func.)
-    const root = treemap().tile(this.tile.bind(this))(
-      hierarchy(this.data)
-        .sum((d) => d[this.valueProp])
-        .sort((a, b) => b[this.valueProp] - a[this.valueProp])
-    );
+    const root = treemap().tile(this.tile.bind(this))(valueFn);
 
     this.setScales();
 
@@ -193,22 +197,32 @@ export default class TreeMap extends Base {
 
   onMouseMove({ clientX, clientY, target }, d) {
     // the breadcrumb group is always the last item, so, if there's no next sibling, it's breadcrumb
-    const isBreadcrumb = !target.closest("g").nextSibling
+    const isBreadcrumb = !target.closest("g").nextSibling;
     if (!this.cursorInsideTooltip && !isBreadcrumb && d.parent && d.data.children) {
-      const tooltip = this.tooltipContainer.style("pointer-events", "auto").html(this.tooltip(d))
+      const tooltip = this.tooltipContainer.style("pointer-events", "auto").html(this.tooltip(d));
       const { width: containerWidth, height: containerHeight, left, top } = this.container.getBoundingClientRect();
       const { width: tooltipWidth, height: tooltipHeight } = tooltip.node().getBoundingClientRect();
 
-      const isHorizontalInverted = clientX - left + tooltipWidth > containerWidth
-      const isVerticalInverted = clientY - top + tooltipHeight > containerHeight
+      const isHorizontalInverted = clientX - left + tooltipWidth > containerWidth;
+      const isVerticalInverted = clientY - top + tooltipHeight > containerHeight;
 
-      const offset = 0.02
+      const offset = 0.02;
       tooltip
-        .style("top", isVerticalInverted ? `${(clientY - top - tooltipHeight) * (1 - offset)}px` : `${(clientY - top) * (1 + offset)}px`)
-        .style("left", isHorizontalInverted ? `${(clientX - left - tooltipWidth) * (1 - offset)}px` : `${(clientX - left) * (1 + offset)}px`)
-        .call(t => t.transition().duration(400).style("opacity", 1))
+        .style(
+          "top",
+          isVerticalInverted
+            ? `${(clientY - top - tooltipHeight) * (1 - offset)}px`
+            : `${(clientY - top) * (1 + offset)}px`
+        )
+        .style(
+          "left",
+          isHorizontalInverted
+            ? `${(clientX - left - tooltipWidth) * (1 - offset)}px`
+            : `${(clientX - left) * (1 + offset)}px`
+        )
+        .call((t) => t.transition().duration(400).style("opacity", 1))
         .on("mouseover", () => (this.cursorInsideTooltip = true))
-        .on("mouseleave", () => (this.cursorInsideTooltip = false))
+        .on("mouseleave", () => (this.cursorInsideTooltip = false));
     }
   }
 
@@ -224,15 +238,15 @@ export default class TreeMap extends Base {
   }
 
   parse(data) {
-    const reduce = (v) => sum(v, (d) => d[this.valueProp]);
+    const reduce = this.valueProp ? (v) => sum(v, (d) => d[this.valueProp]) : () => {};
     const groupBys = Array.isArray(this.groupProp)
       ? this.groupProp.map((prop) => (d) => d[prop])
       : [(d) => d[this.groupProp]];
 
     // since rollup "reduces" the data, it only works for creating the categories
-    const rollupData = rollup(data, reduce, ...groupBys)
+    const rollupData = rollup(data, reduce, ...groupBys);
     // still needing which items belongs to what category, so appends also the group function
-    const groupData = group(data, ...groupBys)
+    const groupData = group(data, ...groupBys);
     // hierarchies always require an object
     return { [this.idProp]: this.rootTitle, children: this.nest(rollupData, groupData) };
   }
@@ -240,10 +254,10 @@ export default class TreeMap extends Base {
   tile(node, x0, y0, x1, y1) {
     treemapBinary(node, 0, 0, this.width, this.height);
     for (const child of node.children) {
-      child.x0 = x0 + child.x0 / this.width * (x1 - x0);
-      child.x1 = x0 + child.x1 / this.width * (x1 - x0);
-      child.y0 = y0 + child.y0 / this.height * (y1 - y0);
-      child.y1 = y0 + child.y1 / this.height * (y1 - y0);
+      child.x0 = x0 + (child.x0 / this.width) * (x1 - x0);
+      child.x1 = x0 + (child.x1 / this.width) * (x1 - x0);
+      child.y0 = y0 + (child.y0 / this.height) * (y1 - y0);
+      child.y1 = y0 + (child.y1 / this.height) * (y1 - y0);
     }
   }
 
@@ -252,7 +266,7 @@ export default class TreeMap extends Base {
     return Array.from(rollup, ([key, value]) =>
       value instanceof Map
         ? { [this.idProp]: key, children: this.nest(value, group.get(key)) }
-        : { [this.idProp]: key, value, children: group.get(key) }
+        : { [this.idProp]: key, [this.valueProp]: value, children: group.get(key) }
     );
   }
 
@@ -278,8 +292,10 @@ export default class TreeMap extends Base {
   defaultTooltip(d) {
     return d.data.children.map(x => `
       <div class="treemap-tooltip-block">
-        <div class="treemap-tooltip-id">${x[this.idProp]}</div>
-        <div class="treemap-tooltip-values">${x[this.valueProp].toLocaleString()}</div>
+        ${[
+          `<div class="treemap-tooltip-id">${x[this.idProp]}</div>`,
+          x[this.valueProp] && `<div class="treemap-tooltip-values">${x[this.valueProp].toLocaleString()}</div>`
+        ].join("")}
       </div>
     `).join("");
   }
