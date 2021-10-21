@@ -162,6 +162,8 @@ export default class TreeMap extends Base {
 
     this.setScales();
 
+    // clean the elements before render
+    this.g.selectAll("*").remove()
     let group = this.g.call(render, root);
   }
 
