@@ -287,7 +287,7 @@ export default class TreeMap extends Base {
     return [
       `<div><strong>${d.data[this.idProp]}</strong></div>`,
       `<div>${d.value.toLocaleString()}</div>`,
-      d.children && `<div>${d.children?.length}</div>`,
+      d.children && `<div>${d.children.length}</div>`,
     ].join("");
   }
 
