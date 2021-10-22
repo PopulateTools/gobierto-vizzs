@@ -49,6 +49,7 @@ bee.setData(newData)
 | **margin** | _Object_ | `{ top: 50, bottom: 50, left: 120, right: 30 }` | Set the margin around the chart. You can change all or just what you want. |
 | **locale** | _String_ | `window.navigator.language` | 4-letters specification of the locale. |
 | **minBlockSize** | _Number_ | 100 | Height of each category. If there are many elements, it's strongly recommended it to increase this value. |
+| **circleSize** | _Array_ | `[2, 20]` | Minimum and maximum circle radius size, respectively |
 | **onClick** | _Function_ | - | Circle callback handler. It receives the `event` and the `datum` |
 | **tooltip** | _Function_ | [<sup>1</sup>](#1) | Custom HTML content to render in the tooltip on mouseenter. |
 
@@ -155,9 +156,9 @@ Set a custom callback when clicking into the circles
 const bee = new BeeSwarm(chart, data, { onClick: (event, datum) => /* custom function */ })
 ```
 
-If your dataset is quite large and the groups are too close each other, try to increase the minBlockSize property
+If your dataset is quite large and the groups are too close each other, try to increase the minBlockSize property. Similarly, you can change the maximum/minimum size of the circles.
 ```js
-const bee = new BeeSwarm(chart, data, { minBlockSize: 200 })
+const bee = new BeeSwarm(chart, data, { minBlockSize: 200, circleSize: [3, 30] })
 ```
 
 In order to render the chart locale-sensitive stuff, enforce the graph language (List of available [locales](https://unpkg.com/browse/d3-time-format/locale/))

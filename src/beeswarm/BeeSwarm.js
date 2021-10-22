@@ -28,6 +28,7 @@ export default class BeeSwarm extends Base {
 
     // band item height
     this.MIN_BLOCK_SIZE = options.minBlockSize || 100;
+    this.CIRCLES_SIZE = options.circleSize || [2, 20];
 
     // chart size
     this.getDimensions();
@@ -194,7 +195,7 @@ export default class BeeSwarm extends Base {
 
     this.scaleRadius = scalePow()
       .exponent(0.5)
-      .range([2, 20])
+      .range(this.CIRCLES_SIZE)
       .domain([0, max(this.data, (d) => d[this.valueProp])]);
   }
 
