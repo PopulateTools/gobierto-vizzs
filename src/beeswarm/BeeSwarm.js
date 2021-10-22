@@ -17,6 +17,7 @@ export default class BeeSwarm extends Base {
 
     this.tooltip = options.tooltip || this.defaultTooltip
     this.margin = { top: 50, bottom: 50, left: 120, right: 30, ...options.margin };
+    this.onClick = options.onClick || (() => {})
 
     // main properties to display
     this.xAxisProp = options.x || "date";
@@ -95,7 +96,8 @@ export default class BeeSwarm extends Base {
           .attr("fill", (d) => this.scaleColor(d[this.yAxisProp]))
       )
       .on("mouseover", this.onMouseOver.bind(this))
-      .on("mouseout", this.onMouseOut.bind(this));
+      .on("mouseout", this.onMouseOut.bind(this))
+      .on("click", (...e) => this.onClick(...e));
   }
 
   xAxis(g) {
