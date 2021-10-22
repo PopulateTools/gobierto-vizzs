@@ -181,7 +181,7 @@ export default class BeeSwarm extends Base {
     const groups = Array.from(new Set(this.data.map((d) => d[this.yAxisProp])));
 
     // the chart reflows based on the amount of groups (categories) it has
-    this.height = groups.length * this.MIN_BLOCK_SIZE - this.margin.top - this.margin.bottom;
+    this.height = groups.length * this.MIN_BLOCK_SIZE - this.MIN_BLOCK_SIZE / 2
     this.svg.attr(
       "viewBox",
       `0 0 ${this.width + this.margin.left + this.margin.right} ${this.height + this.margin.top + this.margin.bottom}`
