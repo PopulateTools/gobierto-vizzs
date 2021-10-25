@@ -178,7 +178,8 @@ export default class BeeSwarm extends Base {
   }
 
   setScales() {
-    const groups = Array.from(new Set(this.data.map((d) => d[this.yAxisProp])));
+    // group by a prop, sort them by occurrences and get the keys
+    const groups = Object.entries(this.groupBy(this.data, this.yAxisProp)).sort(([, a], [, b]) => a.length > b.length).map(([key]) => key)
 
     // the chart reflows based on the amount of groups (categories) it has
     this.height = groups.length * this.MIN_BLOCK_SIZE - this.MIN_BLOCK_SIZE / 2

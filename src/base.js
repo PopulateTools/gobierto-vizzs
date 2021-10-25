@@ -90,4 +90,8 @@ export default class Base {
       timer = setTimeout(next, timeout > 0 ? timeout : 300);
     };
   }
+
+  groupBy(arr, key) {
+    return arr.reduce((acc, item) => ((acc[item[key]] = [...(acc[item[key]] || []), item]), acc), {})
+  }
 }
