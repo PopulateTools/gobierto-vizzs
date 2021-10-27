@@ -21,18 +21,18 @@
   position: relative;
 }
 
-.treemap-plot .treemap-breadcrumb {
+.treemap-breadcrumb {
   font-size: 0.875rem;
   display: flex;
   align-items: center;
   height: 100%;
 }
 
-.treemap-plot .treemap-breadcrumb > :last-child {
+.treemap-breadcrumb > :last-child {
   font-weight: bold;
 }
 
-.treemap-plot .treemap-item {
+.treemap-item {
   padding: 0.5rem;
   font-size: 0.875rem;
   color: var(--tm-white);
