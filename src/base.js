@@ -13,7 +13,7 @@ export default class Base {
     window.addEventListener("resize", this.resizeListener.bind(this));
   }
 
-  async setLocale() {
+  async getLocale() {
     if (!Object.keys(LOCALES).includes(this.locale)) {
       // unpkg does not keep non-regional locales (2-letters code), so it's worthless make the request
       if (this.locale.length > 2) {
@@ -28,6 +28,12 @@ export default class Base {
       const i18n = await LOCALES[this.locale]()
       timeFormatDefaultLocale(i18n)
     }
+  }
+
+  async setLocale(value) {
+    this.locale = value
+    await this.getLocale()
+    this.build()
   }
 
   // defined in the inherited classes

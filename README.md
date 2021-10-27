@@ -37,7 +37,8 @@ bee.setData(newData)
 
 **data** _(Array)_: Elements to display
 
-**options** _(Object)_: To custom the defaults presets. Optional.
+**options** _(Object)_: To custom the defaults presets. Optional. All properties come with setters, that is, once you have the object you can change any property using `setPROP(VALUE)`, i.e. `setX("prop")`, `setMargin({ left: 30 })`, etc...
+
 
 | name | type | default | description |
 |---|---|---|---|

@@ -28,7 +28,7 @@ export default class BeeSwarm extends Base {
 
     // band item height
     this.MIN_BLOCK_SIZE = options.minBlockSize || 100;
-    this.CIRCLES_SIZE = options.circleSize || [2, 20];
+    this.CIRCLE_SIZE = options.circleSize || [2, 20];
 
     // chart size
     this.getDimensions();
@@ -36,6 +36,7 @@ export default class BeeSwarm extends Base {
     this.setupElements();
 
     if (data.length) {
+      this.rawData = data
       this.setData(data)
     }
   }
@@ -145,7 +146,7 @@ export default class BeeSwarm extends Base {
       });
   }
 
-  async setData(data) {
+  async setData(data = this.rawData) {
     this.data = this.parse(data)
 
     // only set the color scale, as of the first time you get the data
@@ -154,7 +155,7 @@ export default class BeeSwarm extends Base {
     }
 
     // wait for the locales resolution before draw anything
-    await this.setLocale()
+    await this.getLocale()
     this.build();
   }
 
@@ -196,7 +197,7 @@ export default class BeeSwarm extends Base {
 
     this.scaleRadius = scalePow()
       .exponent(0.5)
-      .range(this.CIRCLES_SIZE)
+      .range(this.CIRCLE_SIZE)
       .domain([0, max(this.data, (d) => d[this.valueProp])]);
   }
 
@@ -268,5 +269,59 @@ export default class BeeSwarm extends Base {
     const offset = 100 + width / 2
     const x = (clientX - left < this.width / 2) ? clientX - left + offset : clientX - left - offset
     return { x, y: clientY - top };
+  }
+
+  setX(value) {
+    this.xAxisProp = value
+    this.setData()
+  }
+
+  setY(value) {
+    this.yAxisProp = value
+    this.setData()
+  }
+
+  setValue(value) {
+    this.valueProp = value
+    this.setData()
+  }
+
+  setId(value) {
+    this.idProp = value
+    this.build()
+  }
+
+  setRelation(value) {
+    this.relationProp = value
+    this.build()
+  }
+
+  setMinBlockSize(value) {
+    this.MIN_BLOCK_SIZE = value
+    this.build()
+  }
+
+  setCircleSize(value) {
+    this.CIRCLE_SIZE = value
+    this.build()
+  }
+
+  setTooltip(value) {
+    this.tooltip = value
+    this.build()
+  }
+
+  setOnClick(value) {
+    this.onClick = value
+    this.build()
+  }
+
+  setMargin(value) {
+    this.margin = { ...this.margin, ...value }
+
+    this.container.replaceChildren()
+    this.getDimensions()
+    this.setupElements()
+    this.build()
   }
 }

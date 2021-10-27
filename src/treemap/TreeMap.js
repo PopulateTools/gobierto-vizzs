@@ -172,7 +172,7 @@ export default class TreeMap extends Base {
     this.data = this.parse(data);
 
     // wait for the locales resolution before draw anything
-    await this.setLocale();
+    await this.getLocale();
     this.build();
   }
 
