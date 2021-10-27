@@ -15,7 +15,7 @@ export default class TreeMap extends Base {
     this.breadcrumb = options.breadcrumb || this.defaultBreadcrumb;
     this.itemTemplate = options.itemTemplate || this.defaultItemTemplate;
     this.tooltip = options.tooltip || this.defaultTooltip;
-    this.margin = { top: 30, bottom: 0, left: 0, right: 0, ...options.margin };
+    this.margin = { top: 0, bottom: 0, left: 0, right: 0, ...options.margin };
 
     // main properties to display
     this.groupProp = options.group || "group";
@@ -29,6 +29,7 @@ export default class TreeMap extends Base {
     this.setupElements();
 
     if (data.length) {
+      this.rawData = data
       this.setColorScale();
       this.setData(data);
     }
@@ -51,7 +52,7 @@ export default class TreeMap extends Base {
         "viewBox",
         `0 0 ${this.width + this.margin.left + this.margin.right} ${this.height + this.margin.top + this.margin.bottom}`
       );
-    this.g = this.svg.append("g");
+    this.g = this.svg.append("g").attr("transform", `translate(${this.margin.left} ${this.margin.top})`);
     this.tooltipContainer = select(this.container).append("div").attr("class", "treemap-tooltip");
   }
 
@@ -68,7 +69,7 @@ export default class TreeMap extends Base {
 
       node
         .append("rect")
-        .attr("id", (d, i) => (d.leafUid = `tm-leaf-${this.seed()}`))
+        .attr("id", (d) => (d.leafUid = `tm-leaf-${this.seed()}`))
         .attr("fill", (d) => {
           if (d === root) return "transparent";
           while (d.depth > 1) d = d.parent;
@@ -78,7 +79,7 @@ export default class TreeMap extends Base {
 
       node
         .append("clipPath")
-        .attr("id", (d, i) => (d.clipUid = `tm-clip-${this.seed()}`))
+        .attr("id", (d) => (d.clipUid = `tm-clip-${this.seed()}`))
         .append("use")
         .attr("xlink:href", (d) => new URL(`#${d.leafUid}`, location));
 
@@ -167,7 +168,7 @@ export default class TreeMap extends Base {
     let group = this.g.call(render, root);
   }
 
-  async setData(data) {
+  async setData(data = this.rawData) {
     this.data = this.parse(data);
 
     // wait for the locales resolution before draw anything
@@ -300,5 +301,49 @@ export default class TreeMap extends Base {
         ].join("")}
       </div>
     `).join("");
+  }
+
+  setGroup(value) {
+    this.groupProp = value
+    this.setData()
+  }
+
+  setValue(value) {
+    this.valueProp = value
+    this.setData()
+  }
+
+  setId(value) {
+    this.idProp = value
+    this.setData()
+  }
+
+  setRootTitle(value) {
+    this.rootTitle = value
+    this.setData()
+  }
+
+  setItemTemplate(value) {
+    this.itemTemplate = value
+    this.build()
+  }
+
+  setBreadcrumb(value) {
+    this.breadcrumb = value
+    this.build()
+  }
+
+  setTooltip(value) {
+    this.tooltip = value
+    this.build()
+  }
+
+  setMargin(value) {
+    this.margin = { ...this.margin, ...value }
+
+    this.container.replaceChildren()
+    this.getDimensions()
+    this.setupElements()
+    this.build()
   }
 }

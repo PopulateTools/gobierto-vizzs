@@ -46,11 +46,11 @@ bee.setData(newData)
 | **value** | _String_ | "value" | Property name of the radius. Quantitative value. |
 | **id** | _String_ | "id" | Property name of the id or title. Better if unique. |
 | **relation** | _String_ | - | Property name of the relationship. In order to display some internal relationships between circles of different categories. Only make sense on mouse over. |
-| **margin** | _Object_ | `{ top: 50, bottom: 50, left: 120, right: 30 }` | Set the margin around the chart. You can change all or just what you want. |
+| **margin** | _Object_ | `{ top: 50, bottom: 50, left: 120, right: 30 }` | Set the margin around the chart. You can pass the properties you want. |
 | **locale** | _String_ | `window.navigator.language` | 4-letters specification of the locale. |
 | **minBlockSize** | _Number_ | 100 | Height of each category. If there are many elements, it's strongly recommended it to increase this value. |
-| **circleSize** | _Array_ | `[2, 20]` | Minimum and maximum circle radius size, respectively |
-| **onClick** | _Function_ | - | Circle callback handler. It receives the `event` and the `datum` |
+| **circleSize** | _Array_ | `[2, 20]` | Minimum and maximum circle radius size, respectively. |
+| **onClick** | _Function_ | - | Circle callback handler. It receives the `event` and the `datum`. |
 | **tooltip** | _Function_ | [<sup>1</sup>](#1) | Custom HTML content to render in the tooltip on mouseenter. |
 
 <span id="1"></span>
@@ -181,18 +181,18 @@ tree.setData(newData)
 
 **data** _(Array)_: Elements to display
 
-**options** _(Object)_: To custom the defaults presets. Optional.
+**options** _(Object)_: To custom the defaults presets. Optional. All properties come with setters, that is, once you have the object you can change any property using `setPROP(VALUE)`, i.e. `setGroup("another_group")`, `setTooltip(d => d)`, etc...
 
 | name | type | default | description |
 |---|---|---|---|
-| **group** | _String_, _Array<_String_>_ | "group" | Property/ies name/s of the different levels of the tree |
-| **value** | _String_ | - | Property name of the aggregator. The tree will be adding such value for each item in each category. If none is passed, the treemap will group by number of children |
-| **id** | _String_ | "id" | Property name to build the tree object. It works as a title for the different groups |
-| **rootTitle** | _String_ | "root" | Display name of the first level of the tree |
-| **margin** | _Object_ | `{ top: 50, bottom: 50, left: 120, right: 30 }` | Set the margin around the chart. You can change all or just what you want. |
+| **group** | _String_, _Array<_String_>_ | "group" | Property/ies name/s of the different levels of the tree. |
+| **value** | _String_ | - | Property name of the aggregator. The tree will be adding such value for each item in each category. If none is passed, the treemap will group by number of children. |
+| **id** | _String_ | "id" | Property name to build the tree object. It works as a title for the different groups. |
+| **rootTitle** | _String_ | "root" | Display name of the first level of the tree. |
+| **margin** | _Object_ | `{ top: 0, bottom: 0, left: 0, right: 0 }` | Set the margin around the chart. You can pass the properties you want. |
 | **locale** | _String_ | `window.navigator.language` | 4-letters specification of the locale. |
 | **tooltip** | _Function_ | [<sup>1</sup>](#1) | Custom HTML content to render in the tooltip on mouseenter. |
-| **breadcrumb** | _Function_ | [<sup>2</sup>](#2) | Custom HTML content to render in the breadcrumb. It's clickable to change groups |
+| **breadcrumb** | _Function_ | [<sup>2</sup>](#2) | Custom HTML content to render in the breadcrumb. It's clickable to change groups. |
 | **itemTemplate** | _Function_ | [<sup>3</sup>](#3) | Custom HTML content to render in the item. |
 
 <span id="1"></span>
