@@ -16,6 +16,7 @@ export default class TreeMap extends Base {
     this.itemTemplate = options.itemTemplate || this.defaultItemTemplate;
     this.tooltip = options.tooltip || this.defaultTooltip;
     this.margin = { top: 30, bottom: 0, left: 0, right: 0, ...options.margin };
+    this.onLeafClick = options.onLeafClick || (() => {})
 
     // main properties to display
     this.groupProp = options.group || "group";
@@ -63,9 +64,9 @@ export default class TreeMap extends Base {
       node
         .on("mousemove", this.onMouseMove.bind(this))
         .on("mouseleave", this.debounce(this.onMouseLeave.bind(this), 250))
-        .filter((d) => (d === root ? d.parent : d.children))
+        // .filter((d) => (d === root ? d.parent : d.children))
         .attr("cursor", "pointer")
-        .on("click", (_, d) => (d === root ? zoomout(root) : zoomin(d)));
+        .on("click", (e, d) => (d === root ? zoomout(root) : d.height === 0 ? this.onLeafClick(e, d) : zoomin(d)));
 
       node
         .append("rect")
@@ -88,7 +89,7 @@ export default class TreeMap extends Base {
         .attr("clip-path", (d) => d.clipUid)
         .append("xhtml:div")
         .attr("class", (d) => (d === root ? "treemap-breadcrumb" : "treemap-item"))
-        .html((d) => (d === root ? this.breadcrumb(this.nodePath(d)) : this.itemTemplate(d)));
+        .html((d) => (d === root ? this.breadcrumb(this.nodePath(d)) : this.itemTemplate(d)))
 
       group.call(position, root);
     };
@@ -335,6 +336,11 @@ export default class TreeMap extends Base {
 
   setTooltip(value) {
     this.tooltip = value
+    this.build()
+  }
+
+  setOnLeafClick(value) {
+    this.onLeafClick = value
     this.build()
   }
 

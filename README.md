@@ -37,7 +37,7 @@ bee.setData(newData)
 
 **data** _(Array)_: Elements to display
 
-**options** _(Object)_: To custom the defaults presets. Optional. All properties come with setters, that is, once you have the object you can change any property using `setPROP(VALUE)`, i.e. `setX("prop")`, `setMargin({ left: 30 })`, etc...
+**options** _(Object)_: To custom the defaults presets. Optional. All properties come with setters, that is, once you have the object you can change any property using `setPROP(VALUE)`, i.e. `setX("prop")`, `setMargin({ left: 30 })`, `setOnClick(() => {})` etc...
 
 
 | name | type | default | description |
@@ -51,7 +51,7 @@ bee.setData(newData)
 | **locale** | _String_ | `window.navigator.language` | 4-letters specification of the locale. |
 | **minBlockSize** | _Number_ | 100 | Height of each category. If there are many elements, it's strongly recommended it to increase this value. |
 | **circleSize** | _Array_ | `[2, 20]` | Minimum and maximum circle radius size, respectively. |
-| **onClick** | _Function_ | - | Circle callback handler. It receives the `event` and the `datum`. |
+| **onClick** | _Function_ | - | Circle click callback handler. It receives the `event` and the `datum`. |
 | **tooltip** | _Function_ | [<sup>1</sup>](#1) | Custom HTML content to render in the tooltip on mouseenter. |
 
 <span id="1"></span>
@@ -182,7 +182,7 @@ tree.setData(newData)
 
 **data** _(Array)_: Elements to display
 
-**options** _(Object)_: To custom the defaults presets. Optional. All properties come with setters, that is, once you have the object you can change any property using `setPROP(VALUE)`, i.e. `setGroup("another_group")`, `setTooltip(d => d)`, etc...
+**options** _(Object)_: To custom the defaults presets. Optional. All properties come with setters, that is, once you have the object you can change any property using `setPROP(VALUE)`, i.e. `setGroup("another_group")`, `setMargin({ bottom: 0 })`, `setTooltip(() => {})`, etc...
 
 | name | type | default | description |
 |---|---|---|---|
@@ -192,6 +192,7 @@ tree.setData(newData)
 | **rootTitle** | _String_ | "root" | Display name of the first level of the tree. |
 | **margin** | _Object_ | `{ top: 30, bottom: 0, left: 0, right: 0 }` | Set the margin around the chart. You can pass the properties you want. |
 | **locale** | _String_ | `window.navigator.language` | 4-letters specification of the locale. |
+| **onLeafClick** | _Function_ | - | Leaf (no children node) click callback handler. It receives the `event` and the `datum`. |
 | **tooltip** | _Function_ | [<sup>1</sup>](#1) | Custom HTML content to render in the tooltip on mouseenter. |
 | **breadcrumb** | _Function_ | [<sup>2</sup>](#2) | Custom HTML content to render in the breadcrumb. It's clickable to change groups. |
 | **itemTemplate** | _Function_ | [<sup>3</sup>](#3) | Custom HTML content to render in the item. |
@@ -330,6 +331,11 @@ const tooltip = (data) => `<strong>${data.title}</strong>`
 const breadcrumb = (data) => data.map(d => `<em>${d.id}</em>`).join(">")
 const itemTemplate = (data) => `<div>${d.value.toLocaleString()}</div>`
 const tree = new TreeMap(chart, data, { tooltip, breadcrumb, itemTemplate })
+```
+
+Set a custom callback when clicking into a leaf (a node with no children)
+```js
+const tree = new TreeMap(chart, data, { onClick: (event, datum) => /* custom function */ })
 ```
 
 Instead of display _root_ as the first item, you may edit the text
