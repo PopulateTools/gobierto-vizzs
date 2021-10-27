@@ -15,7 +15,7 @@ export default class TreeMap extends Base {
     this.breadcrumb = options.breadcrumb || this.defaultBreadcrumb;
     this.itemTemplate = options.itemTemplate || this.defaultItemTemplate;
     this.tooltip = options.tooltip || this.defaultTooltip;
-    this.margin = { top: 0, bottom: 0, left: 0, right: 0, ...options.margin };
+    this.margin = { top: 30, bottom: 0, left: 0, right: 0, ...options.margin };
 
     // main properties to display
     this.groupProp = options.group || "group";
@@ -52,7 +52,7 @@ export default class TreeMap extends Base {
         "viewBox",
         `0 0 ${this.width + this.margin.left + this.margin.right} ${this.height + this.margin.top + this.margin.bottom}`
       );
-    this.g = this.svg.append("g").attr("transform", `translate(${this.margin.left} ${this.margin.top})`);
+    this.g = this.svg.append("g")
     this.tooltipContainer = select(this.container).append("div").attr("class", "treemap-tooltip");
   }
 

@@ -190,7 +190,7 @@ tree.setData(newData)
 | **value** | _String_ | - | Property name of the aggregator. The tree will be adding such value for each item in each category. If none is passed, the treemap will group by number of children. |
 | **id** | _String_ | "id" | Property name to build the tree object. It works as a title for the different groups. |
 | **rootTitle** | _String_ | "root" | Display name of the first level of the tree. |
-| **margin** | _Object_ | `{ top: 0, bottom: 0, left: 0, right: 0 }` | Set the margin around the chart. You can pass the properties you want. |
+| **margin** | _Object_ | `{ top: 30, bottom: 0, left: 0, right: 0 }` | Set the margin around the chart. You can pass the properties you want. |
 | **locale** | _String_ | `window.navigator.language` | 4-letters specification of the locale. |
 | **tooltip** | _Function_ | [<sup>1</sup>](#1) | Custom HTML content to render in the tooltip on mouseenter. |
 | **breadcrumb** | _Function_ | [<sup>2</sup>](#2) | Custom HTML content to render in the breadcrumb. It's clickable to change groups. |
