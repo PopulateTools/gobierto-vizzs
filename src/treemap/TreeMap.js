@@ -30,8 +30,6 @@ export default class TreeMap extends Base {
     this.setupElements();
 
     if (data.length) {
-      this.rawData = data
-      this.setColorScale();
       this.setData(data);
     }
   }
@@ -167,8 +165,12 @@ export default class TreeMap extends Base {
     let group = this.svg.append("g").call(render, root);
   }
 
-  async setData(data = this.rawData) {
+  async setData(data) {
     this.data = this.parse(data);
+
+    if (!this.scaleColor) {
+      this.setColorScale();
+    }
 
     // wait for the locales resolution before draw anything
     await this.getLocale();
@@ -239,6 +241,16 @@ export default class TreeMap extends Base {
     }
   }
 
+  tile(node, x0, y0, x1, y1) {
+    treemapBinary(node, 0, 0, this.width, this.height);
+    for (const child of node.children) {
+      child.x0 = x0 + (child.x0 / this.width) * (x1 - x0);
+      child.x1 = x0 + (child.x1 / this.width) * (x1 - x0);
+      child.y0 = y0 + (child.y0 / this.height) * (y1 - y0);
+      child.y1 = y0 + (child.y1 / this.height) * (y1 - y0);
+    }
+  }
+
   parse(data) {
     const reduce = this.valueProp ? (v) => sum(v, (d) => d[this.valueProp]) : () => {};
     const groupBys = Array.isArray(this.groupProp)
@@ -251,16 +263,6 @@ export default class TreeMap extends Base {
     const groupData = group(data, ...groupBys);
     // hierarchies always require an object
     return { [this.idProp]: this.rootTitle, children: this.nest(rollupData, groupData) };
-  }
-
-  tile(node, x0, y0, x1, y1) {
-    treemapBinary(node, 0, 0, this.width, this.height);
-    for (const child of node.children) {
-      child.x0 = x0 + (child.x0 / this.width) * (x1 - x0);
-      child.x1 = x0 + (child.x1 / this.width) * (x1 - x0);
-      child.y0 = y0 + (child.y0 / this.height) * (y1 - y0);
-      child.y1 = y0 + (child.y1 / this.height) * (y1 - y0);
-    }
   }
 
   nest(rollup, group) {
@@ -304,22 +306,22 @@ export default class TreeMap extends Base {
 
   setGroup(value) {
     this.groupProp = value
-    this.setData()
+    this.setData(this.data)
   }
 
   setValue(value) {
     this.valueProp = value
-    this.setData()
+    this.setData(this.data)
   }
 
   setId(value) {
     this.idProp = value
-    this.setData()
+    this.setData(this.data)
   }
 
   setRootTitle(value) {
     this.rootTitle = value
-    this.setData()
+    this.setData(this.data)
   }
 
   setItemTemplate(value) {

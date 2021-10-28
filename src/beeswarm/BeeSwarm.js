@@ -36,7 +36,6 @@ export default class BeeSwarm extends Base {
     this.setupElements();
 
     if (data.length) {
-      this.rawData = data
       this.setData(data)
     }
   }
@@ -146,7 +145,7 @@ export default class BeeSwarm extends Base {
       });
   }
 
-  async setData(data = this.rawData) {
+  async setData(data) {
     this.data = this.parse(data)
 
     // only set the color scale, as of the first time you get the data
@@ -273,17 +272,17 @@ export default class BeeSwarm extends Base {
 
   setX(value) {
     this.xAxisProp = value
-    this.setData()
+    this.setData(this.data)
   }
 
   setY(value) {
     this.yAxisProp = value
-    this.setData()
+    this.setData(this.data)
   }
 
   setValue(value) {
     this.valueProp = value
-    this.setData()
+    this.setData(this.data)
   }
 
   setId(value) {
