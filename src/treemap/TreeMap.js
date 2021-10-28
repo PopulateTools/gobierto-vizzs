@@ -166,6 +166,7 @@ export default class TreeMap extends Base {
   }
 
   async setData(data) {
+    this.rawData = data
     this.data = this.parse(data);
 
     if (!this.scaleColor) {
@@ -306,22 +307,22 @@ export default class TreeMap extends Base {
 
   setGroup(value) {
     this.groupProp = value
-    this.setData(this.data)
+    this.setData(this.rawData)
   }
 
   setValue(value) {
     this.valueProp = value
-    this.setData(this.data)
+    this.setData(this.rawData)
   }
 
   setId(value) {
     this.idProp = value
-    this.setData(this.data)
+    this.setData(this.rawData)
   }
 
   setRootTitle(value) {
     this.rootTitle = value
-    this.setData(this.data)
+    this.setData(this.rawData)
   }
 
   setItemTemplate(value) {

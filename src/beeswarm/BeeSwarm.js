@@ -146,6 +146,7 @@ export default class BeeSwarm extends Base {
   }
 
   async setData(data) {
+    this.rawData = data
     this.data = this.parse(data)
 
     // only set the color scale, as of the first time you get the data
@@ -272,17 +273,17 @@ export default class BeeSwarm extends Base {
 
   setX(value) {
     this.xAxisProp = value
-    this.setData(this.data)
+    this.setData(this.rawData)
   }
 
   setY(value) {
     this.yAxisProp = value
-    this.setData(this.data)
+    this.setData(this.rawData)
   }
 
   setValue(value) {
     this.valueProp = value
-    this.setData(this.data)
+    this.setData(this.rawData)
   }
 
   setId(value) {
