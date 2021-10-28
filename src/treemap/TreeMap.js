@@ -53,7 +53,6 @@ export default class TreeMap extends Base {
         "viewBox",
         `0 0 ${this.width + this.margin.left + this.margin.right} ${this.height + this.margin.top + this.margin.bottom}`
       );
-    this.g = this.svg.append("g")
     this.tooltipContainer = select(this.container).append("div").attr("class", "treemap-tooltip");
   }
 
@@ -164,8 +163,8 @@ export default class TreeMap extends Base {
     this.setScales();
 
     // clean the elements before render
-    this.g.selectAll("*").remove()
-    let group = this.g.call(render, root);
+    this.svg.selectAll("*").remove()
+    let group = this.svg.append("g").call(render, root);
   }
 
   async setData(data = this.rawData) {
