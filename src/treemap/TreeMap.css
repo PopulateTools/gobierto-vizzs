@@ -54,6 +54,10 @@
   overflow: hidden auto;
 }
 
+.treemap-tooltip:empty {
+  display: none;
+}
+
 .treemap-tooltip-block:not(:first-child) {
   padding-top: 0.5rem;
 }

@@ -64,7 +64,6 @@ export default class TreeMap extends Base {
       node
         .on("mousemove", this.onMouseMove.bind(this))
         .on("mouseleave", this.debounce(this.onMouseLeave.bind(this), 250))
-        // .filter((d) => (d === root ? d.parent : d.children))
         .attr("cursor", "pointer")
         .on("click", (e, d) => (d === root ? zoomout(root) : d.height === 0 ? this.onLeafClick(e, d) : zoomin(d)));
 
@@ -202,7 +201,7 @@ export default class TreeMap extends Base {
   onMouseMove({ clientX, clientY, target }, d) {
     // the breadcrumb group is always the last item, so, if there's no next sibling, it's breadcrumb
     const isBreadcrumb = !target.closest("g").nextSibling;
-    if (!this.cursorInsideTooltip && !isBreadcrumb && d.parent && d.data.children) {
+    if (!this.cursorInsideTooltip && !isBreadcrumb && d.parent) {
       const tooltip = this.tooltipContainer.style("pointer-events", "auto").html(this.tooltip(d));
       const { width: containerWidth, height: containerHeight, left, top } = this.container.getBoundingClientRect();
       const { width: tooltipWidth, height: tooltipHeight } = tooltip.node().getBoundingClientRect();
@@ -294,7 +293,7 @@ export default class TreeMap extends Base {
   }
 
   defaultTooltip(d) {
-    return d.data.children.map(x => `
+    return d.children && d.data.children.map(x => `
       <div class="treemap-tooltip-block">
         ${[
           `<div class="treemap-tooltip-id">${x[this.idProp]}</div>`,
