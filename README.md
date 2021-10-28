@@ -200,7 +200,7 @@ tree.setData(newData)
 <span id="1"></span>
 ```js
 defaultTooltip(d) {
-  return d.data.children.map(x => `
+  return d.children && d.data.children.map(x => `
     <div class="treemap-tooltip-block">
       ${[
         `<div class="treemap-tooltip-id">${x[this.idProp]}</div>`,
