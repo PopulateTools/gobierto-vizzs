@@ -1,5 +1,5 @@
 import "./index.css"
-import { BeeSwarm, TreeMap } from "../../index.js"
+import { BeeSwarm, TreeMap } from "../../src/index.js"
 import { mockJSON } from "./random";
 
 function DOM([key, ChartModule, ...opts]) {

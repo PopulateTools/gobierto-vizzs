@@ -11,12 +11,12 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@parcel/resolver-glob": "^2.0.0-nightly.2338",
-    "autoprefixer": "^10.3.4",
+    "@parcel/resolver-glob": "^2.0.0",
+    "autoprefixer": "^10.4.0",
     "gh-pages": "^3.2.3",
-    "parcel": "^2.0.0-rc.0",
-    "postcss": "^8.3.6",
-    "tailwindcss": "^2.2.15"
+    "parcel": "^2.0.0",
+    "postcss": "^8.3.11",
+    "tailwindcss": "^2.2.19"
   },
   "dependencies": {
     "faker": "^5.5.3"
