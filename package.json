@@ -1,6 +1,6 @@
 {
   "name": "gobierto-vizzs",
-  "version": "1.0.0",
+  "version": "0.0.0",
   "description": "Shared data visualizations for Gobierto projects",
   "source": "src/index.js",
   "main": "dist/main.js",
