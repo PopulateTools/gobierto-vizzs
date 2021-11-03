@@ -2,7 +2,14 @@
   "name": "gobierto-vizzs",
   "version": "0.0.1-rc.1",
   "description": "Shared data visualizations for Gobierto projects",
+  "keywords": [
+    "gobierto",
+    "visualizations",
+    "beeswarm",
+    "treemap"
+  ],
   "source": "src/index.js",
+  "main": "dist/index.js",
   "scripts": {
     "watch": "parcel watch",
     "build": "parcel build"
