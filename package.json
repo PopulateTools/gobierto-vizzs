@@ -32,5 +32,10 @@
   },
   "devDependencies": {
     "parcel": "^2.0.0"
+  },
+  "targets": {
+    "main": {
+      "optimize": true
+    }
   }
 }
