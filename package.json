@@ -3,12 +3,11 @@
   "version": "0.0.1-rc.0",
   "description": "Shared data visualizations for Gobierto projects",
   "source": "src/index.js",
-  "main": "dist/main.js",
   "scripts": {
     "watch": "parcel watch",
     "build": "parcel build"
   },
-  "author": "",
+  "author": "populate",
   "license": "ISC",
   "dependencies": {
     "d3-array": "^3.1.1",
