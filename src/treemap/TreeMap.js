@@ -271,7 +271,7 @@ export default class TreeMap extends Base {
     return Array.from(rollup, ([key, value]) =>
       value instanceof Map
         ? { [this.idProp]: key, children: this.nest(value, group.get(key)) }
-        : { [this.idProp]: key, [this.valueProp]: value, children: group.get(key) }
+        : { [this.idProp]: key, children: group.get(key) }
     );
   }
 
