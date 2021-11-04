@@ -10,6 +10,7 @@
   ],
   "source": "src/index.js",
   "main": "dist/index.js",
+  "module": "dist/module.js",
   "scripts": {
     "watch": "parcel watch",
     "build": "parcel build"
@@ -32,10 +33,5 @@
   },
   "devDependencies": {
     "parcel": "^2.0.0"
-  },
-  "targets": {
-    "main": {
-      "optimize": true
-    }
   }
 }
