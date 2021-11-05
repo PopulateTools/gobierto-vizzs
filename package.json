@@ -6,10 +6,12 @@
     "gobierto",
     "visualizations",
     "beeswarm",
-    "treemap"
+    "treemap",
+    "gantt"
   ],
   "source": "src/index.js",
   "main": "dist/index.js",
+  "module": "src/index.js",
   "scripts": {
     "watch": "parcel watch",
     "prebuild": "rm -rf ./dist/*",
