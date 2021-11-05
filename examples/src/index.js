@@ -1,5 +1,6 @@
 import "./index.css"
-import { BeeSwarm, TreeMap } from "gobierto-vizzs"
+import { BeeSwarm, TreeMap, Gantt } from "../../src/index"
+// import { BeeSwarm, TreeMap } from "gobierto-vizzs"
 import { mockJSON } from "./random";
 
 function DOM([key, ChartModule, ...opts]) {
@@ -38,4 +39,5 @@ function DOM([key, ChartModule, ...opts]) {
   // [title, Chart, options]
   ["BeeSwarm", BeeSwarm, { relation: "relation", id: "title" }],
   ["TreeMap", TreeMap, { group: ["group", "relation"], id: "title" }],
+  ["Gantt", Gantt],
 ].map(DOM);

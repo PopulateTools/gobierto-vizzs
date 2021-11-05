@@ -5,7 +5,6 @@ import { scaleLinear, scaleOrdinal } from "d3-scale";
 import { interpolate } from "d3-interpolate";
 import { group, rollup, sum } from "d3-array";
 import "d3-transition";
-
 import "./TreeMap.css"
 
 export default class TreeMap extends Base {
