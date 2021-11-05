@@ -162,20 +162,7 @@ export default class BeeSwarm extends Base {
   setColorScale() {
     this.scaleColor = scaleOrdinal()
       .domain(Array.from(new Set(this.data.map((d) => d[this.yAxisProp]))))
-      .range([
-        "var(--bs-color-1)",
-        "var(--bs-color-2)",
-        "var(--bs-color-3)",
-        "var(--bs-color-4)",
-        "var(--bs-color-5)",
-        "var(--bs-color-6)",
-        "var(--bs-color-7)",
-        "var(--bs-color-8)",
-        "var(--bs-color-9)",
-        "var(--bs-color-10)",
-        "var(--bs-color-11)",
-        "var(--bs-color-12)",
-      ]);
+      .range(Array.from({ length: 12 }, (_, i) => `var(--bs-color-${i + 1})`));
   }
 
   setScales() {

@@ -183,20 +183,8 @@ export default class TreeMap extends Base {
   }
 
   setColorScale() {
-    this.scaleColor = scaleOrdinal().range([
-      "var(--tm-color-1)",
-      "var(--tm-color-2)",
-      "var(--tm-color-3)",
-      "var(--tm-color-4)",
-      "var(--tm-color-5)",
-      "var(--tm-color-6)",
-      "var(--tm-color-7)",
-      "var(--tm-color-8)",
-      "var(--tm-color-9)",
-      "var(--tm-color-10)",
-      "var(--tm-color-11)",
-      "var(--tm-color-12)",
-    ]);
+    this.scaleColor = scaleOrdinal()
+      .range(Array.from({ length: 12 }, (_, i) => `var(--tm-color-${i + 1})`));
   }
 
   onMouseMove({ clientX, clientY, target }, d) {
