@@ -26,6 +26,8 @@ export default class Gantt extends Base {
     // band item height
     this.BAR_HEIGHT = options.barHeight || 20;
 
+    this.uniqueSeed = this.seed()
+
     // chart size
     this.getDimensions();
     // static elements (do not redraw)
@@ -67,11 +69,7 @@ export default class Gantt extends Base {
           .attr("y", (d) => this.scaleY(d[this.yAxisProp]))
           .attr("width", (d) => this.scaleX(d[this.toProp]) - this.scaleX(d[this.fromProp]))
           .attr("height", this.scaleY.bandwidth())
-          .attr("fill", (d) => {
-            // TODO: mover mejor en donde se preparan los datos
-            const group = this.data.filter(x => x[this.yAxisProp] === d[this.yAxisProp])
-            return this.scaleColor(group.findIndex(x => x[this.fromProp] === d[this.fromProp] || x[this.toProp] === d[this.toProp]))
-          })
+          .attr("fill", (d) => this.scaleColor(d[`group-ix-${this.uniqueSeed}`]))
       )
   }
 
@@ -98,7 +96,6 @@ export default class Gantt extends Base {
   async setData(data) {
     this.rawData = data
     this.data = this.parse(data)
-    console.log(this.data);
 
     // only set the color scale, as of the first time you get the data
     if (!this.scaleColor) {
@@ -116,7 +113,7 @@ export default class Gantt extends Base {
   }
 
   setScales() {
-    const groups = Object.entries(this.groupBy(this.data, this.yAxisProp)).map(([key]) => key)
+    const groups = Array.from(new Set(this.data.map(x => x[this.yAxisProp])))
 
     const paddingInner = 0.1
     // the chart reflows based on the amount of groups (categories) it has
@@ -138,11 +135,15 @@ export default class Gantt extends Base {
   }
 
   parse(data) {
+    const groups = this.groupBy(data, this.yAxisProp)
+
     // 1. remove those elements with no FROM/TO axis data
-    // 2. enforces the datatypes:
-    //    - X axis is Date
-    // 3. sort the array
+    // 2. enforces the datatypes: FROM/TO as Dates
+    // 3. add the position in the group (useful for colorize)
+    // 4. sort the array by FROM
     return data.reduce((acc, d) => {
+      const itemGroup = groups[d[this.yAxisProp]].sort(this.sortBy(this.fromProp))
+      const itemPosition = itemGroup.findIndex(x => x[this.fromProp] === d[this.fromProp])
       return [
         ...acc,
         // https://2ality.com/2017/04/conditional-literal-entries.html
@@ -152,10 +153,16 @@ export default class Gantt extends Base {
                 ...d,
                 [this.fromProp]: new Date(d[this.fromProp]),
                 [this.toProp]: new Date(d[this.toProp]),
+                // the use of the unique seed is about appending a no-conflicting property with the actual dataset
+                [`group-ix-${this.uniqueSeed}`]: itemPosition
               },
             ]
           : []),
       ];
-    }, []).sort((a, b) => a[this.fromProp] > b[this.fromProp] ? 1 : -1);
+    }, []).sort(this.sortBy(this.fromProp));
+  }
+
+  sortBy(prop) {
+    return (a, b) => a[prop] > b[prop] ? 1 : -1
   }
 }
