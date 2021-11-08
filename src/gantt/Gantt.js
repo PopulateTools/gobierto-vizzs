@@ -26,6 +26,7 @@ export default class Gantt extends Base {
     // band item height
     this.BAR_HEIGHT = options.barHeight || 20;
 
+    // the use of the unique seed is about appending no-conflicting properties in the dataset
     this.uniqueSeed = this.seed()
 
     // chart size
@@ -48,6 +49,7 @@ export default class Gantt extends Base {
     this.g = this.svg.append("g").attr("transform", `translate(${this.margin.left} ${this.margin.top})`);
     this.g.append("g").attr("class", "axis axis-x");
     this.tooltipContainer = select(this.container).append("div").attr("class", "gantt-tooltip")
+    this.legendContainer = select(this.container).append("div").attr("class", "gantt-legend")
   }
 
   build() {
@@ -59,8 +61,7 @@ export default class Gantt extends Base {
 
     this.g
       .selectAll("rect.gantt-item")
-      .data(this.data)
-      // .data(this.data, d => d[this.yAxisProp])
+      .data(this.data, d => d[this.yAxisProp])
       .join((enter) =>
         enter
           .append("rect")
@@ -71,6 +72,8 @@ export default class Gantt extends Base {
           .attr("height", this.scaleY.bandwidth())
           .attr("fill", (d) => this.scaleColor(d[`group-ix-${this.uniqueSeed}`]))
       )
+
+    this.legendContainer.html(this.legend(this.data, `group-ix-${this.uniqueSeed}`))
   }
 
   xAxis(g) {
@@ -109,7 +112,7 @@ export default class Gantt extends Base {
 
   setColorScale() {
     this.scaleColor = scaleOrdinal()
-      .range(Array.from({ length: 12 }, (_, i) => `var(--tm-color-${i + 1})`));
+      .range(Array.from({ length: 12 }, (_, i) => `var(--gv-color-${i + 1})`));
   }
 
   setScales() {
@@ -153,7 +156,6 @@ export default class Gantt extends Base {
                 ...d,
                 [this.fromProp]: new Date(d[this.fromProp]),
                 [this.toProp]: new Date(d[this.toProp]),
-                // the use of the unique seed is about appending a no-conflicting property with the actual dataset
                 [`group-ix-${this.uniqueSeed}`]: itemPosition
               },
             ]
@@ -162,7 +164,12 @@ export default class Gantt extends Base {
     }, []).sort(this.sortBy(this.fromProp));
   }
 
-  sortBy(prop) {
-    return (a, b) => a[prop] > b[prop] ? 1 : -1
+  legend(data, key) {
+    const items = [...new Set(data.map(x => x[key]))]
+    return items.map(x => `
+      <div style="display: flex">
+        <i style="width: 10px; height: 10px; background-color: ${this.scaleColor(x)}"></i>
+        <span>${x}</span>
+      </div>`).join("")
   }
 }

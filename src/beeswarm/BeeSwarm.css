@@ -1,20 +1,7 @@
+@import "../palette.css";
+
 :root {
-  --bs-grey: #c4c4c4;
-  --bs-white: #fff;
-  --bs-black: #000;
   --bs-shadow: 0 0 3px rgba(0, 0, 0, .2);
-  --bs-color-1: #008e9c;
-  --bs-color-2: #12365b;
-  --bs-color-3: #ff776d;
-  --bs-color-4: #f8b205;
-  --bs-color-5: #a6cee3;
-  --bs-color-6: #1f78b4;
-  --bs-color-7: #b2df8a;
-  --bs-color-8: #33a02c;
-  --bs-color-9: #fb9a99;
-  --bs-color-10: #e31a1c;
-  --bs-color-11: #fdbf6f;
-  --bs-color-12: #ff7f00;
 }
 
 .beeswarm-container {
@@ -22,7 +9,7 @@
 }
 
 .beeswarm-plot .axis-x {
-  color: var(--bs-grey);
+  color: var(--gv-grey);
   font-size: 0.875rem;
 }
 
@@ -40,10 +27,10 @@
   height: auto;
   z-index: 100;
   right: 1rem;
-  color: var(--bs-black);
-  background-color: var(--bs-white);
+  color: var(--gv-black);
+  background-color: var(--gv-white);
   border-radius: 4px;
-  border: 1px solid var(--bs-grey);
+  border: 1px solid var(--gv-grey);
   box-shadow: var(--bs-shadow);
   transform: translate(-50%, -50%);
 }
@@ -52,7 +39,7 @@
   text-transform: uppercase;
   font-size: 1rem;
   font-weight: bold;
-  border-bottom: 1px solid var(--bs-grey);
+  border-bottom: 1px solid var(--gv-grey);
 }
 
 .beeswarm-tooltip-values {
@@ -63,7 +50,7 @@
 }
 
 .beeswarm-tooltip-date {
-  color: var(--bs-grey);
+  color: var(--gv-grey);
   font-size: 0.75rem;
   text-align: center;
 }

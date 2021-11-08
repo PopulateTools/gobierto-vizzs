@@ -133,7 +133,7 @@ export default class BeeSwarm extends Base {
     g.attr("font-family", null).attr("font-size", null).attr("text-anchor", "start");
 
     // change line style defaults
-    g.selectAll("line").attr("transform", `translate(${this.margin.left} 0)`).attr("stroke-dasharray", 1).attr("stroke", "var(--bs-grey)");
+    g.selectAll("line").attr("transform", `translate(${this.margin.left} 0)`).attr("stroke-dasharray", 1).attr("stroke", "var(--gv-grey)");
 
     // change line style defaults
     g.selectAll("text")
@@ -164,7 +164,7 @@ export default class BeeSwarm extends Base {
   setColorScale() {
     this.scaleColor = scaleOrdinal()
       .domain(Array.from(new Set(this.data.map((d) => d[this.yAxisProp]))))
-      .range(Array.from({ length: 12 }, (_, i) => `var(--bs-color-${i + 1})`));
+      .range(Array.from({ length: 12 }, (_, i) => `var(--gv-color-${i + 1})`));
   }
 
   setScales() {

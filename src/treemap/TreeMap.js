@@ -184,7 +184,7 @@ export default class TreeMap extends Base {
 
   setColorScale() {
     this.scaleColor = scaleOrdinal()
-      .range(Array.from({ length: 12 }, (_, i) => `var(--tm-color-${i + 1})`));
+      .range(Array.from({ length: 12 }, (_, i) => `var(--gv-color-${i + 1})`));
   }
 
   onMouseMove({ clientX, clientY, target }, d) {

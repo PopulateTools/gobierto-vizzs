@@ -100,4 +100,8 @@ export default class Base {
   groupBy(arr, key) {
     return arr.reduce((acc, item) => ((acc[item[key]] = [...(acc[item[key]] || []), item]), acc), {})
   }
+
+  sortBy(prop) {
+    return (a, b) => a[prop] > b[prop] ? 1 : -1
+  }
 }

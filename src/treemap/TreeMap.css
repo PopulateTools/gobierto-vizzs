@@ -1,20 +1,7 @@
+@import "../palette.css";
+
 :root {
-  --tm-grey: #c4c4c4;
-  --tm-white: #fff;
-  --tm-black: #000;
   --tm-shadow: 0 0 3px rgba(0, 0, 0, .2);
-  --tm-color-1: #008e9c;
-  --tm-color-2: #12365b;
-  --tm-color-3: #ff776d;
-  --tm-color-4: #f8b205;
-  --tm-color-5: #a6cee3;
-  --tm-color-6: #1f78b4;
-  --tm-color-7: #b2df8a;
-  --tm-color-8: #33a02c;
-  --tm-color-9: #fb9a99;
-  --tm-color-10: #e31a1c;
-  --tm-color-11: #fdbf6f;
-  --tm-color-12: #ff7f00;
 }
 
 .treemap-container {
@@ -35,7 +22,7 @@
 .treemap-item {
   padding: 0.5rem;
   font-size: 0.875rem;
-  color: var(--tm-white);
+  color: var(--gv-white);
 }
 
 .treemap-tooltip {
@@ -46,10 +33,10 @@
   max-height: 300px;
   z-index: 100;
   right: 1rem;
-  color: var(--tm-black);
-  background-color: var(--tm-white);
+  color: var(--gv-black);
+  background-color: var(--gv-white);
   border-radius: 4px;
-  border: 1px solid var(--tm-grey);
+  border: 1px solid var(--gv-grey);
   box-shadow: var(--tm-shadow);
   overflow: hidden auto;
 }
@@ -67,7 +54,7 @@
 }
 
 .treemap-tooltip-block + .treemap-tooltip-block {
-  border-top: 1px solid var(--tm-grey);
+  border-top: 1px solid var(--gv-grey);
 }
 
 .treemap-tooltip-id {

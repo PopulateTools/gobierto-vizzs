@@ -73,18 +73,18 @@ defaultTooltip(d) {
 The chart uses CSS custom variables to define the palette, you may overwrite them:
 ```css
 :root {
-  --bs-color-1: #008e9c;
-  --bs-color-2: #12365b;
-  --bs-color-3: #ff776d;
-  --bs-color-4: #f8b205;
-  --bs-color-5: #a6cee3;
-  --bs-color-6: #1f78b4;
-  --bs-color-7: #b2df8a;
-  --bs-color-8: #33a02c;
-  --bs-color-9: #fb9a99;
-  --bs-color-10: #e31a1c;
-  --bs-color-11: #fdbf6f;
-  --bs-color-12: #ff7f00;
+  --gv-color-1: #008e9c;
+  --gv-color-2: #12365b;
+  --gv-color-3: #ff776d;
+  --gv-color-4: #f8b205;
+  --gv-color-5: #a6cee3;
+  --gv-color-6: #1f78b4;
+  --gv-color-7: #b2df8a;
+  --gv-color-8: #33a02c;
+  --gv-color-9: #fb9a99;
+  --gv-color-10: #e31a1c;
+  --gv-color-11: #fdbf6f;
+  --gv-color-12: #ff7f00;
 }
 ```
 
@@ -234,18 +234,18 @@ defaultItemTemplate(d) {
 The chart uses CSS custom variables to define the palette, you may overwrite them:
 ```css
 :root {
-  --tm-color-1: #008e9c;
-  --tm-color-2: #12365b;
-  --tm-color-3: #ff776d;
-  --tm-color-4: #f8b205;
-  --tm-color-5: #a6cee3;
-  --tm-color-6: #1f78b4;
-  --tm-color-7: #b2df8a;
-  --tm-color-8: #33a02c;
-  --tm-color-9: #fb9a99;
-  --tm-color-10: #e31a1c;
-  --tm-color-11: #fdbf6f;
-  --tm-color-12: #ff7f00;
+  --gv-color-1: #008e9c;
+  --gv-color-2: #12365b;
+  --gv-color-3: #ff776d;
+  --gv-color-4: #f8b205;
+  --gv-color-5: #a6cee3;
+  --gv-color-6: #1f78b4;
+  --gv-color-7: #b2df8a;
+  --gv-color-8: #33a02c;
+  --gv-color-9: #fb9a99;
+  --gv-color-10: #e31a1c;
+  --gv-color-11: #fdbf6f;
+  --gv-color-12: #ff7f00;
 }
 ```
 
