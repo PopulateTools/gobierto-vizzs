@@ -18,13 +18,11 @@ export default class Gantt extends Base {
     // main properties to display
     this.fromProp = options.from || "from";
     this.toProp = options.to || "to";
+    this.xAxisProp = options.x || "phase";
     this.yAxisProp = options.y || "group";
 
     // band item height
     this.BAR_HEIGHT = options.barHeight || 10;
-
-    // the use of the unique seed is about appending no-conflicting properties in the dataset
-    this.uniqueSeed = this.seed()
 
     // chart size
     this.getDimensions();
@@ -67,10 +65,10 @@ export default class Gantt extends Base {
           .attr("y", (d) => this.scaleY(d[this.yAxisProp]))
           .attr("width", (d) => this.scaleX(d[this.toProp]) - this.scaleX(d[this.fromProp]))
           .attr("height", this.scaleY.bandwidth())
-          .attr("fill", (d) => this.scaleColor(d[`group-ix-${this.uniqueSeed}`]))
+          .attr("fill", (d) => this.scaleColor(d[this.xAxisProp]))
       )
 
-    this.legendContainer.html(this.legend(this.data, `group-ix-${this.uniqueSeed}`))
+    this.legendContainer.html(this.legend(this.data, this.xAxisProp))
   }
 
   xAxis(g) {
@@ -108,7 +106,9 @@ export default class Gantt extends Base {
   }
 
   setColorScale() {
-    this.scaleColor = scaleOrdinal().range(this.PALETTE)
+    this.scaleColor = scaleOrdinal()
+      .domain(Array.from(new Set(this.data.map((d) => d[this.xAxisProp]))))
+      .range(this.PALETTE)
   }
 
   setScales() {
@@ -134,15 +134,11 @@ export default class Gantt extends Base {
   }
 
   parse(data) {
-    const groups = this.groupBy(data, this.yAxisProp)
-
+    console.log(this.groupBy(data, "phase"));
     // 1. remove those elements with no FROM/TO axis data
     // 2. enforces the datatypes: FROM/TO as Dates
-    // 3. add the position in the group (useful for colorize)
-    // 4. sort the array by FROM
+    // 3. sort the array by FROM
     return data.reduce((acc, d) => {
-      const itemGroup = groups[d[this.yAxisProp]].sort(this.sortBy(this.fromProp))
-      const itemPosition = itemGroup.findIndex(x => x[this.fromProp] === d[this.fromProp])
       return [
         ...acc,
         // https://2ality.com/2017/04/conditional-literal-entries.html
@@ -152,7 +148,6 @@ export default class Gantt extends Base {
                 ...d,
                 [this.fromProp]: new Date(d[this.fromProp]),
                 [this.toProp]: new Date(d[this.toProp]),
-                [`group-ix-${this.uniqueSeed}`]: itemPosition
               },
             ]
           : []),

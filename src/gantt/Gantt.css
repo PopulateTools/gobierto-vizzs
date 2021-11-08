@@ -1,9 +1,8 @@
 @import "../commons/palette.css";
 @import "../commons/tooltip.css";
 
-.gantt-legend {
+.gv-legend {
   display: flex;
-  justify-items: space-between;
 }
 
 .gantt-legend-item {
