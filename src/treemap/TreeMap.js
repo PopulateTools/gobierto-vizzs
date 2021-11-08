@@ -1,4 +1,4 @@
-import Base from "../base";
+import Base from "../commons/base";
 import { select } from "d3-selection";
 import { treemap, hierarchy, treemapBinary } from "d3-hierarchy";
 import { scaleLinear, scaleOrdinal } from "d3-scale";
@@ -43,14 +43,14 @@ export default class TreeMap extends Base {
 
   setupElements() {
     this.svg = select(this.container)
-      .classed("treemap-container", true)
+      .classed("gv-container", true)
       .append("svg")
-      .attr("class", "treemap-plot")
+      .attr("class", "gv-plot")
       .attr(
         "viewBox",
         `0 0 ${this.width + this.margin.left + this.margin.right} ${this.height + this.margin.top + this.margin.bottom}`
       );
-    this.tooltipContainer = select(this.container).append("div").attr("class", "treemap-tooltip");
+    this.tooltipContainer = select(this.container).append("div").attr("class", "gv-tooltip");
   }
 
   build() {
@@ -183,8 +183,7 @@ export default class TreeMap extends Base {
   }
 
   setColorScale() {
-    this.scaleColor = scaleOrdinal()
-      .range(Array.from({ length: 12 }, (_, i) => `var(--gv-color-${i + 1})`));
+    this.scaleColor = scaleOrdinal().range(this.PALETTE);
   }
 
   onMouseMove({ clientX, clientY, target }, d) {

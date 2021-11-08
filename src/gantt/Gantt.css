@@ -1,1 +1,25 @@
-@import "../palette.css";
+@import "../commons/palette.css";
+@import "../commons/tooltip.css";
+
+.gantt-legend {
+  display: flex;
+  justify-items: space-between;
+}
+
+.gantt-legend-item {
+  display: flex;
+  align-items: center;
+}
+
+.gantt-legend-item:not(:first-child) {
+  margin-left: 0.5em;
+}
+
+.gantt-legend-item > *:not(:first-child) {
+  margin-left: 0.25em;
+}
+
+.gantt-legend-item i {
+  width: 1em;
+  height: 1em;
+}

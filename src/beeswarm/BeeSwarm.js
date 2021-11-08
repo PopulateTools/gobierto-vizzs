@@ -1,4 +1,4 @@
-import Base from "../base";
+import Base from "../commons/base";
 import { select, selectAll } from "d3-selection";
 import "d3-transition";
 import { scaleBand, scaleTime, scalePow, scaleOrdinal } from "d3-scale";
@@ -46,11 +46,11 @@ export default class BeeSwarm extends Base {
   }
 
   setupElements() {
-    this.svg = select(this.container).classed("beeswarm-container", true).append("svg").attr("class", "beeswarm-plot");
+    this.svg = select(this.container).classed("gv-container", true).append("svg").attr("class", "gv-plot");
     this.g = this.svg.append("g").attr("transform", `translate(${this.margin.left} ${this.margin.top})`);
     this.g.append("g").attr("class", "axis axis-x");
     this.g.append("g").attr("class", "axis axis-y");
-    this.tooltipContainer = select(this.container).append("div").attr("class", "beeswarm-tooltip")
+    this.tooltipContainer = select(this.container).append("div").attr("class", "gv-tooltip")
   }
 
   build() {
@@ -164,7 +164,7 @@ export default class BeeSwarm extends Base {
   setColorScale() {
     this.scaleColor = scaleOrdinal()
       .domain(Array.from(new Set(this.data.map((d) => d[this.yAxisProp]))))
-      .range(Array.from({ length: 12 }, (_, i) => `var(--gv-color-${i + 1})`));
+      .range(this.PALETTE)
   }
 
   setScales() {

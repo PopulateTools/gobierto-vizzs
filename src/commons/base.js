@@ -9,6 +9,7 @@ export default class Base {
   constructor(container, data, options) {
     this.container = container;
     this.locale = options.locale || window.navigator.language
+    this.PALETTE = Array.from({ length: 12 }, (_, i) => `var(--gv-color-${i + 1})`)
 
     window.addEventListener("resize", this.resizeListener.bind(this));
   }

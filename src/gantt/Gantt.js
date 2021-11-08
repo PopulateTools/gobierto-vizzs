@@ -1,4 +1,4 @@
-import Base from "../base";
+import Base from "../commons/base";
 import { select } from "d3-selection";
 import { scaleOrdinal, scaleBand, scaleTime } from "d3-scale";
 import { axisTop } from "d3-axis";
@@ -19,12 +19,9 @@ export default class Gantt extends Base {
     this.fromProp = options.from || "from";
     this.toProp = options.to || "to";
     this.yAxisProp = options.y || "group";
-    // this.valueProp = options.value || "value";
-    // this.idProp = options.id || "id";
-    // this.relationProp = options.relation;
 
     // band item height
-    this.BAR_HEIGHT = options.barHeight || 20;
+    this.BAR_HEIGHT = options.barHeight || 10;
 
     // the use of the unique seed is about appending no-conflicting properties in the dataset
     this.uniqueSeed = this.seed()
@@ -45,11 +42,11 @@ export default class Gantt extends Base {
   }
 
   setupElements() {
-    this.svg = select(this.container).classed("gantt-container", true).append("svg").attr("class", "gantt-plot");
+    this.svg = select(this.container).classed("gv-container", true).append("svg").attr("class", "gv-plot");
     this.g = this.svg.append("g").attr("transform", `translate(${this.margin.left} ${this.margin.top})`);
     this.g.append("g").attr("class", "axis axis-x");
-    this.tooltipContainer = select(this.container).append("div").attr("class", "gantt-tooltip")
-    this.legendContainer = select(this.container).append("div").attr("class", "gantt-legend")
+    this.tooltipContainer = select(this.container).append("div").attr("class", "gv-tooltip")
+    this.legendContainer = select(this.container).append("div").attr("class", "gv-legend")
   }
 
   build() {
@@ -111,8 +108,7 @@ export default class Gantt extends Base {
   }
 
   setColorScale() {
-    this.scaleColor = scaleOrdinal()
-      .range(Array.from({ length: 12 }, (_, i) => `var(--gv-color-${i + 1})`));
+    this.scaleColor = scaleOrdinal().range(this.PALETTE)
   }
 
   setScales() {
@@ -167,8 +163,8 @@ export default class Gantt extends Base {
   legend(data, key) {
     const items = [...new Set(data.map(x => x[key]))]
     return items.map(x => `
-      <div style="display: flex">
-        <i style="width: 10px; height: 10px; background-color: ${this.scaleColor(x)}"></i>
+      <div class="gantt-legend-item">
+        <i style="background-color: ${this.scaleColor(x)}"></i>
         <span>${x}</span>
       </div>`).join("")
   }
