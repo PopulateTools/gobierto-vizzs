@@ -102,11 +102,13 @@ export default class BeeSwarm extends Base {
   }
 
   xAxis(g) {
-    const hasMultipleYears = Array.from(new Set(this.data.map((d) => d[this.xAxisProp].getFullYear()))).length > 2;
+    const months = timeMonth.count(...this.scaleX.domain())
+    const hasMultipleYears = months > 24;
+    const onlyOneYear = months < 12;
 
     g.call(
       axisBottom(this.scaleX)
-        .tickFormat(hasMultipleYears ? timeFormat("%Y") : timeFormat("%b-%Y"))
+        .tickFormat(hasMultipleYears ? timeFormat("%Y") : onlyOneYear ? timeFormat("%b") : timeFormat("%b-%Y"))
         .tickSize(-this.height)
         .ticks(hasMultipleYears ? 5 : timeMonth.every(3))
     );

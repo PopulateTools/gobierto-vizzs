@@ -12,7 +12,7 @@ export default class Gantt extends Base {
     super(container, data, options)
 
     // this.tooltip = options.tooltip || this.defaultTooltip
-    this.margin = { top: 20, bottom: 0, left: 0, right: 0, ...options.margin };
+    this.margin = { top: 30, bottom: 0, left: 0, right: 0, ...options.margin };
     this.onClick = options.onClick || (() => {})
 
     // main properties to display
@@ -57,7 +57,8 @@ export default class Gantt extends Base {
 
     this.g
       .selectAll("rect.gantt-item")
-      .data(this.data, d => d[this.yAxisProp])
+      .data(this.data)
+      // .data(this.data, d => d[this.yAxisProp])
       .join((enter) =>
         enter
           .append("rect")
@@ -65,7 +66,7 @@ export default class Gantt extends Base {
           .attr("x", (d) => this.scaleX(d[this.fromProp]))
           .attr("y", (d) => this.scaleY(d[this.yAxisProp]))
           .attr("width", (d) => this.scaleX(d[this.toProp]) - this.scaleX(d[this.fromProp]))
-          .attr("height", this.BAR_HEIGHT)
+          .attr("height", this.scaleY.bandwidth())
           .attr("fill", (d) => {
             // TODO: mover mejor en donde se preparan los datos
             const group = this.data.filter(x => x[this.yAxisProp] === d[this.yAxisProp])
@@ -75,13 +76,16 @@ export default class Gantt extends Base {
   }
 
   xAxis(g) {
-    const hasMultipleYears = Array.from(new Set(this.data.map((d) => d[this.fromProp].getFullYear()))).length > 2;
+    const months = timeMonth.count(...this.scaleX.domain())
+    const hasMultipleYears = months > 24;
+    const onlyOneYear = months < 12;
 
     g.call(
       axisTop(this.scaleX)
-        .tickFormat(hasMultipleYears ? timeFormat("%Y") : timeFormat("%b-%Y"))
+        .tickFormat(hasMultipleYears ? timeFormat("%Y") : onlyOneYear ? timeFormat("%b") : timeFormat("%b-%Y"))
         .tickSize(-this.height)
         .ticks(hasMultipleYears ? 5 : timeMonth.every(3))
+        .tickPadding(5)
     );
 
     // remove baseline
@@ -94,6 +98,7 @@ export default class Gantt extends Base {
   async setData(data) {
     this.rawData = data
     this.data = this.parse(data)
+    console.log(this.data);
 
     // only set the color scale, as of the first time you get the data
     if (!this.scaleColor) {
@@ -111,18 +116,21 @@ export default class Gantt extends Base {
   }
 
   setScales() {
-    const g = Object.entries(this.groupBy(this.data, this.yAxisProp))
-    const groups = g.map(([key]) => key)
-    console.log(g);
+    const groups = Object.entries(this.groupBy(this.data, this.yAxisProp)).map(([key]) => key)
 
+    const paddingInner = 0.1
     // the chart reflows based on the amount of groups (categories) it has
-    this.height = groups.length * this.BAR_HEIGHT
+    this.height = groups.length * this.BAR_HEIGHT * (1 + paddingInner)
     this.svg.attr(
       "viewBox",
       `0 0 ${this.width + this.margin.left + this.margin.right} ${this.height + this.margin.top + this.margin.bottom}`
     );
 
-    this.scaleY = scaleBand().paddingInner(1).domain(groups).range([this.height, 0]);
+    this.scaleY = scaleBand()
+      .domain(groups)
+      .range([0, this.height])
+      .paddingInner(paddingInner)
+      .round(true)
 
     this.scaleX = scaleTime()
       .domain([min(this.data, (d) => d[this.fromProp]), max(this.data, (d) => d[this.toProp])])
@@ -148,6 +156,6 @@ export default class Gantt extends Base {
             ]
           : []),
       ];
-    }, []).sort((a, b) => a[this.fromProp] < b[this.fromProp] ? 1 : -1);
+    }, []).sort((a, b) => a[this.fromProp] > b[this.fromProp] ? 1 : -1);
   }
 }
