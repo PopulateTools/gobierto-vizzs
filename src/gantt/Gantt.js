@@ -4,7 +4,7 @@ import { scaleOrdinal, scaleBand, scaleTime } from "d3-scale";
 import { axisTop } from "d3-axis";
 import { max, min } from "d3-array";
 import { timeFormat } from "d3-time-format";
-import { timeMonth } from "d3-time";
+import { timeMonth, timeYear } from "d3-time";
 import "./Gantt.css"
 
 export default class Gantt extends Base {
@@ -14,12 +14,14 @@ export default class Gantt extends Base {
     // this.tooltip = options.tooltip || this.defaultTooltip
     this.margin = { top: 30, bottom: 0, left: 0, right: 0, ...options.margin };
     this.onClick = options.onClick || (() => {})
+    this.tooltip = options.tooltip || this.defaultTooltip;
 
     // main properties to display
     this.fromProp = options.from || "from";
     this.toProp = options.to || "to";
     this.xAxisProp = options.x || "phase";
     this.yAxisProp = options.y || "group";
+    this.idProp = options.id || "id";
 
     // band item height
     this.BAR_HEIGHT = options.barHeight || 10;
@@ -56,7 +58,7 @@ export default class Gantt extends Base {
 
     this.g
       .selectAll("rect.gantt-item")
-      .data(this.data, d => d[this.yAxisProp])
+      .data(this.data, d => d[this.idProp])
       .join((enter) =>
         enter
           .append("rect")
@@ -67,6 +69,10 @@ export default class Gantt extends Base {
           .attr("height", this.scaleY.bandwidth())
           .attr("fill", (d) => this.scaleColor(d[this.xAxisProp]))
       )
+      .on("mouseover", this.onMouseOver.bind(this))
+      .on("mouseout", this.onMouseOut.bind(this))
+      .attr("cursor", "pointer")
+      .on("click", (...e) => this.onClick(...e));
 
     this.legendContainer.html(this.legend(this.data, this.xAxisProp))
   }
@@ -80,9 +86,13 @@ export default class Gantt extends Base {
       axisTop(this.scaleX)
         .tickFormat(hasMultipleYears ? timeFormat("%Y") : onlyOneYear ? timeFormat("%b") : timeFormat("%b-%Y"))
         .tickSize(-this.height)
-        .ticks(hasMultipleYears ? 5 : timeMonth.every(3))
-        .tickPadding(5)
+        .ticks(hasMultipleYears ? timeYear : timeMonth)
+        .tickPadding(10)
     );
+
+    if (g.selectAll(".tick").size() > 8) {
+      g.selectAll(".tick:not(:nth-child(3n + 1)) text").remove()
+    }
 
     // remove baseline
     g.select(".domain").remove();
@@ -134,7 +144,6 @@ export default class Gantt extends Base {
   }
 
   parse(data) {
-    console.log(this.groupBy(data, "phase"));
     // 1. remove those elements with no FROM/TO axis data
     // 2. enforces the datatypes: FROM/TO as Dates
     // 3. sort the array by FROM
@@ -162,5 +171,86 @@ export default class Gantt extends Base {
         <i style="background-color: ${this.scaleColor(x)}"></i>
         <span>${x}</span>
       </div>`).join("")
+  }
+
+  relativeCoords({ clientX, clientY }) {
+    const { left, top } = this.container.getBoundingClientRect();
+    const { width } = this.tooltipContainer.node().getBoundingClientRect()
+    const offset = 100 + width / 2
+    const x = (clientX - left < this.width / 2) ? clientX - left + offset : clientX - left - offset
+    return { x, y: clientY - top };
+  }
+
+  onMouseOver(event, d) {
+    const tooltip = this.tooltipContainer.html(this.tooltip(d))
+
+    const { x, y } = this.relativeCoords(event);
+    tooltip
+      .style("top", `${y}px`)
+      .style("left", `${x}px`)
+      .transition()
+      .duration(400)
+      .style("opacity", 1);
+  }
+
+  onMouseOut() {
+    this.tooltipContainer.style("opacity", 1).transition().duration(400).style("opacity", 0);
+  }
+
+  defaultTooltip(d) {
+    return `
+      <div class="gantt-tooltip-id">${d[this.idProp]}</div>
+      <div class="gantt-tooltip-values">
+        <span class="gantt-tooltip-range">${d[this.fromProp].toLocaleDateString()}</span>
+        <span class="gantt-tooltip-range">${d[this.toProp].toLocaleDateString()}</span>
+      </div>
+      <div class="gantt-tooltip-values">
+        <span class="gantt-tooltip-prop">${d[this.yAxisProp]} (${d[this.xAxisProp]})</span>
+      </div>
+      `;
+  }
+
+  setX(value) {
+    this.xAxisProp = value
+    this.setData(this.rawData)
+  }
+
+  setY(value) {
+    this.yAxisProp = value
+    this.setData(this.rawData)
+  }
+
+  setFrom(value) {
+    this.fromProp = value
+    this.setData(this.rawData)
+  }
+
+  setTo(value) {
+    this.toProp = value
+    this.setData(this.rawData)
+  }
+
+  setBarHeight(value) {
+    this.BAR_HEIGHT = value
+    this.build()
+  }
+
+  setTooltip(value) {
+    this.tooltip = value
+    this.build()
+  }
+
+  setOnClick(value) {
+    this.onClick = value
+    this.build()
+  }
+
+  setMargin(value) {
+    this.margin = { ...this.margin, ...value }
+
+    this.container.replaceChildren()
+    this.getDimensions()
+    this.setupElements()
+    this.build()
   }
 }

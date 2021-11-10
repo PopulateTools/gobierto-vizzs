@@ -1,8 +1,15 @@
 @import "../commons/palette.css";
 @import "../commons/tooltip.css";
 
+.gv-container {
+  display: grid;
+}
+
 .gv-legend {
   display: flex;
+  grid-area: 1 / -1;
+  align-self: start;
+  justify-self: end;
 }
 
 .gantt-legend-item {
@@ -21,4 +28,31 @@
 .gantt-legend-item i {
   width: 1em;
   height: 1em;
+}
+
+.gantt-tooltip-id {
+  font-size: 1rem;
+  font-weight: bold;
+  border-bottom: 1px solid var(--gv-grey);
+}
+
+.gantt-tooltip-values {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0.5rem;
+}
+
+.gantt-tooltip-values + .gantt-tooltip-values {
+  margin-top: 0.25rem;
+}
+
+.gantt-tooltip-range {
+  color: var(--gv-grey);
+  font-size: 0.75rem;
+}
+
+.gantt-tooltip-prop {
+  font-size: 0.875rem;
+  font-weight: bold;
 }

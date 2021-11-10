@@ -98,6 +98,7 @@ export default class BeeSwarm extends Base {
       )
       .on("mouseover", this.onMouseOver.bind(this))
       .on("mouseout", this.onMouseOut.bind(this))
+      .attr("cursor", "pointer")
       .on("click", (...e) => this.onClick(...e));
   }
 
