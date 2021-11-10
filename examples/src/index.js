@@ -1,6 +1,6 @@
 import "./index.css"
-import { BeeSwarm, TreeMap, Gantt } from "../../src/index"
-// import { BeeSwarm, TreeMap } from "gobierto-vizzs"
+// import { BeeSwarm, TreeMap, Gantt } from "../../src/index"
+import { BeeSwarm, TreeMap, Gantt } from "gobierto-vizzs"
 import { mockJSON } from "./random";
 
 function DOM([key, ChartModule, ...opts]) {
