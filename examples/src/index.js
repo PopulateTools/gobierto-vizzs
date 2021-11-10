@@ -37,7 +37,7 @@ function DOM([key, ChartModule, ...opts]) {
 
 [
   // [title, Chart, options]
-  // ["BeeSwarm", BeeSwarm, { relation: "relation", id: "title" }],
-  // ["TreeMap", TreeMap, { group: ["group", "relation"], id: "title" }],
+  ["BeeSwarm", BeeSwarm, { relation: "relation", id: "title" }],
+  ["TreeMap", TreeMap, { group: ["group", "relation"], id: "title" }],
   ["Gantt", Gantt, { id: "title", y: "relation" }],
 ].map(DOM);
