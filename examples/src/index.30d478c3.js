@@ -644,7 +644,27 @@ function DOM([key, ChartModule, ...opts]) {
     ], 
 ].map(DOM);
 
-},{"./index.css":"kEVM9","./random":"pHfQu","../../src/index":"hD4hw"}],"kEVM9":[function() {},{}],"pHfQu":[function(require,module,exports) {
+},{"./index.css":"kEVM9","../../src/index":"hD4hw","./random":"pHfQu"}],"kEVM9":[function() {},{}],"hD4hw":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "BeeSwarm", ()=>_beeSwarmDefault.default
+);
+parcelHelpers.export(exports, "TreeMap", ()=>_treeMapDefault.default
+);
+parcelHelpers.export(exports, "Gantt", ()=>_ganttDefault.default
+);
+parcelHelpers.export(exports, "toJSON", ()=>_csvDefault.default
+);
+var _beeSwarm = require("./beeswarm/BeeSwarm");
+var _beeSwarmDefault = parcelHelpers.interopDefault(_beeSwarm);
+var _treeMap = require("./treemap/TreeMap");
+var _treeMapDefault = parcelHelpers.interopDefault(_treeMap);
+var _gantt = require("./gantt/Gantt");
+var _ganttDefault = parcelHelpers.interopDefault(_gantt);
+var _csv = require("./commons/csv");
+var _csvDefault = parcelHelpers.interopDefault(_csv);
+
+},{"./beeswarm/BeeSwarm":"efvdt","./treemap/TreeMap":"jphrP","./gantt/Gantt":"evGx1","./commons/csv":"cNR0a","@parcel/transformer-js/src/esmodule-helpers.js":"4Rs9r"}],"pHfQu":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "mockJSON", ()=>mockJSON
@@ -30654,26 +30674,6 @@ module["exports"] = [
     "Rap"
 ];
 
-},{}],"hD4hw":[function(require,module,exports) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-parcelHelpers.export(exports, "BeeSwarm", ()=>_beeSwarmDefault.default
-);
-parcelHelpers.export(exports, "TreeMap", ()=>_treeMapDefault.default
-);
-parcelHelpers.export(exports, "Gantt", ()=>_ganttDefault.default
-);
-parcelHelpers.export(exports, "toJSON", ()=>_csvDefault.default
-);
-var _beeSwarm = require("./beeswarm/BeeSwarm");
-var _beeSwarmDefault = parcelHelpers.interopDefault(_beeSwarm);
-var _treeMap = require("./treemap/TreeMap");
-var _treeMapDefault = parcelHelpers.interopDefault(_treeMap);
-var _gantt = require("./gantt/Gantt");
-var _ganttDefault = parcelHelpers.interopDefault(_gantt);
-var _csv = require("./commons/csv");
-var _csvDefault = parcelHelpers.interopDefault(_csv);
-
-},{"./beeswarm/BeeSwarm":"efvdt","./treemap/TreeMap":"jphrP","./gantt/Gantt":"evGx1","./commons/csv":"cNR0a","@parcel/transformer-js/src/esmodule-helpers.js":"4Rs9r"}]},["8h2Kx","kmYzM","19Ijc","3Yy36","axYM6","euwhi","68wJx","31w0r","5uiTB","lkS6V"], "lkS6V", "parcelRequire3004")
+},{}]},["8h2Kx","kmYzM","19Ijc","3Yy36","axYM6","euwhi","68wJx","31w0r","5uiTB","lkS6V"], "lkS6V", "parcelRequire3004")
 
 //# sourceMappingURL=index.30d478c3.js.map
