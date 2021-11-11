@@ -604,6 +604,7 @@ class BeeSwarm extends _baseDefault.default {
             2,
             20
         ];
+        this.t = _d3Transition.transition().duration(600).ease(_d3Ease.easeLinear);
         // chart size
         this.getDimensions();
         // static elements (do not redraw)
@@ -718,12 +719,10 @@ class BeeSwarm extends _baseDefault.default {
         //     .style("opacity", 1);
         // }
         const { x , y  } = this.relativeCoords(event);
-        this.tooltipContainer.html(this.tooltip(d)).call((el)=>el.style("top", `${y}px`).style("left", `${x}px`).transition().duration(400).style("opacity", 1)
-        );
+        this.tooltipContainer.html(this.tooltip(d)).style("top", `${y}px`).style("left", `${x}px`).transition(this.t).style("opacity", 1);
     }
     onMouseOut() {
-        this.tooltipContainer.call((el)=>el.style("opacity", 1).transition().duration(400).style("opacity", 0)
-        );
+        this.tooltipContainer.style("opacity", 1).transition(this.t).style("opacity", 0);
     // selectAll("circle.beeswarm-circle").transition().duration(450).style("opacity", 1);
     }
     parse(data) {
