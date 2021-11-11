@@ -11,9 +11,10 @@
   ],
   "source": "src/index.js",
   "main": "dist/index.js",
+  "module": "dist/module.js",
   "scripts": {
     "watch": "parcel watch",
-    "prebuild": "rm -rf ./dist/*",
+    "prebuild": "rm -rf ./dist/* ./.parcel-cache",
     "build": "parcel build"
   },
   "author": "populate",
