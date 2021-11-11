@@ -7,6 +7,8 @@ Reusable visualizations used in Gobierto. Check out [the demo](https://populatet
   + [BeeSwarm examples](#beeswarm-examples)
 * [TreeMap](#treemap)
   + [TreeMap examples](#treemap-examples)
+* [Gantt](#gantt)
+  + [Gantt examples](#gantt-examples)
 * [Helpers](#helpers)
   + [toJSON](#tojson)
 * [Styling](#styling)
@@ -299,6 +301,7 @@ const tree = new TreeMap(chart, data, { locale: "it-IT" })
 ```
 
 ## Gantt
+
 ```js
 import { Gantt } from "gobierto-vizzs"
 
