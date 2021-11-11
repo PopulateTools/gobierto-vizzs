@@ -617,7 +617,7 @@ function DOM([key, ChartModule, ...opts]) {
     const a = document.createElement("a");
     const btn = document.createElement("button");
     const chart = document.createElement("div");
-    block.className = "md:container mx-auto px-4";
+    block.className = "md:container mx-auto py-4";
     head.className = "flex justify-between items-center py-3";
     a.className = "text-3xl font-bold";
     btn.className = "bg-blue-500 text-white font-bold py-2 px-4 rounded";
@@ -709,7 +709,7 @@ function mockJSON() {
     const addDays = (d, n)=>new Date(new Date(d).setDate(d.getDate() + n))
     ;
     return Array.from({
-        length: 200
+        length: 100
     }, (_, i)=>({
             date: Math.random() > 0.98 ? null : _en.date.past(),
             value: Math.random() > 0.9 ? _en.datatype.number(100000) : _en.datatype.number(10000),
