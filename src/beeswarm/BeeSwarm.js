@@ -578,7 +578,6 @@ var _d3TimeFormat = require("d3-time-format");
 var _d3Ease = require("d3-ease");
 var _d3Time = require("d3-time");
 var _beeSwarmCss = require("./BeeSwarm.css");
-console.log(_d3Transition.transition);
 class BeeSwarm extends _baseDefault.default {
     constructor(container, data, options = {
     }){
@@ -599,13 +598,14 @@ class BeeSwarm extends _baseDefault.default {
         this.valueProp = options.value || "value";
         this.idProp = options.id || "id";
         this.relationProp = options.relation;
+        this.t = (name)=>_d3Transition.transition(name).duration(600).ease(_d3Ease.easeLinear)
+        ;
         // band item height
         this.MIN_BLOCK_SIZE = options.minBlockSize || 100;
         this.CIRCLE_SIZE = options.circleSize || [
             2,
             20
         ];
-        this.t = _d3Transition.transition().duration(600).ease(_d3Ease.easeLinear);
         // chart size
         this.getDimensions();
         // static elements (do not redraw)
@@ -720,10 +720,10 @@ class BeeSwarm extends _baseDefault.default {
         //     .style("opacity", 1);
         // }
         const { x , y  } = this.relativeCoords(event);
-        this.tooltipContainer.html(this.tooltip(d)).style("top", `${y}px`).style("left", `${x}px`).transition(this.t).style("opacity", 1);
+        this.tooltipContainer.html(this.tooltip(d)).style("top", `${y}px`).style("left", `${x}px`).transition(this.t("tooltip")).style("opacity", 1);
     }
     onMouseOut() {
-        this.tooltipContainer.style("opacity", 1).transition(this.t).style("opacity", 0);
+        this.tooltipContainer.style("opacity", 1).transition(this.t("tooltip")).style("opacity", 0);
     // selectAll("circle.beeswarm-circle").transition().duration(450).style("opacity", 1);
     }
     parse(data) {
