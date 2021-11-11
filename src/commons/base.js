@@ -2,7 +2,7 @@ import { select } from "d3-selection";
 import { timeFormatDefaultLocale } from "d3-time-format";
 
 const LOCALES = {
-  "es-ES": async () => await import("d3-time-format/locale/es-ES.json"),
+  "es-ES": () => import("d3-time-format/locale/es-ES.json"),
 }
 
 export default class Base {
@@ -27,7 +27,7 @@ export default class Base {
       }
     } else {
       const i18n = await LOCALES[this.locale]()
-      timeFormatDefaultLocale(i18n)
+      timeFormatDefaultLocale(i18n.default || i18n) // hack parcel
     }
   }
 
