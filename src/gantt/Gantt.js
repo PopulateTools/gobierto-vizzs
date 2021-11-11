@@ -5,6 +5,7 @@ import { axisTop } from "d3-axis";
 import { max, min } from "d3-array";
 import { timeFormat } from "d3-time-format";
 import { timeMonth, timeYear } from "d3-time";
+import "d3-transition";
 import "./Gantt.css"
 
 export default class Gantt extends Base {

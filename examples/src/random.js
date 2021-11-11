@@ -6,7 +6,7 @@ export function mockJSON() {
   const phases = Array.from({ length: 20 }, () => commerce.department())
   const addDays = (d, n) => new Date(new Date(d).setDate(d.getDate() + n))
 
-  return Array.from({ length: 50 }, (_, i) => ({
+  return Array.from({ length: 100 }, (_, i) => ({
     date: Math.random() > 0.98 ? null : date.past(),
     value: Math.random() > 0.9 ? datatype.number(1e5) : datatype.number(1e4),
     title: lorem.words(5),

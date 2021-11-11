@@ -1,16 +1,6 @@
 # gobierto-vizzs
 Reusable visualizations used in Gobierto. Check out [the demo](https://populatetools.github.io/gobierto-vizzs/)!
 
-### Development
-
-You can try the demos, running the examples:
-
-```sh
-cd examples
-npm install
-npm start
-```
-
 # API
 
 * [BeeSwarm](#beeswarm)
@@ -65,26 +55,6 @@ defaultTooltip(d) {
       <span class="beeswarm-tooltip-radius">${d[this.rAxisProp].toLocaleString()}</span>
     </div>
     `;
-}
-```
-
-### Styling
-
-The chart uses CSS custom variables to define the palette, you may overwrite them:
-```css
-:root {
-  --gv-color-1: #008e9c;
-  --gv-color-2: #12365b;
-  --gv-color-3: #ff776d;
-  --gv-color-4: #f8b205;
-  --gv-color-5: #a6cee3;
-  --gv-color-6: #1f78b4;
-  --gv-color-7: #b2df8a;
-  --gv-color-8: #33a02c;
-  --gv-color-9: #fb9a99;
-  --gv-color-10: #e31a1c;
-  --gv-color-11: #fdbf6f;
-  --gv-color-12: #ff7f00;
 }
 ```
 
@@ -229,26 +199,6 @@ defaultItemTemplate(d) {
 }
 ```
 
-### Styling
-
-The chart uses CSS custom variables to define the palette, you may overwrite them:
-```css
-:root {
-  --gv-color-1: #008e9c;
-  --gv-color-2: #12365b;
-  --gv-color-3: #ff776d;
-  --gv-color-4: #f8b205;
-  --gv-color-5: #a6cee3;
-  --gv-color-6: #1f78b4;
-  --gv-color-7: #b2df8a;
-  --gv-color-8: #33a02c;
-  --gv-color-9: #fb9a99;
-  --gv-color-10: #e31a1c;
-  --gv-color-11: #fdbf6f;
-  --gv-color-12: #ff7f00;
-}
-```
-
 ### TreeMap examples
 
 If your data array have the expected keys, you can simply do to display a one level depth treemap, arranged by `group` property
@@ -364,4 +314,34 @@ You can use a different separator as well
 import { toJSON } from "gobierto-vizzs"
 
 const data = toJSON(CSV_STRING, ";")
+```
+
+### Styling
+
+All charts uses CSS custom variables to define the palette, you may overwrite them:
+```css
+:root {
+  --gv-color-1: #008e9c;
+  --gv-color-2: #12365b;
+  --gv-color-3: #ff776d;
+  --gv-color-4: #f8b205;
+  --gv-color-5: #a6cee3;
+  --gv-color-6: #1f78b4;
+  --gv-color-7: #b2df8a;
+  --gv-color-8: #33a02c;
+  --gv-color-9: #fb9a99;
+  --gv-color-10: #e31a1c;
+  --gv-color-11: #fdbf6f;
+  --gv-color-12: #ff7f00;
+}
+```
+
+### Development
+
+You can try the demos, running the examples:
+
+```sh
+cd examples
+npm install
+npm start
 ```

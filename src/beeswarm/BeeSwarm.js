@@ -1,6 +1,5 @@
 import Base from "../commons/base";
 import { select, selectAll } from "d3-selection";
-import "d3-transition";
 import { scaleBand, scaleTime, scalePow, scaleOrdinal } from "d3-scale";
 import { forceSimulation, forceX, forceY, forceCollide } from "d3-force";
 import { axisBottom, axisLeft } from "d3-axis";
@@ -9,6 +8,7 @@ import { timeFormat } from "d3-time-format";
 import { max } from "d3-array";
 import { easeLinear } from "d3-ease";
 import { timeMonth } from "d3-time";
+import "d3-transition";
 import "./BeeSwarm.css"
 
 export default class BeeSwarm extends Base {
