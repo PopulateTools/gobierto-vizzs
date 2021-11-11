@@ -718,10 +718,8 @@ class BeeSwarm extends _baseDefault.default {
         //     .style("opacity", 1);
         // }
         const { x , y  } = this.relativeCoords(event);
-        this.tooltipContainer.html(this.tooltip(d)).call((el)=>{
-            console.log(el);
-            return el.style("top", `${y}px`).style("left", `${x}px`).transition().duration(400).style("opacity", 1);
-        });
+        this.tooltipContainer.html(this.tooltip(d)).call((el)=>el.style("top", `${y}px`).style("left", `${x}px`).transition().duration(400).style("opacity", 1)
+        );
     }
     onMouseOut() {
         this.tooltipContainer.call((el)=>el.style("opacity", 1).transition().duration(400).style("opacity", 0)
