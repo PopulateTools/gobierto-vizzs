@@ -464,7 +464,7 @@ parcelHelpers.defineInteropFlag(exports);
 var _d3Selection = require("d3-selection");
 var _d3TimeFormat = require("d3-time-format");
 const LOCALES = {
-    "es-ES": ()=>require("9d720a8a2d0757ff")
+    "es-ES": async ()=>await require("9d720a8a2d0757ff")
 };
 class Base {
     constructor(container, data, options){

@@ -706,15 +706,15 @@ class BeeSwarm extends _baseDefault.default {
         ]);
     }
     onMouseOver(event, d) {
-        if (this.relationProp) _d3Selection.selectAll("circle.beeswarm-circle").transition().duration(200).style("opacity", 0.1).filter((e)=>e[this.relationProp] === d[this.relationProp]
-        ).transition().duration(200).ease(_d3Ease.easeLinear).style("opacity", 1);
+        if (this.relationProp) _d3Selection.selectAll("circle.beeswarm-circle").transition().duration(400).style("opacity", 0.1).filter((e)=>e[this.relationProp] === d[this.relationProp]
+        ).transition().duration(400).ease(_d3Ease.easeLinear).style("opacity", 1);
         const tooltip = this.tooltipContainer.html(this.tooltip(d));
         const { x , y  } = this.relativeCoords(event);
         tooltip.style("top", `${y}px`).style("left", `${x}px`).transition().duration(400).style("opacity", 1);
     }
     onMouseOut() {
         this.tooltipContainer.style("opacity", 1).transition().duration(400).style("opacity", 0);
-        _d3Selection.selectAll("circle.beeswarm-circle").transition().duration(450).style("opacity", 1);
+        _d3Selection.selectAll("circle.beeswarm-circle").transition().duration(400).style("opacity", 1);
     }
     parse(data) {
         // 1. remove those elements with no X axis data
@@ -810,7 +810,7 @@ parcelHelpers.defineInteropFlag(exports);
 var _d3Selection = require("d3-selection");
 var _d3TimeFormat = require("d3-time-format");
 const LOCALES = {
-    "es-ES": ()=>require("9d720a8a2d0757ff")
+    "es-ES": async ()=>await require("9d720a8a2d0757ff")
 };
 class Base {
     constructor(container, data, options){

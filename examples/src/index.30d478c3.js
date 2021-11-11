@@ -679,7 +679,7 @@ var _ganttDefault = parcelHelpers.interopDefault(_gantt);
 var _csv = require("./commons/csv");
 var _csvDefault = parcelHelpers.interopDefault(_csv);
 
-},{"./beeswarm/BeeSwarm":"efvdt","./treemap/TreeMap":"jphrP","./gantt/Gantt":"evGx1","./commons/csv":"cNR0a","@parcel/transformer-js/src/esmodule-helpers.js":"4Rs9r"}],"pHfQu":[function(require,module,exports) {
+},{"./treemap/TreeMap":"jphrP","@parcel/transformer-js/src/esmodule-helpers.js":"4Rs9r","./beeswarm/BeeSwarm":"efvdt","./gantt/Gantt":"evGx1","./commons/csv":"cNR0a"}],"pHfQu":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "mockJSON", ()=>mockJSON
