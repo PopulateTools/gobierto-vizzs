@@ -598,7 +598,7 @@ class BeeSwarm extends _baseDefault.default {
         this.valueProp = options.value || "value";
         this.idProp = options.id || "id";
         this.relationProp = options.relation;
-        this.t = (name)=>_d3Transition.transition(name).duration(600).ease(_d3Ease.easeLinear)
+        this.t = (name)=>_d3Transition.transition(name).duration(250).ease(_d3Ease.easeLinear)
         ;
         // band item height
         this.MIN_BLOCK_SIZE = options.minBlockSize || 100;
