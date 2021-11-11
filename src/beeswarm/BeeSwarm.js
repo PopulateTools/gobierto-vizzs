@@ -578,6 +578,7 @@ var _d3TimeFormat = require("d3-time-format");
 var _d3Ease = require("d3-ease");
 var _d3Time = require("d3-time");
 var _beeSwarmCss = require("./BeeSwarm.css");
+console.log(_d3Transition.transition);
 class BeeSwarm extends _baseDefault.default {
     constructor(container, data, options = {
     }){
