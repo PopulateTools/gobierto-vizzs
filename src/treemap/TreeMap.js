@@ -202,14 +202,14 @@ export default class TreeMap extends Base {
         .style(
           "top",
           isVerticalInverted
-            ? `${(clientY - top - tooltipHeight) * (1 - offset)}px`
-            : `${(clientY - top) * (1 + offset)}px`
+            ? `${(clientY + top - tooltipHeight) * (1 - offset)}px`
+            : `${(clientY + top) * (1 + offset)}px`
         )
         .style(
           "left",
           isHorizontalInverted
-            ? `${(clientX - left - tooltipWidth) * (1 - offset)}px`
-            : `${(clientX - left) * (1 + offset)}px`
+            ? `${(clientX - tooltipWidth) * (1 - offset)}px`
+            : `${clientX * (1 + offset)}px`
         )
         .call((t) => t.transition().duration(400).style("opacity", 1))
         .on("mouseover", () => (this.cursorInsideTooltip = true))

@@ -195,11 +195,11 @@ export default class BeeSwarm extends Base {
     if (this.relationProp) {
       selectAll("circle.beeswarm-circle")
         .transition()
-        .duration(200)
+        .duration(400)
         .style("opacity", 0.1)
         .filter((e) => e[this.relationProp] === d[this.relationProp])
         .transition()
-        .duration(200)
+        .duration(400)
         .ease(easeLinear)
         .style("opacity", 1);
     }
@@ -217,7 +217,7 @@ export default class BeeSwarm extends Base {
 
   onMouseOut() {
     this.tooltipContainer.style("opacity", 1).transition().duration(400).style("opacity", 0);
-    selectAll("circle.beeswarm-circle").transition().duration(450).style("opacity", 1);
+    selectAll("circle.beeswarm-circle").transition().duration(400).style("opacity", 1);
   }
 
   parse(data) {
