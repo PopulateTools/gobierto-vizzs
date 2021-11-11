@@ -4,13 +4,13 @@ Reusable visualizations used in Gobierto. Check out [the demo](https://populatet
 # API
 
 * [BeeSwarm](#beeswarm)
-  + [Styling](#styling)
   + [BeeSwarm examples](#beeswarm-examples)
 * [TreeMap](#treemap)
-  + [Styling](#styling-1)
   + [TreeMap examples](#treemap-examples)
 * [Helpers](#helpers)
   + [toJSON](#tojson)
+* [Styling](#styling)
+* [Development](#development)
 
 ## BeeSwarm
 
@@ -298,6 +298,122 @@ In order to render the chart locale-sensitive stuff, enforce the graph language 
 const tree = new TreeMap(chart, data, { locale: "it-IT" })
 ```
 
+## Gantt
+```js
+import { Gantt } from "gobierto-vizzs"
+
+const gantt = new Gantt(chart, data, options)
+
+// ...update data
+gantt.setData(newData)
+```
+
+**chart** _(HTMLElement)_: DOM node where put the visualization
+
+**data** _(Array)_: Elements to display
+
+**options** _(Object)_: To custom the defaults presets. Optional. All properties come with setters, that is, once you have the object you can change any property using `setPROP(VALUE)`, i.e. `setX("prop")`, `setMargin({ left: 30 })`, `setOnClick(() => {})` etc...
+
+
+| name | type | default | description |
+|---|---|---|---|
+| **x** | _String_ | "phase" | Property name of the categories along the X-axis. Legend will be depicted by these values |
+| **y** | _String_ | "group" | Property name of the Y-axis. Categories to be grouped by. |
+| **from** | _String_ | "from" | Property name of the initial range. Date-like value. |
+| **to** | _String_ | "to" | Property name of the end range. Date-like value. |
+| **id** | _String_ | "id" | Property name of the id or title. Better if unique. |
+| **margin** | _Object_ | `{ top: 30, bottom: 0, left: 0, right: 0 }` | Set the margin around the chart. You can pass the properties you want. |
+| **locale** | _String_ | `window.navigator.language` | 4-letters specification of the locale. |
+| **barHeight** | _Number_ | 10 | Height of each category. |
+| **onClick** | _Function_ | - | Circle click callback handler. It receives the `event` and the `datum`. |
+| **tooltip** | _Function_ | [<sup>1</sup>](#1) | Custom HTML content to render in the tooltip on mouseenter. |
+
+<span id="1"></span>
+```js
+defaultTooltip(d) {
+  return `
+    <div class="gantt-tooltip-id">${d[this.idProp]}</div>
+    <div class="gantt-tooltip-values">
+      <span class="gantt-tooltip-range">${d[this.fromProp].toLocaleDateString()}</span>
+      <span class="gantt-tooltip-range">${d[this.toProp].toLocaleDateString()}</span>
+    </div>
+    <div class="gantt-tooltip-values">
+      <span class="gantt-tooltip-prop">${d[this.yAxisProp]} (${d[this.xAxisProp]})</span>
+    </div>
+    `;
+}
+```
+
+### Gantt examples
+
+If your data array have the expected keys, you can simply do:
+```js
+import { Gantt } from "gobierto-vizzs"
+
+const chart = document.body
+const data = [
+  {
+    "id": "id nobis possimus incidunt dolorum",
+    "group": "Lebanon",
+    "phase": "Step 1",
+    "from": "2020-01-01",
+    "to": "2020-03-01",
+  },
+  {
+    "id": "adipisci fugiat quidem alias molestiae",
+    "phase": "Step 2",
+    "group": "Lebanon",
+    "from": "2020-03-01",
+    "to": "2020-06-01",
+  },
+  ...
+]
+const gantt = new Gantt(chart, data)
+```
+
+But if not, you can easily parse them using the options setup:
+```js
+import { BeeSwarm } from "gobierto-vizzs"
+
+const chart = document.body
+const data = [
+  {
+    "start_date": "2020-10-26T13:04:51.746Z",
+    "end_date": "2020-12-26T13:04:51.746Z",
+    "amount": 8600,
+    "category": "Mayotte",
+    "event": "#1",
+    "title": 0
+  },
+  {
+    "start_date": "2021-04-03",
+    "end_date": "2021-04-03",
+    "amount": 169,
+    "category": "Mayotte",
+    "event": "#2",
+    "title": 1
+  },
+  ...
+]
+const gantt = new Gantt(chart, data, {
+  from: "start_date",
+  to: "end_date",
+  x: "event",
+  y: "category",
+  id: "title"
+})
+```
+
+Set a custom callback when clicking into a leaf (a node with no children)
+```js
+const gantt = new Gantt(chart, data, { onClick: (event, datum) => /* custom function */ })
+```
+
+In order to render the chart locale-sensitive stuff, enforce the graph language (List of available [locales](https://unpkg.com/browse/d3-time-format/locale/))
+```js
+const gantt = new Gantt(chart, data, { locale: "it-IT" })
+```
+
 ## Helpers
 
 ### toJSON
@@ -316,7 +432,7 @@ import { toJSON } from "gobierto-vizzs"
 const data = toJSON(CSV_STRING, ";")
 ```
 
-### Styling
+## Styling
 
 All charts uses CSS custom variables to define the palette, you may overwrite them:
 ```css
@@ -336,7 +452,7 @@ All charts uses CSS custom variables to define the palette, you may overwrite th
 }
 ```
 
-### Development
+## Development
 
 You can try the demos, running the examples:
 
