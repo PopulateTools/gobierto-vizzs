@@ -1,13 +1,15 @@
 import { select } from "d3-selection";
 import { timeFormatDefaultLocale } from "d3-time-format";
+import { version } from "../../package.json"
 
 const LOCALES = {
   "es-ES": () => import("d3-time-format/locale/es-ES.json"),
 }
 
 export default class Base {
-  constructor(container, data, options) {
-    this.container = container;
+  constructor(container, _, options) {
+    this.container = container
+    this.version = version
     this.locale = options.locale || window.navigator.language
     this.PALETTE = Array.from({ length: 12 }, (_, i) => `var(--gv-color-${i + 1})`)
 
