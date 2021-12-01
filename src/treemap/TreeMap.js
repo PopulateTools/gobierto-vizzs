@@ -102,7 +102,17 @@ export default class TreeMap extends Base {
 
       g.select("foreignObject")
         .attr("width", (d) => (d === root ? this.width : this.scaleX(d.x1) - this.scaleX(d.x0)))
-        .attr("height", (d) => (d === root ? this.margin.top : this.scaleY(d.y1) - this.scaleY(d.y0)));
+        .attr("height", (d) => (d === root ? this.margin.top : this.scaleY(d.y1) - this.scaleY(d.y0)))
+        .selectChild()
+        .style("opacity", (d, ix, nodes) => {
+          if (d === root) return 1
+
+          const node = nodes[ix]
+          const { width: w, height: h } = node.getBoundingClientRect()
+          const { width: pW, height: pH } = node.parentElement.getBoundingClientRect()
+          // compare the div size with its parent size
+          return (w > pW) || (h > pH) ? 0 : 1
+        })
     };
 
     const zoomin = (d) => {
