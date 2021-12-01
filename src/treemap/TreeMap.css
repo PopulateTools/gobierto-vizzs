@@ -16,6 +16,8 @@
   padding: 0.5rem;
   font-size: 0.875rem;
   color: var(--gv-white);
+  box-sizing: border-box;
+  width: max-content;
 }
 
 .treemap-tooltip-block:not(:first-child) {
