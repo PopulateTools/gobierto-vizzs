@@ -198,20 +198,19 @@ export default class TreeMap extends Base {
       const containerVerticalOffset = clientY - top
       const isHorizontalInverted = containerHorizontalOffset > containerWidth * 0.5;
       const isVerticalInverted = containerVerticalOffset > containerHeight * 0.5;
-      const offset = 0.01;
 
       tooltip
         .style(
           "top",
           isVerticalInverted
-            ? `${containerVerticalOffset * (1 - offset)}px`
-            : `${containerVerticalOffset * (1 + offset)}px`
+            ? `${containerVerticalOffset}px`
+            : `${containerVerticalOffset}px`
         )
         .style(
           "left",
           isHorizontalInverted
-            ? `${(containerHorizontalOffset - tooltipWidth) * (1 - offset)}px`
-            : `${(containerHorizontalOffset + tooltipWidth) * (1 + offset)}px`
+            ? `${containerHorizontalOffset - (tooltipWidth * 0.7)}px`
+            : `${containerHorizontalOffset + (tooltipWidth * 0.75)}px`
         )
         .call((t) => t.transition().duration(400).style("opacity", 1))
         .on("mouseover", () => (this.cursorInsideTooltip = true))
