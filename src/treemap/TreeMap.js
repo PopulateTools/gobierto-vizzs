@@ -54,6 +54,8 @@ export default class TreeMap extends Base {
   }
 
   build() {
+    const TRANSITION_DURATION = 350
+
     const render = (group, root) => {
       const node = group.selectAll("g").data(root.children.concat(root)).join("g");
 
@@ -104,14 +106,25 @@ export default class TreeMap extends Base {
         .attr("width", (d) => (d === root ? this.width : this.scaleX(d.x1) - this.scaleX(d.x0)))
         .attr("height", (d) => (d === root ? this.margin.top : this.scaleY(d.y1) - this.scaleY(d.y0)))
         .selectChild()
-        .style("opacity", (d, ix, nodes) => {
-          if (d === root) return 1
+        .style("opacity", 0)
+        .call(e => e.transition().duration(TRANSITION_DURATION).style("opacity", 1))
+        .on("end", (d, ix, nodes) => {
+          if (d === root) return null
 
           const node = nodes[ix]
-          const { width: w, height: h } = node.getBoundingClientRect()
+          let { width: w, height: h } = node.getBoundingClientRect()
           const { width: pW, height: pH } = node.parentElement.getBoundingClientRect()
-          // compare the div size with its parent size
-          return (w > pW) || (h > pH) ? 0 : 1
+
+          // if the template does not fit in the parent
+          if ((w > pW) || (h > pH)) {
+            while ((w > pW) || (h > pH)) {
+              if (node.lastChild) {
+                // remove children one by one, until the template fits
+                node.lastChild.remove();
+                ({ width: w, height: h } = node.getBoundingClientRect())
+              } else break
+            }
+          }
         })
     };
 
@@ -124,7 +137,7 @@ export default class TreeMap extends Base {
 
       this.svg
         .transition()
-        .duration(750)
+        .duration(TRANSITION_DURATION)
         .call((t) => group0.transition(t).remove().call(position, d.parent))
         .call((t) =>
           group1
@@ -144,7 +157,7 @@ export default class TreeMap extends Base {
 
       this.svg
         .transition()
-        .duration(750)
+        .duration(TRANSITION_DURATION)
         .call((t) =>
           group0
             .transition(t)
