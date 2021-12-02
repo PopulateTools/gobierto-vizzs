@@ -61,7 +61,7 @@ export default class TreeMap extends Base {
 
       node
         .on("mousemove", this.onMouseMove.bind(this))
-        .on("mouseleave", this.debounce(this.onMouseLeave.bind(this), 250))
+        .on("mouseleave", this.debounce(this.onMouseLeave.bind(this), 100))
         .attr("cursor", "pointer")
         .on("click", (e, d) => (d === root ? zoomout(root) : d.height === 0 ? this.onLeafClick(e, d) : zoomin(d)));
 
