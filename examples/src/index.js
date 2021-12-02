@@ -35,6 +35,8 @@ function DOM([key, ChartModule, ...opts]) {
   btn.addEventListener("click", () => module.setData(mockJSON()))
 }
 
+document.body.replaceChildren();
+
 [
   // [title, Chart, options]
   ["BeeSwarm", BeeSwarm, { relation: "relation", id: "title" }],
