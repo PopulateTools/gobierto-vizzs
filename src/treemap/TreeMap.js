@@ -35,7 +35,7 @@ export default class TreeMap extends Base {
 
   getDimensions() {
     const { width, height } = this.container.getBoundingClientRect();
-    const minHeight = height > 0 ? height : width / (16 / 9);
+    const minHeight = height > 0 ? height : width / (2 / 1);
 
     this.width = width - this.margin.left - this.margin.right;
     this.height = minHeight - this.margin.top - this.margin.bottom;

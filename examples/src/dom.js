@@ -7,8 +7,6 @@ export function DOM([key, ChartModule, opts]) {
   const btn = document.createElement("button")
   const chart = document.createElement("div")
 
-  chart.style.aspectRatio = "3 / 1"
-
   block.className = "md:container mx-auto py-4"
   head.className = "flex justify-between items-center py-3"
   a.className = "text-3xl font-bold"
