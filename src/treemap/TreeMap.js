@@ -50,7 +50,7 @@ export default class TreeMap extends Base {
         "viewBox",
         `0 0 ${this.width + this.margin.left + this.margin.right} ${this.height + this.margin.top + this.margin.bottom}`
       )
-      .on("mouseleave", this.debounce(this.onMouseLeave.bind(this), 250))
+      .on("mouseleave", this.onMouseLeave.bind(this))
     this.tooltipContainer = select(this.container).append("div").attr("class", "gv-tooltip");
   }
 
