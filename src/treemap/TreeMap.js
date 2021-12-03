@@ -46,16 +46,17 @@ export default class TreeMap extends Base {
       .classed("gv-container", true)
       .append("svg")
       .attr("class", "gv-plot")
-      .attr(
-        "viewBox",
-        `0 0 ${this.width + this.margin.left + this.margin.right} ${this.height + this.margin.top + this.margin.bottom}`
-      )
       .on("mouseleave", this.onMouseLeave.bind(this))
     this.tooltipContainer = select(this.container).append("div").attr("class", "gv-tooltip");
   }
 
   build() {
     const TRANSITION_DURATION = 350
+
+    this.svg.attr(
+      "viewBox",
+      `0 0 ${this.width + this.margin.left + this.margin.right} ${this.height + this.margin.top + this.margin.bottom}`
+    );
 
     const render = (group, root) => {
       const node = group.selectAll("g").data(root.children.concat(root)).join("g");
