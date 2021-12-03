@@ -49,7 +49,8 @@ export default class TreeMap extends Base {
       .attr(
         "viewBox",
         `0 0 ${this.width + this.margin.left + this.margin.right} ${this.height + this.margin.top + this.margin.bottom}`
-      );
+      )
+      .on("mouseleave", this.debounce(this.onMouseLeave.bind(this), 250))
     this.tooltipContainer = select(this.container).append("div").attr("class", "gv-tooltip");
   }
 
@@ -60,8 +61,8 @@ export default class TreeMap extends Base {
       const node = group.selectAll("g").data(root.children.concat(root)).join("g");
 
       node
+        .on("mouseenter", (e, d) => d === root && this.onMouseLeave(e, d))
         .on("mousemove", this.onMouseMove.bind(this))
-        .on("mouseleave", this.debounce(this.onMouseLeave.bind(this), 100))
         .attr("cursor", "pointer")
         .on("click", (e, d) => (d === root ? zoomout(root) : d.height === 0 ? this.onLeafClick(e, d) : zoomin(d)));
 
