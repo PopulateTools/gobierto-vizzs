@@ -15,7 +15,8 @@
   "scripts": {
     "watch": "parcel watch",
     "prebuild": "rm -rf ./dist/* ./.parcel-cache",
-    "build": "parcel build"
+    "build": "parcel build",
+    "preversion": "npm run build"
   },
   "author": "populate",
   "license": "ISC",
