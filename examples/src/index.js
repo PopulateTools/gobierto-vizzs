@@ -1,45 +1,21 @@
 import "./index.css"
-import { BeeSwarm, TreeMap, Gantt } from "../../src/index"
+import { BeeSwarm, TreeMap, Gantt, toJSON } from "../../src/index"
 // import { BeeSwarm, TreeMap, Gantt } from "gobierto-vizzs"
-import { mockJSON } from "./random";
+import { DOM } from "./dom"
+// import CSV from "url:./data.csv"
 
-function DOM([key, ChartModule, ...opts]) {
-  const head = document.createElement("div")
-  const block = document.createElement("div")
-  const a = document.createElement("a")
-  const btn = document.createElement("button")
-  const chart = document.createElement("div")
+async function main() {
+  // To test real data, fetch it from CSV and pass it to the options object
+  // const raw = await fetch(CSV).then(r => r.text());
+  // const data = toJSON(raw);
 
-  block.className = "md:container mx-auto py-4"
-  head.className = "flex justify-between items-center py-3"
-  a.className = "text-3xl font-bold"
-  btn.className = "bg-blue-500 text-white font-bold py-2 px-4 rounded"
-
-  a.textContent = key
-  btn.textContent = "Change data"
-
-  a.href = `#${key}`
-
-  a.id = key
-
-  head.appendChild(a)
-  head.appendChild(btn)
-
-  block.appendChild(head)
-  block.appendChild(chart)
-
-  document.body.appendChild(block)
-
-  const module = new ChartModule(chart, mockJSON(), ...opts)
-
-  btn.addEventListener("click", () => module.setData(mockJSON()))
+  [
+    // [title, Chart, options]
+    ["BeeSwarm", BeeSwarm, { relation: "relation", id: "title" }],
+    ["TreeMap", TreeMap, { group: ["group", "relation"], id: "title" }],
+    ["Gantt", Gantt, { id: "title", y: "relation" }],
+  ].map(DOM);
 }
 
-document.body.replaceChildren();
-
-[
-  // [title, Chart, options]
-  ["BeeSwarm", BeeSwarm, { relation: "relation", id: "title" }],
-  ["TreeMap", TreeMap, { group: ["group", "relation"], id: "title" }],
-  ["Gantt", Gantt, { id: "title", y: "relation" }],
-].map(DOM);
+// clear site on startup
+(document.body.replaceChildren() || true) && main()
