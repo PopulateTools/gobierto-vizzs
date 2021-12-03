@@ -19,6 +19,11 @@
   box-sizing: border-box;
   width: max-content;
   max-width: calc(100% - 2px);
+  overflow: hidden;
+}
+
+.treemap-item * {
+  overflow: hidden;
 }
 
 .treemap-tooltip-block:not(:first-child) {

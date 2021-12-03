@@ -90,7 +90,7 @@ export default class TreeMap extends Base {
         .attr("class", (d) => (d === root ? "treemap-breadcrumb" : "treemap-item"))
         .html((d) => (d === root ? this.breadcrumb(this.nodePath(d)) : this.itemTemplate(d)))
 
-      group.call(position, root);
+      group.transition().duration(TRANSITION_DURATION).call(position, root);
     };
 
     const position = (group, root) => {
@@ -108,8 +108,13 @@ export default class TreeMap extends Base {
         .attr("width", (d) => (d === root ? this.width : this.scaleX(d.x1) - this.scaleX(d.x0)))
         .attr("height", (d) => (d === root ? this.margin.top : this.scaleY(d.y1) - this.scaleY(d.y0)))
         .selectChild()
-        .style("opacity", 0)
-        .call(e => e.transition().duration(TRANSITION_DURATION).style("opacity", 1))
+        .call((e) =>
+          e
+            .style("opacity", 0)
+            .transition()
+            .duration(TRANSITION_DURATION)
+            .style("opacity", 1)
+        )
         .on("end", (d, ix, nodes) => {
           if (d === root) return null
 
