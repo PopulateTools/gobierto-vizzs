@@ -54,6 +54,11 @@ export default class Base {
     window.removeEventListener("resize", this.resizeListener.bind(this));
   }
 
+  isSmallDevice() {
+    console.log(screen.width);
+    return screen.width < 768
+  }
+
   wrap(text, width) {
     text.each(function () {
       var text = select(this),
