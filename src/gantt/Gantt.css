@@ -42,18 +42,10 @@
   justify-content: space-between;
   align-items: center;
   margin-top: 0.5rem;
-}
-
-.gantt-tooltip-values + .gantt-tooltip-values {
-  margin-top: 0.25rem;
-}
-
-.gantt-tooltip-range {
   color: var(--gv-grey);
   font-size: 0.75rem;
 }
 
-.gantt-tooltip-prop {
-  font-size: 0.875rem;
-  font-weight: bold;
+.gantt-tooltip-values > *:not(:first-child) {
+  margin-left: 1em;
 }

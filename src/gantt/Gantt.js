@@ -203,13 +203,10 @@ export default class Gantt extends Base {
 
   defaultTooltip(d) {
     return `
-      <div class="gantt-tooltip-id">${d[this.idProp]}</div>
+      <div class="gantt-tooltip-id">${d[this.yAxisProp]}</div>
       <div class="gantt-tooltip-values">
-        <span class="gantt-tooltip-range">${d[this.fromProp].toLocaleDateString()}</span>
-        <span class="gantt-tooltip-range">${d[this.toProp].toLocaleDateString()}</span>
-      </div>
-      <div class="gantt-tooltip-values">
-        <span class="gantt-tooltip-prop">${d[this.yAxisProp]} (${d[this.xAxisProp]})</span>
+        <span>${d[this.xAxisProp]}:</span>
+        <span>${d[this.fromProp].toLocaleDateString()} - ${d[this.toProp].toLocaleDateString()}</span>
       </div>
       `;
   }
