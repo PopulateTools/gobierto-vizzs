@@ -80,7 +80,7 @@ export default class Gantt extends Base {
 
   xAxis(g) {
     const months = timeMonth.count(...this.scaleX.domain())
-    const hasMultipleYears = months > 24;
+    const hasMultipleYears = months > 48;
     const onlyOneYear = months < 12;
 
     g.call(
@@ -91,7 +91,9 @@ export default class Gantt extends Base {
         .tickPadding(10)
     );
 
+    // since the chart shows y-axis lines for each month...
     if (g.selectAll(".tick").size() > 8) {
+      // ...the labels must be removed to fit inside
       g.selectAll(".tick:not(:nth-child(3n + 1)) text").remove()
     }
 
@@ -184,7 +186,7 @@ export default class Gantt extends Base {
   }
 
   onMouseOver(event, d) {
-    const tooltip = this.tooltipContainer.html(this.tooltip(d))
+    const tooltip = this.tooltipContainer.style("pointer-events", "auto").html(this.tooltip(d))
 
     const { x, y } = this.relativeCoords(event);
     tooltip
@@ -196,7 +198,7 @@ export default class Gantt extends Base {
   }
 
   onMouseOut() {
-    this.tooltipContainer.style("opacity", 1).transition().duration(400).style("opacity", 0);
+    this.tooltipContainer.style("pointer-events", "none").transition().delay(1000).duration(400).style("opacity", 0);
   }
 
   defaultTooltip(d) {

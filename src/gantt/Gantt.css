@@ -10,6 +10,7 @@
   grid-area: 1 / -1;
   align-self: start;
   justify-self: end;
+  font-size: 0.875rem;
 }
 
 .gantt-legend-item {
@@ -18,11 +19,11 @@
 }
 
 .gantt-legend-item:not(:first-child) {
-  margin-left: 0.5em;
+  margin-left: 2em;
 }
 
 .gantt-legend-item > *:not(:first-child) {
-  margin-left: 0.25em;
+  margin-left: 0.5em;
 }
 
 .gantt-legend-item i {
