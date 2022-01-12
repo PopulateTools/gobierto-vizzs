@@ -55,7 +55,6 @@ export default class Base {
   }
 
   isSmallDevice() {
-    console.log(screen.width);
     return screen.width < 768
   }
 
