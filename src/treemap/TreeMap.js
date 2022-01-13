@@ -220,7 +220,7 @@ export default class TreeMap extends Base {
     // the breadcrumb group is always the last item, so, if there's no next sibling, it's breadcrumb
     const isBreadcrumb = !target.closest("g").nextSibling;
     if (!this.cursorInsideTooltip && !isBreadcrumb && d.parent) {
-      const tooltip = this.tooltipContainer.style("pointer-events", "auto").html(this.tooltip(d));
+      const tooltip = this.tooltipContainer.html(this.tooltip(d));
       const { width: containerWidth, height: containerHeight, left, top } = this.container.getBoundingClientRect();
       const { width: tooltipWidth, height: tooltipHeight } = tooltip.node().getBoundingClientRect();
 
@@ -246,6 +246,7 @@ export default class TreeMap extends Base {
             ? `${containerHorizontalOffset - tooltipWidth * 0.7}px`
             : `${containerHorizontalOffset + tooltipWidth * 0.75}px`
         )
+        .style("pointer-events", "auto")
         .call((t) => t.transition().duration(400).style("opacity", 1))
         .on("mouseover", () => (this.cursorInsideTooltip = true))
         .on("mouseleave", () => (this.cursorInsideTooltip = false));

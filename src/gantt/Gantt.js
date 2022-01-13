@@ -186,12 +186,13 @@ export default class Gantt extends Base {
   }
 
   onMouseOver(event, d) {
-    const tooltip = this.tooltipContainer.style("pointer-events", "auto").html(this.tooltip(d))
+    const tooltip = this.tooltipContainer.html(this.tooltip(d))
 
     const { x, y } = this.relativeCoords(event);
     tooltip
       .style("top", `${y}px`)
       .style("left", `${x}px`)
+      .style("pointer-events", "auto")
       .transition()
       .duration(400)
       .style("opacity", 1);
