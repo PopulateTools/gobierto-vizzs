@@ -44,8 +44,10 @@
   margin-top: 0.5rem;
   color: var(--gv-grey);
   font-size: 0.75rem;
+  font-weight: bold;
 }
 
 .gantt-tooltip-values > *:not(:first-child) {
   margin-left: 1em;
+  font-weight: normal;
 }
