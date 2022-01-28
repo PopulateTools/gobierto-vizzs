@@ -119,17 +119,19 @@ export default class TreeMap extends Base {
           if (d === root) return null
 
           const node = nodes[ix]
-          let { width: w, height: h } = node.getBoundingClientRect()
-          const { width: pW, height: pH } = node.parentElement.getBoundingClientRect()
+          if (node && node.parentNode) {
+            let { width: w, height: h } = node.getBoundingClientRect()
+            const { width: pW, height: pH } = node.parentNode.getBoundingClientRect()
 
-          // if the template does not fit in the parent
-          if ((w > pW) || (h > pH)) {
-            while ((w > pW) || (h > pH)) {
-              if (node.lastChild) {
-                // remove children one by one, until the template fits
-                node.lastChild.remove();
-                ({ width: w, height: h } = node.getBoundingClientRect())
-              } else break
+            // if the template does not fit in the parent
+            if ((w > pW) || (h > pH)) {
+              while ((w > pW) || (h > pH)) {
+                if (node.lastChild) {
+                  // remove children one by one, until the template fits
+                  node.lastChild.remove();
+                  ({ width: w, height: h } = node.getBoundingClientRect())
+                } else break
+              }
             }
           }
         })
