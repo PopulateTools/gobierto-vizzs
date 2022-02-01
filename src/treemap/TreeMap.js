@@ -62,6 +62,7 @@ export default class TreeMap extends Base {
       const node = group.selectAll("g").data(root.children.concat(root)).join("g");
 
       node
+        .on("touchmove", e => e.preventDefault())
         .on("pointerenter", (e, d) => d === root && this.onPointerLeave(e, d))
         .on("pointermove", this.onPointerMove.bind(this))
         .attr("cursor", "pointer")

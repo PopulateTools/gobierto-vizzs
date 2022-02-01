@@ -71,6 +71,7 @@ export default class Gantt extends Base {
           .attr("height", this.scaleY.bandwidth())
           .attr("fill", (d) => this.scaleColor(d[this.xAxisProp]))
       )
+      .on("touchmove", e => e.preventDefault())
       .on("pointermove", this.onPointerMove.bind(this))
       .on("pointerout", this.onPointerOut.bind(this))
       .attr("cursor", "pointer")

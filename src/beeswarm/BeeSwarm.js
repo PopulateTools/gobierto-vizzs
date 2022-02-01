@@ -96,6 +96,7 @@ export default class BeeSwarm extends Base {
           .attr("r", (d) => this.scaleRadius(d[this.valueProp]))
           .attr("fill", (d) => this.scaleColor(d[this.yAxisProp]))
       )
+      .on("touchmove", e => e.preventDefault())
       .on("pointermove", this.onPointerMove.bind(this))
       .on("pointerout", this.onPointerOut.bind(this))
       .attr("cursor", "pointer")
