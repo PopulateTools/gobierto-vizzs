@@ -8,7 +8,6 @@ import { timeMonth, timeYear } from "d3-time";
 import "d3-transition";
 import "./Gantt.css"
 
-
 export default class Gantt extends Base {
   constructor(container, data, options = {}) {
     super(container, data, options)

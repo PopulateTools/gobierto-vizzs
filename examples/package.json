@@ -11,7 +11,8 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@parcel/resolver-glob": "^2.0.0",
+    "@parcel/optimizer-css": "^2.2.1",
+    "@parcel/transformer-css-experimental": "^2.2.1",
     "autoprefixer": "^10.4.0",
     "gh-pages": "^3.2.3",
     "parcel": "^2.0.0",

@@ -7,7 +7,7 @@ export function DOM([key, ChartModule, opts]) {
   const btn = document.createElement("button")
   const chart = document.createElement("div")
 
-  block.className = "md:container mx-auto py-4"
+  block.className = "md:container mx-auto px-1 md:px-0 py-4"
   head.className = "flex justify-between items-center py-3"
   a.className = "text-3xl font-bold"
   btn.className = "bg-blue-500 text-white font-bold py-2 px-4 rounded"

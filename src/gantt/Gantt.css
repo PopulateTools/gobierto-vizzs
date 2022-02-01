@@ -1,6 +1,3 @@
-@import "../commons/palette.css";
-@import "../commons/tooltip.css";
-
 .gv-container {
   display: grid;
 }
@@ -11,19 +8,26 @@
   align-self: start;
   justify-self: end;
   font-size: 0.875rem;
+  flex-wrap: wrap;
+  margin: -0.25em -1em;
 }
 
 .gantt-legend-item {
   display: flex;
   align-items: center;
-}
-
-.gantt-legend-item:not(:first-child) {
-  margin-left: 2em;
+  margin: 0.25em 1em;
+  max-width: 25vw;
 }
 
 .gantt-legend-item > *:not(:first-child) {
-  margin-left: 0.5em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.gantt-legend-item > *:first-child {
+  margin-right: 0.5em;
+  flex-shrink: 0;
 }
 
 .gantt-legend-item i {
