@@ -181,10 +181,6 @@ export default class Gantt extends Base {
     const tooltip = this.tooltipContainer.html(this.tooltip(d))
 
     const rects = this.g.selectAll("rect.gantt-item")
-    // filter those rects in the same yAxisProp ("group")
-    // then get the last one, as
-    // const [last] = rects.filter((x) => x[this.yAxisProp] === d[this.yAxisProp]).nodes().slice(-1);
-    // const { x, top, width, height } = last.getBoundingClientRect()
     rects
       .filter((x) => x[this.yAxisProp] !== d[this.yAxisProp])
       .transition()
@@ -208,17 +204,20 @@ export default class Gantt extends Base {
       .transition()
       .duration(400)
       .style("fill-opacity", null);
-    // this.tooltipContainer.style("pointer-events", "none").transition().delay(1000).duration(400).style("opacity", 0);
+    this.tooltipContainer.style("pointer-events", "none").transition().delay(1000).duration(400).style("opacity", 0);
   }
 
   defaultTooltip(d) {
-    return `
-      <div class="gantt-tooltip-id">${d[this.yAxisProp]}</div>
-      <div class="gantt-tooltip-values">
-        <span>${d[this.xAxisProp]}:</span>
-        <span>${d[this.fromProp].toLocaleDateString()} - ${d[this.toProp].toLocaleDateString()}</span>
-      </div>
-      `;
+    const group = this.data.filter(x => x[this.yAxisProp] === d[this.yAxisProp])
+    return [
+      `<div class="gantt-tooltip-id">${d[this.yAxisProp]}</div>`,
+      ...group.map(g => `
+        <div class="gantt-tooltip-values">
+          <span>${g[this.xAxisProp]}:</span>
+          <span>${g[this.fromProp].toLocaleDateString()} - ${g[this.toProp].toLocaleDateString()}</span>
+        </div>
+      `)
+    ].join("")
   }
 
   setX(value) {
