@@ -46,7 +46,7 @@ export default class TreeMap extends Base {
       .classed("gv-container", true)
       .append("svg")
       .attr("class", "gv-plot")
-      .on("mouseleave", this.onMouseLeave.bind(this))
+      .on("pointerleave", this.onPointerLeave.bind(this))
     this.tooltipContainer = select(this.container).append("div").attr("class", "gv-tooltip");
   }
 
@@ -62,8 +62,8 @@ export default class TreeMap extends Base {
       const node = group.selectAll("g").data(root.children.concat(root)).join("g");
 
       node
-        .on("mouseenter", (e, d) => d === root && this.onMouseLeave(e, d))
-        .on("mousemove", this.onMouseMove.bind(this))
+        .on("pointerenter", (e, d) => d === root && this.onPointerLeave(e, d))
+        .on("pointermove", this.onPointerMove.bind(this))
         .attr("cursor", "pointer")
         .on("click", (e, d) => (d === root ? zoomout(root) : d.height === 0 ? this.onLeafClick(e, d) : zoomin(d)));
 
@@ -218,7 +218,7 @@ export default class TreeMap extends Base {
     this.scaleColor = scaleOrdinal().range(this.PALETTE);
   }
 
-  onMouseMove(event, d) {
+  onPointerMove(event, d) {
     // the breadcrumb group is always the last item, so, if there's no next sibling, it's breadcrumb
     const isBreadcrumb = !event.target.closest("g").nextSibling;
     if (!this.cursorInsideTooltip && !isBreadcrumb && d.parent) {
@@ -230,12 +230,12 @@ export default class TreeMap extends Base {
         .style("left", `${x}px`)
         .style("pointer-events", "auto")
         .call((t) => t.transition().duration(400).style("opacity", 1))
-        .on("mouseover", () => (this.cursorInsideTooltip = true))
-        .on("mouseleave", () => (this.cursorInsideTooltip = false));
+        .on("pointerover", () => (this.cursorInsideTooltip = true))
+        .on("pointerleave", () => (this.cursorInsideTooltip = false));
     }
   }
 
-  onMouseLeave() {
+  onPointerLeave() {
     if (!this.cursorInsideTooltip) {
       this.tooltipContainer.style("pointer-events", "none").transition().delay(1000).duration(400).style("opacity", 0);
     }

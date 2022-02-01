@@ -96,8 +96,8 @@ export default class BeeSwarm extends Base {
           .attr("r", (d) => this.scaleRadius(d[this.valueProp]))
           .attr("fill", (d) => this.scaleColor(d[this.yAxisProp]))
       )
-      .on("pointerover", this.onMouseOver.bind(this))
-      .on("pointerout", this.onMouseOut.bind(this))
+      .on("pointermove", this.onPointerMove.bind(this))
+      .on("pointerout", this.onPointerOut.bind(this))
       .attr("cursor", "pointer")
       .on("click", (...e) => this.onClick(...e));
   }
@@ -191,7 +191,7 @@ export default class BeeSwarm extends Base {
       .domain([0, max(this.data, (d) => d[this.valueProp])]);
   }
 
-  onMouseOver(event, d) {
+  onPointerMove(event, d) {
     if (this.relationProp) {
       selectAll("circle.beeswarm-circle")
         .transition()
@@ -216,7 +216,7 @@ export default class BeeSwarm extends Base {
       .style("opacity", 1);
   }
 
-  onMouseOut() {
+  onPointerOut() {
     this.tooltipContainer.style("pointer-events", "none").transition().delay(1000).duration(400).style("opacity", 0);
     selectAll("circle.beeswarm-circle").transition().duration(400).style("opacity", 1);
   }

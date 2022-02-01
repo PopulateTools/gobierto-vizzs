@@ -71,8 +71,8 @@ export default class Gantt extends Base {
           .attr("height", this.scaleY.bandwidth())
           .attr("fill", (d) => this.scaleColor(d[this.xAxisProp]))
       )
-      .on("mouseover", this.onMouseOver.bind(this))
-      .on("mouseout", this.onMouseOut.bind(this))
+      .on("pointermove", this.onPointerMove.bind(this))
+      .on("pointerout", this.onPointerOut.bind(this))
       .attr("cursor", "pointer")
       .on("click", (...e) => this.onClick(...e));
 
@@ -177,7 +177,7 @@ export default class Gantt extends Base {
       </div>`).join("")
   }
 
-  onMouseOver(event, d) {
+  onPointerMove(event, d) {
     const tooltip = this.tooltipContainer.html(this.tooltip(d))
 
     const rects = this.g.selectAll("rect.gantt-item")
@@ -201,7 +201,7 @@ export default class Gantt extends Base {
       .style("opacity", 1);
   }
 
-  onMouseOut(_, d) {
+  onPointerOut(_, d) {
     this.g
       .selectAll("rect.gantt-item")
       .filter((x) => x[this.yAxisProp] !== d[this.yAxisProp])
