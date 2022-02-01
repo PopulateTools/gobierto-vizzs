@@ -1,5 +1,5 @@
 import Base from "../commons/base";
-import { select, selectAll } from "d3-selection";
+import { select, selectAll, pointer } from "d3-selection";
 import { scaleBand, scaleTime, scalePow, scaleOrdinal } from "d3-scale";
 import { forceSimulation, forceX, forceY, forceCollide } from "d3-force";
 import { axisBottom, axisLeft } from "d3-axis";
@@ -96,8 +96,8 @@ export default class BeeSwarm extends Base {
           .attr("r", (d) => this.scaleRadius(d[this.valueProp]))
           .attr("fill", (d) => this.scaleColor(d[this.yAxisProp]))
       )
-      .on("mouseover", this.onMouseOver.bind(this))
-      .on("mouseout", this.onMouseOut.bind(this))
+      .on("pointerover", this.onMouseOver.bind(this))
+      .on("pointerout", this.onMouseOut.bind(this))
       .attr("cursor", "pointer")
       .on("click", (...e) => this.onClick(...e));
   }
@@ -205,8 +205,8 @@ export default class BeeSwarm extends Base {
     }
 
     const tooltip = this.tooltipContainer.html(this.tooltip(d))
+    const [x, y] = this.tooltipPosition(event, this.tooltipContainer.node(), 10);
 
-    const { x, y } = this.relativeCoords(event);
     tooltip
       .style("top", `${y}px`)
       .style("left", `${x}px`)
@@ -252,15 +252,6 @@ export default class BeeSwarm extends Base {
         <span class="beeswarm-tooltip-radius">${d[this.valueProp].toLocaleString()}</span>
       </div>
       `;
-  }
-
-  relativeCoords({ clientX, clientY }) {
-    const { left, top, width: pW } = this.container.getBoundingClientRect();
-    const { width } = this.tooltipContainer.node().getBoundingClientRect()
-    const offset = Math.max(20, Math.min(100, screen.width / 20)) + width / 2
-    const x = (clientX - left < this.width / 2) ? clientX - left + offset : clientX - left - offset
-    const y = (clientY - top < this.height / 2) ? clientY - top + offset : clientY - top - offset
-    return !this.isSmallDevice() ? { x, y: clientY - top } : { x: pW / 2, y };
   }
 
   setX(value) {

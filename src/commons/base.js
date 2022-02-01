@@ -1,4 +1,4 @@
-import { select } from "d3-selection";
+import { select, pointer } from "d3-selection";
 import { timeFormatDefaultLocale } from "d3-time-format";
 import { version } from "../../package.json"
 
@@ -87,6 +87,22 @@ export default class Base {
         }
       }
     });
+  }
+
+  tooltipPosition(event, element, offset = 0) {
+    const [x,y] = pointer(event, this.container)
+    const { width: pW, height: pH } = this.container.getBoundingClientRect();
+    const { width, height } = element.getBoundingClientRect();
+    const isLeft = x < pW * 0.5;
+    const isTop = y < pH * 0.5;
+
+    return isLeft && isTop
+      ? [x + offset, y + offset]
+      : isLeft && !isTop
+      ? [x + offset, (y - height) - offset]
+      : !isLeft && isTop
+      ? [x - width - offset, y + offset]
+      : [x - width - offset, y - height - offset];
   }
 
   seed(len = 24) {

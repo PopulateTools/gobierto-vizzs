@@ -218,36 +218,16 @@ export default class TreeMap extends Base {
     this.scaleColor = scaleOrdinal().range(this.PALETTE);
   }
 
-  onMouseMove({ clientX, clientY, target }, d) {
+  onMouseMove(event, d) {
     // the breadcrumb group is always the last item, so, if there's no next sibling, it's breadcrumb
-    const isBreadcrumb = !target.closest("g").nextSibling;
+    const isBreadcrumb = !event.target.closest("g").nextSibling;
     if (!this.cursorInsideTooltip && !isBreadcrumb && d.parent) {
       const tooltip = this.tooltipContainer.html(this.tooltip(d));
-      const { width: containerWidth, height: containerHeight, left, top } = this.container.getBoundingClientRect();
-      const { width: tooltipWidth, height: tooltipHeight } = tooltip.node().getBoundingClientRect();
-
-      const containerHorizontalOffset = clientX - left
-      const containerVerticalOffset = clientY - top
-      const isHorizontalInverted = containerHorizontalOffset > containerWidth * 0.5;
-      const isVerticalInverted = containerVerticalOffset > containerHeight * 0.5;
+      const [x, y] = this.tooltipPosition(event, this.tooltipContainer.node(), 10);
 
       tooltip
-        .style(
-          "top",
-          this.isSmallDevice()
-            ? isVerticalInverted
-              ? `${containerVerticalOffset - tooltipHeight * 0.7}px`
-              : `${containerVerticalOffset + tooltipHeight * 0.75}px`
-            : `${containerVerticalOffset}px`
-        )
-        .style(
-          "left",
-          this.isSmallDevice()
-            ? `${containerWidth / 2}px`
-            : isHorizontalInverted
-            ? `${containerHorizontalOffset - tooltipWidth * 0.7}px`
-            : `${containerHorizontalOffset + tooltipWidth * 0.75}px`
-        )
+        .style("top", `${y}px`)
+        .style("left", `${x}px`)
         .style("pointer-events", "auto")
         .call((t) => t.transition().duration(400).style("opacity", 1))
         .on("mouseover", () => (this.cursorInsideTooltip = true))
@@ -257,12 +237,7 @@ export default class TreeMap extends Base {
 
   onMouseLeave() {
     if (!this.cursorInsideTooltip) {
-      this.tooltipContainer
-        .style("pointer-events", "none")
-        .style("opacity", 1)
-        .transition()
-        .duration(400)
-        .style("opacity", 0);
+      this.tooltipContainer.style("pointer-events", "none").transition().delay(1000).duration(400).style("opacity", 0);
     }
   }
 

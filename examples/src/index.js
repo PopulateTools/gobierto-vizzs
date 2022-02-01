@@ -13,7 +13,7 @@ async function main() {
     // [title, Chart, options]
     ["BeeSwarm", BeeSwarm, { relation: "relation", id: "title" }],
     ["TreeMap", TreeMap, { group: ["group", "relation"], id: "title" }],
-    ["Gantt", Gantt, { id: "title", y: "relation" }],
+    ["Gantt", Gantt, { id: "title", y: "relation", barHeight: 20 }],
   ].map(DOM);
 }
 

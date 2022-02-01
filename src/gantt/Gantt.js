@@ -1,5 +1,5 @@
 import Base from "../commons/base";
-import { select } from "d3-selection";
+import { select, pointer } from "d3-selection";
 import { scaleOrdinal, scaleBand, scaleTime } from "d3-scale";
 import { axisTop } from "d3-axis";
 import { max, min } from "d3-array";
@@ -7,6 +7,7 @@ import { timeFormat } from "d3-time-format";
 import { timeMonth, timeYear } from "d3-time";
 import "d3-transition";
 import "./Gantt.css"
+
 
 export default class Gantt extends Base {
   constructor(container, data, options = {}) {
@@ -176,19 +177,21 @@ export default class Gantt extends Base {
       </div>`).join("")
   }
 
-  relativeCoords({ clientX, clientY }) {
-    const { left, top, width: pW } = this.container.getBoundingClientRect();
-    const { width } = this.tooltipContainer.node().getBoundingClientRect()
-    const offset = Math.max(20, Math.min(100, screen.width / 20)) + width / 2
-    const x = (clientX - left < this.width / 2) ? clientX - left + offset : clientX - left - offset
-    const y = (clientY - top < this.height / 2) ? clientY - top + offset : clientY - top - offset
-    return !this.isSmallDevice() ? { x, y: clientY - top } : { x: pW / 2, y };
-  }
-
   onMouseOver(event, d) {
     const tooltip = this.tooltipContainer.html(this.tooltip(d))
 
-    const { x, y } = this.relativeCoords(event);
+    const rects = this.g.selectAll("rect.gantt-item")
+    // filter those rects in the same yAxisProp ("group")
+    // then get the last one, as
+    // const [last] = rects.filter((x) => x[this.yAxisProp] === d[this.yAxisProp]).nodes().slice(-1);
+    // const { x, top, width, height } = last.getBoundingClientRect()
+    rects
+      .filter((x) => x[this.yAxisProp] !== d[this.yAxisProp])
+      .transition()
+      .duration(400)
+      .style("fill-opacity", 0.25);
+
+    const [x, y] = this.tooltipPosition(event, this.tooltipContainer.node(), 10);
     tooltip
       .style("top", `${y}px`)
       .style("left", `${x}px`)
@@ -198,8 +201,14 @@ export default class Gantt extends Base {
       .style("opacity", 1);
   }
 
-  onMouseOut() {
-    this.tooltipContainer.style("pointer-events", "none").transition().delay(1000).duration(400).style("opacity", 0);
+  onMouseOut(_, d) {
+    this.g
+      .selectAll("rect.gantt-item")
+      .filter((x) => x[this.yAxisProp] !== d[this.yAxisProp])
+      .transition()
+      .duration(400)
+      .style("fill-opacity", null);
+    // this.tooltipContainer.style("pointer-events", "none").transition().delay(1000).duration(400).style("opacity", 0);
   }
 
   defaultTooltip(d) {
