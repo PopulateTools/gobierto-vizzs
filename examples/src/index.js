@@ -1,7 +1,7 @@
 import "./index.css"
-import { BeeSwarm, TreeMap, Gantt, toJSON } from "../../src/index"
-// import { BeeSwarm, TreeMap, Gantt } from "gobierto-vizzs"
-import { DOM } from "./dom"
+import { BeeSwarm, TreeMap, Gantt } from "../../src/index"
+// import { BeeSwarm } from "gobierto-vizzs"
+import DOM from "./dom"
 // import CSV from "url:./data.csv"
 
 async function main() {

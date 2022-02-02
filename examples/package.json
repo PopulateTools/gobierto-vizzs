@@ -5,7 +5,7 @@
   "scripts": {
     "start": "parcel ./src/index.html ../src/**/* --lazy --open",
     "prebuild": "rm -rf ./dist/* ./.parcel-cache",
-    "build": "parcel build ./src/index.html --public-url . --no-scope-hoist",
+    "build": "parcel build ./src/index.html --public-url . --log-level verbose",
     "postbuild": "gh-pages -d dist -r git@github.com:PopulateTools/gobierto-vizzs"
   },
   "author": "",
@@ -17,10 +17,10 @@
     "gh-pages": "^3.2.3",
     "parcel": "^2.0.0",
     "postcss": "^8.3.11",
-    "tailwindcss": "^2.2.19"
+    "tailwindcss": "^3.0.18"
   },
   "dependencies": {
-    "faker": "5.5.3",
+    "@faker-js/faker": "^6.0.0-alpha.5",
     "gobierto-vizzs": "*"
   }
 }

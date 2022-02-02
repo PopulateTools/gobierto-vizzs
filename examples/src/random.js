@@ -1,4 +1,6 @@
-import { datatype, address, vehicle, date, lorem, random, commerce } from "faker/locale/en";
+import { faker } from "@faker-js/faker";
+
+const { datatype, address, vehicle, date, lorem, random, commerce } = faker
 
 export function mockJSON(length = 100) {
   const groups = Array.from({ length: datatype.number({ min: 3, max: 9 }) }, () => address.country());

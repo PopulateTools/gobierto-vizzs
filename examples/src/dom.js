@@ -1,6 +1,6 @@
 import { mockJSON } from "./random";
 
-export function DOM([key, ChartModule, opts]) {
+export default function DOM([key, ChartModule, opts]) {
   const head = document.createElement("div")
   const block = document.createElement("div")
   const a = document.createElement("a")
