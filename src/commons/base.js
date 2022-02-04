@@ -1,13 +1,9 @@
 import { select, pointer } from "d3-selection";
 import { timeFormatDefaultLocale } from "d3-time-format";
 import { version } from "../../package.json"
-import ES from "d3-time-format/locale/es-ES.json"
+
 import "./palette.css"
 import "./tooltip.css"
-
-const LOCALES = {
-  "es-ES": ES,
-}
 
 export default class Base {
   constructor(container, _, options) {
@@ -20,18 +16,14 @@ export default class Base {
   }
 
   async getLocale() {
-    if (!Object.keys(LOCALES).includes(this.locale)) {
-      // unpkg does not keep non-regional locales (2-letters code), so it's worthless make the request
-      if (this.locale.length > 2) {
-        // request the locale when it does not exists by default
-        const i18n = await fetch(`https://unpkg.com/d3-time-format/locale/${this.locale}.json`).then(r => r.json()).catch(() => {})
+    // unpkg does not keep non-regional locales (2-letters code), so it's worthless make the request
+    if (this.locale.length > 2) {
+      // request the locale when it does not exists by default
+      const i18n = await fetch(`https://unpkg.com/d3-time-format/locale/${this.locale}.json`).then(r => r.json()).catch(() => {})
 
-        if (i18n) {
-          timeFormatDefaultLocale(i18n)
-        }
+      if (i18n) {
+        timeFormatDefaultLocale(i18n)
       }
-    } else {
-      timeFormatDefaultLocale(LOCALES[this.locale])
     }
   }
 
