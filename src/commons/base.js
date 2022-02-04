@@ -1,11 +1,12 @@
 import { select, pointer } from "d3-selection";
 import { timeFormatDefaultLocale } from "d3-time-format";
 import { version } from "../../package.json"
+import ES from "d3-time-format/locale/es-ES.json"
 import "./palette.css"
 import "./tooltip.css"
 
 const LOCALES = {
-  "es-ES": () => import("d3-time-format/locale/es-ES.json"),
+  "es-ES": ES,
 }
 
 export default class Base {
@@ -30,8 +31,7 @@ export default class Base {
         }
       }
     } else {
-      const i18n = await LOCALES[this.locale]()
-      timeFormatDefaultLocale(i18n.default || i18n) // hack parcel
+      timeFormatDefaultLocale(LOCALES[this.locale])
     }
   }
 
