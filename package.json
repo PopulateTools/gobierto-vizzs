@@ -17,7 +17,7 @@
     "dist",
     "src"
   ],
-  "sideEffects": false,
+  "sideEffects": ["*.css"],
   "scripts": {
     "watch": "parcel watch",
     "prebuild": "rm -rf ./dist/* ./.parcel-cache",
