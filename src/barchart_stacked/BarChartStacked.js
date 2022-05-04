@@ -23,7 +23,6 @@ export default class BarChartStacked extends Base {
     this.yAxisProp = options.y || "group";
     this.valueProp = options.value || "value";
     this.idProp = options.id || "id";
-    this.relationProp = options.relation;
     this.filterColumns = [...options.filterColumns || '', this.xAxisProp]
     this.columns = Object.keys(data[0]).filter(column => !this.filterColumns.includes(column))
     this.xAxisExtra = options.axisEstra || []
@@ -67,7 +66,7 @@ export default class BarChartStacked extends Base {
       .selectAll(".bar-stacked")
       .data(stack().keys(this.columns)(this.data))
       .join("g")
-        .attr("class", d => this.relationProp ? `bar-stacked bar-stacked-${d[this.relationProp]}` : "bar-stacked")
+        .attr("class", "bar-stacked")
         .attr("fill", d => this.scaleColor(d.key))
       .selectAll("rect")
       .data(d => d)
@@ -188,17 +187,6 @@ export default class BarChartStacked extends Base {
   }
 
   onPointerMove(event, d) {
-    if (this.relationProp) {
-      selectAll(".bar-stacked")
-        .transition()
-        .duration(400)
-        .style("opacity", 0.1)
-        .filter((e) => e[this.relationProp] === d[this.relationProp])
-        .transition()
-        .duration(400)
-        .ease(easeLinear)
-        .style("opacity", 1);
-    }
 
     const tooltip = this.tooltipContainer.html(this.tooltip(d))
     const [x, y] = this.tooltipPosition(event, this.tooltipContainer.node(), 10);
@@ -240,11 +228,10 @@ export default class BarChartStacked extends Base {
 
   defaultTooltip(d) {
     let tooltipContent = [];
-    for (const key in d.data) {
-      if (key !== this.xAxisProp) {
-        const valueContent = `<div id="${key}" class="tooltip-barchart-stacked-grid"><span style="background-color: ${this.scaleColor(key)}" class="tooltip-barchart-stacked-grid-key-color"></span><span class="tooltip-barchart-stacked-grid-key">${key}:</span><span class="tooltip-barchart-stacked-grid-value">${d.data[key]}</span></div>`
-        tooltipContent.push(valueContent);
-      }
+    const filteredDataByKey = Object.fromEntries(Object.entries(d.data).filter(([key, value]) => !this.filterColumns.includes(key)));
+    for (const key in filteredDataByKey) {
+      const valueContent = `<div id="${key}" class="tooltip-barchart-stacked-grid"><span style="background-color: ${this.scaleColor(key)}" class="tooltip-barchart-stacked-grid-key-color"></span><span class="tooltip-barchart-stacked-grid-key">${key}:</span><span class="tooltip-barchart-stacked-grid-value">${d.data[key]}</span></div>`
+      tooltipContent.push(valueContent);
     }
     return `
       <span class="tooltip-barchart-stacked-title">${d.data[this.xAxisProp].toLocaleDateString()}</span>
@@ -269,11 +256,6 @@ export default class BarChartStacked extends Base {
 
   setId(value) {
     this.idProp = value
-    this.build()
-  }
-
-  setRelation(value) {
-    this.relationProp = value
     this.build()
   }
 
