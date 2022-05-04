@@ -55,3 +55,16 @@
   font-size: 14px;
   text-transform: capitalize;
 }
+
+.extra-legend-text,
+.axis-x-legend {
+  font-size: 14px;
+  text-transform: capitalize;
+  font-weight: bold;
+  fill: #828282;
+}
+
+.extra-legend-value {
+  font-size: 14px;
+  fill: #828282;
+}

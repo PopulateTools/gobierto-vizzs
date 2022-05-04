@@ -1,7 +1,8 @@
 import "./index.css"
-import { BeeSwarm, TreeMap, Gantt } from "../../src/index"
+import { BeeSwarm, TreeMap, BarChartStacked } from "../../src/index"
 // import { BeeSwarm } from "gobierto-vizzs"
 import DOM from "./dom"
+import DATA_STACKED from "./data_bar_chart_stacked.json"
 // import CSV from "url:./data.csv"
 
 async function main() {
@@ -13,7 +14,7 @@ async function main() {
     // [title, Chart, options]
     ["BeeSwarm", BeeSwarm, { relation: "relation", id: "title" }],
     ["TreeMap", TreeMap, { group: ["group", "relation"], id: "title" }],
-    ["Gantt", Gantt, { id: "title", y: "relation", barHeight: 15 }],
+    ["BarChartStacked", BarChartStacked, { id: "title", data: DATA_STACKED, x: "year", filterColumns: ["total", "decada"], extraLegends: ["total","decada"] }]
   ].map(DOM);
 }
 
