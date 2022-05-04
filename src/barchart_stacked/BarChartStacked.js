@@ -138,7 +138,7 @@ export default class BarChartStacked extends Base {
       .append("text")
       .attr("class", "extra-legend-text")
       .attr("text-anchor", "end")
-      .attr("x", (-this.margin.left/3))
+      .attr("x", (-this.margin.left / 3))
       .attr("y", (d, i) => `${this.margin.top + (i * 2) + 14}`)
       .text(({ key }) => key);
 
@@ -281,7 +281,7 @@ export default class BarChartStacked extends Base {
     return `
       <span class="tooltip-barchart-stacked-title">${d.data[this.xAxisProp].getFullYear()}</span>
       ${tooltipContent.join("")}
-      `;
+    `;
   }
 
   setX(value) {
