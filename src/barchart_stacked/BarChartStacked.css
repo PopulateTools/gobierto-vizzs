@@ -3,6 +3,10 @@
   font-size: 0.875rem;
 }
 
+.gv-tooltip-bar-stacked {
+  width: max-content;
+}
+
 .gv-plot .axis-y {
   text-transform: uppercase;
   font-size: 0.875rem;
@@ -20,11 +24,13 @@
   display: grid;
   grid-template-columns: 16px 1fr 1fr;
   margin-bottom: .5rem;
+  align-items: center;
 }
 
 .tooltip-barchart-stacked-grid-key-color {
   width: 16px;
   height: 16px;
+  display: inline-block;
 }
 
 .tooltip-barchart-stacked-grid-key,
@@ -37,6 +43,11 @@
 .tooltip-barchart-stacked-grid-key {
   font-weight: bold;
   text-transform: capitalize;
+  text-align: left;
+}
+
+.tooltip-barchart-stacked-grid-value {
+  text-align: right;
 }
 
 .bar-stacked-legend-text {

@@ -23,7 +23,7 @@ export default class BarChartStacked extends Base {
     this.yAxisProp = options.y || "group";
     this.valueProp = options.value || "value";
     this.idProp = options.id || "id";
-    this.filterColumns = [...options.filterColumns || '', this.xAxisProp]
+    this.filterColumns = [...options.filterColumns || "", this.xAxisProp]
     this.columns = Object.keys(data[0]).filter(column => !this.filterColumns.includes(column))
     this.xAxisExtra = options.axisEstra || []
 
@@ -47,7 +47,7 @@ export default class BarChartStacked extends Base {
     this.g = this.svg.append("g").attr("transform", `translate(${this.margin.left} ${this.margin.top})`);
     this.g.append("g").attr("class", "axis axis-x");
     this.g.append("g").attr("class", "axis axis-y");
-    this.tooltipContainer = select(this.container).append("div").attr("class", "gv-tooltip")
+    this.tooltipContainer = select(this.container).append("div").attr("class", "gv-tooltip gv-tooltip-bar-stacked")
   }
 
   build() {
@@ -87,24 +87,24 @@ export default class BarChartStacked extends Base {
 
   buildLegends() {
     this.svg
-      .selectAll('.bar-stack-label')
+      .selectAll(".bar-stack-label")
       .data(stack().keys(this.columns)(this.data))
       .join(
         enter => {
           const g = enter
             .append("g")
-            .attr('class', 'bar-stack-label')
+            .attr("class", "bar-stack-label")
             .attr("fill", d => this.scaleColor(d.key))
-            .attr('transform', (d, i) => `translate(10, ${i * 24})`);
+            .attr("transform", (d, i) => `translate(10, ${i * 24})`);
           g.append("rect")
-            .attr('x', 0)
-            .attr('y', (d, i) => `${this.margin.top + (i * 3)}`)
-            .attr('width', 16)
-            .attr('height', 16)
-          g.append('text')
-            .attr('class', 'bar-stacked-legend-text')
-            .attr('x', 24)
-            .attr('y', (d, i) => `${this.margin.top + (i * 3) + 14}`)
+            .attr("x", 0)
+            .attr("y", (d, i) => `${this.margin.top + (i * 3)}`)
+            .attr("width", 16)
+            .attr("height", 16)
+          g.append("text")
+            .attr("class", "bar-stacked-legend-text")
+            .attr("x", 24)
+            .attr("y", (d, i) => `${this.margin.top + (i * 3) + 14}`)
             .text(d => d.key);
           return g;
         },
@@ -173,8 +173,8 @@ export default class BarChartStacked extends Base {
 
     this.height = 400
     this.svg
-      .attr('width', `${this.width + this.margin.left + this.margin.right}`)
-      .attr('height', `${this.height + this.margin.top + this.margin.bottom}`);
+      .attr("width", `${this.width + this.margin.left + this.margin.right}`)
+      .attr("height", `${this.height + this.margin.top + this.margin.bottom}`);
 
     this.scaleY = scaleLinear()
       .domain([0, max(stacked[stacked.length - 1], d => d[1])])
@@ -201,7 +201,7 @@ export default class BarChartStacked extends Base {
   }
 
   onPointerOut() {
-    this.tooltipContainer.style("pointer-events", "none").transition().delay(1000).duration(400).style("opacity", 0);
+    this.tooltipContainer.style("pointer-events", "none").transition().delay(1000).duration(400).style("opacity", 1);
     selectAll(".bar-stacked").transition().duration(400).style("opacity", 1);
   }
 
@@ -230,12 +230,12 @@ export default class BarChartStacked extends Base {
     let tooltipContent = [];
     const filteredDataByKey = Object.fromEntries(Object.entries(d.data).filter(([key, value]) => !this.filterColumns.includes(key)));
     for (const key in filteredDataByKey) {
-      const valueContent = `<div id="${key}" class="tooltip-barchart-stacked-grid"><span style="background-color: ${this.scaleColor(key)}" class="tooltip-barchart-stacked-grid-key-color"></span><span class="tooltip-barchart-stacked-grid-key">${key}:</span><span class="tooltip-barchart-stacked-grid-value">${d.data[key]}</span></div>`
+      const valueContent = `<div class="tooltip-barchart-stacked-grid"><span style="background-color: ${this.scaleColor(key)}" class="tooltip-barchart-stacked-grid-key-color"></span><span class="tooltip-barchart-stacked-grid-key">${key}:</span><span class="tooltip-barchart-stacked-grid-value">${filteredDataByKey[key]}</span></div>`
       tooltipContent.push(valueContent);
     }
     return `
       <span class="tooltip-barchart-stacked-title">${d.data[this.xAxisProp].toLocaleDateString()}</span>
-      ${tooltipContent.join('')}
+      ${tooltipContent.join("")}
       `;
   }
 
