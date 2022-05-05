@@ -20,11 +20,12 @@ export default class BarChartStacked extends Base {
     // main properties to display
     this.xAxisProp = options.x || "date";
     this.yAxisProp = options.y || "group";
-    this.filterColumns = [...options.filterColumns || "", this.xAxisProp];
-    this.columns = Object.keys(data[0]).filter(column => !this.filterColumns.includes(column));
+    this.excludeColumns = [...options.excludeColumns || "", this.xAxisProp];
+    this.columns = Object.keys(data[0]).filter(column => !this.excludeColumns.includes(column));
     this.extraLegends = options.extraLegends || [];
     this.showLegend = options.showLegend;
     this.orientationLegend = options.orientationLegend || 'left';
+    this.height = options.height || 400
 
     this.margin = {
       top: 12,
@@ -58,6 +59,7 @@ export default class BarChartStacked extends Base {
     this.g.append("g").attr("class", "axis axis-x");
     this.g.append("g").attr("class", "axis axis-y");
     this.tooltipContainer = select(this.container).append("div").attr("class", "gv-tooltip gv-tooltip-bar-stacked")
+    this.g.append('text').attr("class", "axis-x-legend").attr("x", (-this.margin.left/3)).attr("y", this.height + 9).attr("dy", "0.71em").attr("text-anchor", "end").text(this.xAxisProp);
   }
 
   build() {
@@ -71,15 +73,6 @@ export default class BarChartStacked extends Base {
     this.g
       .select(".axis-y")
       .call(this.yAxis.bind(this));
-
-    this.g
-      .append('text')
-      .attr("class", "axis-x-legend")
-      .attr("x", (-this.margin.left/3))
-      .attr("y", this.height + 9)
-      .attr("dy", "0.71em")
-      .attr("text-anchor", "end")
-      .text(this.xAxisProp);
 
     this.g
       .selectAll(".bar-stacked-group")
@@ -187,13 +180,17 @@ export default class BarChartStacked extends Base {
 
   xAxis(g) {
     const months = timeMonth.count(...this.scaleX.domain())
-    const hasMultipleYears = months > 24;
-    const onlyOneYear = months < 12;
+    const showYearOrYears = months > 24 ? timeFormat("%Y") : months < 12 ? timeFormat("%b") : timeFormat("%b-%Y")
+    const ticksValues = months ? showYearOrYears : "";
 
-    g.call(
-      axisBottom(this.scaleX)
-        .tickFormat(hasMultipleYears ? timeFormat("%Y") : onlyOneYear ? timeFormat("%b") : timeFormat("%b-%Y"))
-    );
+    if(months) {
+      g.call(
+        axisBottom(this.scaleX)
+          .tickFormat(showYearOrYears)
+      );
+    } else {
+      g.call(axisBottom(this.scaleX));
+    }
 
     // remove baseline
     g.select(".domain").remove();
@@ -243,7 +240,6 @@ export default class BarChartStacked extends Base {
 
     const stacked = stack().keys(this.columns)(this.data);
 
-    this.height = 400
     this.svg
       .attr("width", `${this.width + this.margin.left + this.margin.right}`)
       .attr("height", `${this.height + this.margin.top + this.margin.bottom}`);
@@ -252,7 +248,6 @@ export default class BarChartStacked extends Base {
       .domain([0, max(stacked[stacked.length - 1], d => d[1])])
       .range([this.height, 0]);
 
-    console.log("this.data.map((d) => d[this.xAxisProp])", this.data.map((d) => d[this.xAxisProp]));
     this.scaleX = scaleBand()
       .domain(this.data.map((d) => d[this.xAxisProp]))
       .paddingInner(0.5)
@@ -291,7 +286,7 @@ export default class BarChartStacked extends Base {
           ? [
               {
                 ...d,
-                [this.xAxisProp]: new Date(d[this.xAxisProp])
+                [this.xAxisProp]: this.isDate(d[this.xAxisProp]) ? new Date(d[this.xAxisProp]) : d[this.xAxisProp]
               },
             ]
           : []),
@@ -299,11 +294,13 @@ export default class BarChartStacked extends Base {
     }, []);
   }
 
+  isDate = (value) => new Date(value) && Object.prototype.toString.call(new Date(value)) === "[object Date]" && !isNaN(new Date(value)) ? true : false
+
   defaultTooltip(d) {
     let tooltipContent = [];
     const titleIsDate = d.data[this.xAxisProp] && Object.prototype.toString.call(d.data[this.xAxisProp]) === "[object Date]" && !isNaN(d.data[this.xAxisProp])
     const titleTooltip = titleIsDate ? d.data[this.xAxisProp].getFullYear() : d.data[this.xAxisProp]
-    const filteredDataByKey = Object.fromEntries(Object.entries(d.data).filter(([key, value]) => !this.filterColumns.includes(key)));
+    const filteredDataByKey = Object.fromEntries(Object.entries(d.data).filter(([key, value]) => !this.excludeColumns.includes(key)));
     for (const key in filteredDataByKey) {
       const valueContent = `
         <div class="tooltip-barchart-stacked-grid">
