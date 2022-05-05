@@ -15,13 +15,6 @@ export default class BarChartStacked extends Base {
     super(container, data, options)
 
     this.tooltip = options.tooltip || this.defaultTooltip
-    this.margin = {
-      top: 12,
-      bottom: 160,
-      left: this.orientationLegend === 'left' ? 192 : 84,
-      right: this.orientationLegend === 'left' ? 48 : 192,
-      ...options.margin
-    };
     this.onClick = options.onClick || (() => {})
 
     // main properties to display
@@ -32,6 +25,14 @@ export default class BarChartStacked extends Base {
     this.extraLegends = options.extraLegends || [];
     this.showLegend = options.showLegend;
     this.orientationLegend = options.orientationLegend || 'left';
+
+    this.margin = {
+      top: 12,
+      bottom: 160,
+      left: this.orientationLegend === 'left' ? 192 : 84,
+      right: this.orientationLegend === 'left' ? 48 : 192,
+      ...options.margin
+    };
 
     this.margin.left = !this.showLegend ? 84 : this.margin.left;
     this.margin.right = !this.showLegend ? 48 : this.margin.left;
@@ -85,6 +86,7 @@ export default class BarChartStacked extends Base {
       .data(stack().keys(this.columns)(this.data))
       .join("g")
         .attr("class", "bar-stacked-group")
+        .attr("id", ({ key }) => key)
         .attr("fill", ({ key }) => this.scaleColor(key))
       .selectAll("rect")
       .data(d => d)
@@ -121,10 +123,11 @@ export default class BarChartStacked extends Base {
             .append("g")
             .attr("class", "bar-stack-label")
             .attr("fill", ({ key }) => this.scaleColor(key))
-            .attr("transform", (d, i) => `translate(10, ${i * 24})`);
+            .attr("transform", (d, i) => `translate(10, ${i * 24})`)
           g.append("rect")
             .attr("x", positionLengedGroupX)
             .attr("y", (d, i) => `${this.margin.top + (i * 3)}`)
+            .attr("class", "bar-stack-label-rect")
             .attr("width", 16)
             .attr("height", 16)
           g.append("text")
@@ -132,11 +135,25 @@ export default class BarChartStacked extends Base {
             .attr("x", positionLengedLabelX)
             .attr("y", (d, i) => `${this.margin.top + (i * 3) + 14}`)
             .text(({ key }) => key);
+
           return g;
         },
         update => update,
         exit => exit.remove()
-      );
+      )
+      .on("pointermove", function(i, d, _) {
+          const { key } = d
+
+          selectAll('.bar-stacked-rect')
+            .style("opacity", .2)
+
+          selectAll(`#${key} .bar-stacked-rect`)
+            .style("opacity", 1)
+        })
+      .on("pointerout", function(d, i, _) {
+        selectAll('.bar-stacked-rect')
+          .style("opacity", 1)
+      })
   }
 
   buildExtraAxis() {
@@ -235,6 +252,7 @@ export default class BarChartStacked extends Base {
       .domain([0, max(stacked[stacked.length - 1], d => d[1])])
       .range([this.height, 0]);
 
+    console.log("this.data.map((d) => d[this.xAxisProp])", this.data.map((d) => d[this.xAxisProp]));
     this.scaleX = scaleBand()
       .domain(this.data.map((d) => d[this.xAxisProp]))
       .paddingInner(0.5)
@@ -283,6 +301,8 @@ export default class BarChartStacked extends Base {
 
   defaultTooltip(d) {
     let tooltipContent = [];
+    const titleIsDate = d.data[this.xAxisProp] && Object.prototype.toString.call(d.data[this.xAxisProp]) === "[object Date]" && !isNaN(d.data[this.xAxisProp])
+    const titleTooltip = titleIsDate ? d.data[this.xAxisProp].getFullYear() : d.data[this.xAxisProp]
     const filteredDataByKey = Object.fromEntries(Object.entries(d.data).filter(([key, value]) => !this.filterColumns.includes(key)));
     for (const key in filteredDataByKey) {
       const valueContent = `
@@ -293,8 +313,9 @@ export default class BarChartStacked extends Base {
         </div>`
       tooltipContent.push(valueContent);
     }
+    //TODO: parse data
     return `
-      <span class="tooltip-barchart-stacked-title">${d.data[this.xAxisProp].getFullYear()}</span>
+      <span class="tooltip-barchart-stacked-title">${titleTooltip}</span>
       ${tooltipContent.join("")}
     `;
   }
