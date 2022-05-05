@@ -14,7 +14,7 @@ async function main() {
     // [title, Chart, options]
     ["BeeSwarm", BeeSwarm, { relation: "relation", id: "title" }],
     ["TreeMap", TreeMap, { group: ["group", "relation"], id: "title" }],
-    ["BarChartStacked", BarChartStacked, { id: "title", data: DATA_STACKED, x: "year", filterColumns: ["total", "decada"], extraLegends: ["total","decada"] }]
+    ["BarChartStacked", BarChartStacked, { id: "title", data: DATA_STACKED, x: "year", filterColumns: ["total", "decada"], extraLegends: ["total","decada"], orientationLegend: 'rigth', showLegend: false }]
   ].map(DOM);
 }
 

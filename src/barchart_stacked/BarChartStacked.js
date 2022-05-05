@@ -15,7 +15,13 @@ export default class BarChartStacked extends Base {
     super(container, data, options)
 
     this.tooltip = options.tooltip || this.defaultTooltip
-    this.margin = { top: 12, bottom: 160, left: 192, right: 48, ...options.margin };
+    this.margin = {
+      top: 12,
+      bottom: 160,
+      left: this.orientationLegend === 'left' ? 192 : 84,
+      right: this.orientationLegend === 'left' ? 48 : 192,
+      ...options.margin
+    };
     this.onClick = options.onClick || (() => {})
 
     // main properties to display
@@ -24,6 +30,11 @@ export default class BarChartStacked extends Base {
     this.filterColumns = [...options.filterColumns || "", this.xAxisProp];
     this.columns = Object.keys(data[0]).filter(column => !this.filterColumns.includes(column));
     this.extraLegends = options.extraLegends || [];
+    this.showLegend = options.showLegend;
+    this.orientationLegend = options.orientationLegend || 'left';
+
+    this.margin.left = !this.showLegend ? 84 : this.margin.left;
+    this.margin.right = !this.showLegend ? 48 : this.margin.left;
 
     // chart size
     this.getDimensions();
@@ -89,7 +100,9 @@ export default class BarChartStacked extends Base {
       .attr("cursor", "pointer")
       .on("click", (...e) => this.onClick(...e));
 
-    this.buildLegends()
+    if(this.showLegend) {
+      this.buildLegends()
+    }
 
     if(this.extraLegends.length) {
       this.buildExtraAxis()
@@ -97,6 +110,8 @@ export default class BarChartStacked extends Base {
   }
 
   buildLegends() {
+    const positionLengedGroupX = this.orientationLegend === 'left' ? 0 : (this.width + this.margin.left);
+    const positionLengedLabelX = this.orientationLegend === 'left' ? 24 : (positionLengedGroupX + 24);
     this.svg
       .selectAll(".bar-stack-label")
       .data(stack().keys(this.columns)(this.data))
@@ -108,13 +123,13 @@ export default class BarChartStacked extends Base {
             .attr("fill", ({ key }) => this.scaleColor(key))
             .attr("transform", (d, i) => `translate(10, ${i * 24})`);
           g.append("rect")
-            .attr("x", 0)
+            .attr("x", positionLengedGroupX)
             .attr("y", (d, i) => `${this.margin.top + (i * 3)}`)
             .attr("width", 16)
             .attr("height", 16)
           g.append("text")
             .attr("class", "bar-stacked-legend-text")
-            .attr("x", 24)
+            .attr("x", positionLengedLabelX)
             .attr("y", (d, i) => `${this.margin.top + (i * 3) + 14}`)
             .text(({ key }) => key);
           return g;
@@ -150,7 +165,7 @@ export default class BarChartStacked extends Base {
       .attr("class", "extra-legend-value")
       .attr("x", d => this.scaleX(d.data[this.xAxisProp]))
       .attr("y", `${this.margin.top + 14}`)
-      .text(d => (d[1] - d[0]).toFixed(2))
+      .text(([y1, y2]) => (y2 - y1).toFixed(2))
   }
 
   xAxis(g) {
