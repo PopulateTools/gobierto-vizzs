@@ -11,6 +11,9 @@ export function mockJSON(length = 100) {
   return Array.from({ length }, (_, i) => ({
     date: Math.random() > 0.98 ? null : date.past(),
     value: Math.random() > 0.9 ? datatype.number(1e5) : datatype.number(1e4),
+    value2: Math.random() > 0.9 ? datatype.number(1e5) : datatype.number(1e4),
+    value3: Math.random() > 0.9 ? datatype.number(1e5) : datatype.number(1e4),
+    value4: Math.random() > 0.9 ? datatype.number(1e5) : datatype.number(1e4),
     title: lorem.words(5),
     relation: random.arrayElement(relations),
     group: random.arrayElement(groups),
