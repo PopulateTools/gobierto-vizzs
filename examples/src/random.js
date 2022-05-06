@@ -4,7 +4,7 @@ const { datatype, address, vehicle, date, lorem, random, commerce } = faker
 
 export function mockJSON(length = 100) {
   const groups = Array.from({ length: datatype.number({ min: 3, max: 9 }) }, () => address.country());
-  const relations = Array.from({ length: datatype.number({ min: 1500, max: 5000 }) }, () => vehicle.manufacturer());
+  const relations = Array.from({ length: datatype.number({ min: 10, max: 15 }) }, () => vehicle.manufacturer());
   const phases = Array.from({ length: 20 }, () => commerce.department())
   const addDays = (d, n) => new Date(new Date(d).setDate(d.getDate() + n))
 
@@ -13,7 +13,7 @@ export function mockJSON(length = 100) {
     value: Math.random() > 0.9 ? datatype.number(1e5) : datatype.number(1e4),
     value2: Math.random() > 0.9 ? datatype.number(1e5) : datatype.number(1e4),
     value3: Math.random() > 0.9 ? datatype.number(1e5) : datatype.number(1e4),
-    value4: Math.random() > 0.9 ? datatype.number(1e5) : datatype.number(1e4),
+    value4: datatype.number(1e1),
     title: lorem.words(5),
     relation: random.arrayElement(relations),
     group: random.arrayElement(groups),
