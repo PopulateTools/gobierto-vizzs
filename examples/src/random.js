@@ -13,7 +13,7 @@ export function mockJSON(length = 100) {
     value: Math.random() > 0.9 ? datatype.number(1e5) : datatype.number(1e4),
     value2: Math.random() > 0.9 ? datatype.number(1e5) : datatype.number(1e4),
     value3: Math.random() > 0.9 ? datatype.number(1e5) : datatype.number(1e4),
-    value4: datatype.number(1e1),
+    value4: datatype.number(1e5),
     title: lorem.words(5),
     relation: random.arrayElement(relations),
     group: random.arrayElement(groups),

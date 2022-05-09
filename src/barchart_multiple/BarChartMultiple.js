@@ -65,65 +65,68 @@ export default class BarChartMultiple extends Base {
       .select(".axis-y")
       .call(this.yAxis.bind(this));
 
-    const gColumn = this.g
+    this.gColumn = this.g
       .join('g')
-      .attr('class', 'columns-group')
+      .attr('class', 'columns')
       .selectAll('.column')
       .data(dataNest)
       .join('g')
       .attr('class', 'column')
       .attr('transform', (d) => `translate(${this.scaleColumn(d[this.xAxisProp])},0)`);
 
-    gColumn.append('text')
+    this.gColumn.append("text")
       .attr('class', 'title')
       .text(d => d[this.xAxisProp]);
 
-    const bars = gColumn
-      .join('g')
-      .attr('class', 'bars-group');
-
-    bars.selectAll('.bar-chart-small-underlying')
+    this.gColumn
+      .selectAll(".bars-group")
       .data(d => d.values)
-      .join('rect')
-      .attr('class', 'bar-chart-small-underlying')
-      .attr('x', 0)
-      .attr('y', (d) => this.scaleY(d[this.yAxisProp]))
-      .attr('width', (this.scaleX.range()[1]))
-      .attr('height', this.scaleY.bandwidth())
-      .attr('opacity', '.2')
-      .attr('fill', 'var(--gv-grey)');
+      .join(
+        enter => {
+          const g = enter
+            .append("g")
+            .attr('class', 'bars-group')
+          g.append("rect")
+            .attr('class', 'bar-chart-small-underlying')
+            .attr('x', 0)
+            .attr('y', (d) => this.scaleY(d[this.yAxisProp]))
+            .attr('width', this.scaleColumn.bandwidth())
+            .attr('height', this.scaleY.bandwidth())
+            .attr('opacity', '.2')
+            .attr('fill', 'var(--gv-grey)');
+          g.append("rect")
+            .attr('class', 'bar-chart-small-overlying')
+            .attr('x', 0)
+            .attr('y', d => this.scaleY(d[this.yAxisProp]))
+            .attr('width', d => (this.scaleX(d[this.countProp] / (this.width / this.data.map(d => d[this.xAxisProp]).length))))
+            .attr('height', this.scaleY.bandwidth())
+            .attr("fill", d => this.scaleColor(d[this.xAxisProp]))
 
-    bars.selectAll('.bar-chart-small-overlying')
-      .data(d => d.values)
-      .join('rect')
-      .attr('class', 'bar-chart-small-overlying')
-      .attr('x', 0)
-      .attr('y', d => this.scaleY(d[this.yAxisProp]))
-      .attr('width', d => (this.scaleX(d[this.countProp] / 25)))
-      .attr('height', this.scaleY.bandwidth())
-      .attr("fill", d => this.scaleColor(d[this.xAxisProp]))
+          return g;
+        },
+        update => update,
+        exit => exit.remove()
+      )
 
-    const self = this
-    gColumn.append('g')
-      .attr('class', 'labels')
-      .selectAll('.label')
-      .data(d => d.values)
-      .join('text')
+    this.gColumn
+    .selectAll(".label")
+    .data(d => d.values)
+    .join('text')
       .attr('class', 'label')
       .text(d => d[this.countProp])
-      .each(function(d) {
-        const xValue = self.scaleX(d[self.countProp] / 25);
-        const xMax = self.scaleX.range()[1];
-        if (xValue < (0.1 * xMax)) {
-          select(this)
-            .attr('x', xValue)
+      .each((d, i, element) => {
+        const xValue = (this.scaleX(d[this.countProp] / (this.width / this.data.map(d => d[this.xAxisProp]).length)))
+        const xMax = select(element[i])._groups[0][0].getBBox().width;
+       if (xValue < xMax) {
+          select(element[i])
+            .attr('x', xValue + 10)
         } else {
-          select(this)
+          select(element[i])
             .attr("fill","#fff")
             .attr('x', 0)
         }
-        select(this)
-          .attr('y', self.scaleY(d[self.yAxisProp]) + self.scaleY.bandwidth() / 2)
+        select(element[i])
+          .attr('y', this.scaleY(d[this.yAxisProp]) + this.scaleY.bandwidth() / 2)
           .attr('dy', '0.33em')
           .attr('dx', 4);
       });
@@ -164,11 +167,11 @@ export default class BarChartMultiple extends Base {
       .range([this.height, 0]).padding(0.4);
 
     this.scaleColumn = scaleBand()
-      .domain(this.data.map(d => d[this.xAxisProp]))
+      .domain([...new Set(this.data.map(d => d[this.xAxisProp]))])
       .range([0, this.width]).paddingInner(0.1);
 
     this.scaleX = scaleLinear()
-      .range([0, this.scaleColumn.bandwidth()]);
+      .range([0, this.scaleColumn.bandwidth() / this.width / [...new Set(this.data.map(d => d[this.xAxisProp]))].length]);
   }
 
   parse(data) {
