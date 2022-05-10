@@ -65,7 +65,7 @@ export default class BarChartMultiple extends Base {
       .select(".axis-y")
       .call(this.yAxis.bind(this));
 
-    this.gColumn = this.g
+    const gColumn = this.g
       .join('g')
       .attr('class', 'columns')
       .selectAll('.column')
@@ -74,11 +74,12 @@ export default class BarChartMultiple extends Base {
       .attr('class', 'column')
       .attr('transform', (d) => `translate(${this.scaleColumn(d[this.xAxisProp])},0)`);
 
-    this.gColumn.append("text")
+    gColumn.append("text")
       .attr('class', 'title')
-      .text(d => d[this.xAxisProp]);
+      .text(d => d[this.xAxisProp])
+      .call(this.wrap, this.width / [...new Set(this.data.map(d => d[this.xAxisProp]))].length);
 
-    this.gColumn
+    gColumn
       .selectAll(".bars-group")
       .data(d => d.values)
       .join(
@@ -98,7 +99,7 @@ export default class BarChartMultiple extends Base {
             .attr('class', 'bar-chart-small-overlying')
             .attr('x', 0)
             .attr('y', d => this.scaleY(d[this.yAxisProp]))
-            .attr('width', d => (this.scaleX(d[this.countProp] / (this.width / this.data.map(d => d[this.xAxisProp]).length))))
+            .attr('width', d => this.calculateScaleXColumn(d[this.xAxisProp])(d[this.countProp]))
             .attr('height', this.scaleY.bandwidth())
             .attr("fill", d => this.scaleColor(d[this.xAxisProp]))
 
@@ -108,14 +109,14 @@ export default class BarChartMultiple extends Base {
         exit => exit.remove()
       )
 
-    this.gColumn
+    gColumn
     .selectAll(".label")
     .data(d => d.values)
     .join('text')
       .attr('class', 'label')
       .text(d => d[this.countProp])
       .each((d, i, element) => {
-        const xValue = (this.scaleX(d[this.countProp] / (this.width / this.data.map(d => d[this.xAxisProp]).length)))
+        const xValue = this.calculateScaleXColumn(d[this.xAxisProp])(d[this.countProp])
         const xMax = select(element[i])._groups[0][0].getBBox().width;
        if (xValue < xMax) {
           select(element[i])
@@ -170,8 +171,13 @@ export default class BarChartMultiple extends Base {
       .domain([...new Set(this.data.map(d => d[this.xAxisProp]))])
       .range([0, this.width]).paddingInner(0.1);
 
-    this.scaleX = scaleLinear()
-      .range([0, this.scaleColumn.bandwidth() / this.width / [...new Set(this.data.map(d => d[this.xAxisProp]))].length]);
+  }
+
+  calculateScaleXColumn(key) {
+    return scaleLinear()
+      .range([0, this.scaleColumn.bandwidth()])
+      .domain([0, max(this.data.filter(element => key.includes(element[this.xAxisProp])), (d) => d[this.countProp])]).nice();
+
   }
 
   parse(data) {

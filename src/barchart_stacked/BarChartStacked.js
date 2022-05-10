@@ -35,9 +35,6 @@ export default class BarChartStacked extends Base {
       ...options.margin
     };
 
-    this.margin.left = !this.showLegend ? 84 : this.margin.left;
-    this.margin.right = !this.showLegend ? 48 : this.margin.left;
-
     // chart size
     this.getDimensions();
     // static elements (do not redraw)
@@ -294,7 +291,9 @@ export default class BarChartStacked extends Base {
     }, []);
   }
 
-  isDate = (value) => new Date(value) && Object.prototype.toString.call(new Date(value)) === "[object Date]" && !isNaN(new Date(value)) ? true : false
+  isDate(value) {
+    return new Date(value) && Object.prototype.toString.call(new Date(value)) === "[object Date]" && !isNaN(new Date(value)) ? true : false
+  }
 
   defaultTooltip(d) {
     let tooltipContent = [];
