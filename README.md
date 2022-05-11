@@ -441,7 +441,7 @@ bar_chart_stacked.setData(newData)
 | **x** | _String_ | "phase" | Property name of the categories along the X-axis. Legend will be depicted by these values |
 | **margin** | _Object_ | `{ top: 30, bottom: 0, left: 0, right: 0 }` | Set the margin around the chart. You can pass the properties you want. |
 | **locale** | _String_ | `window.navigator.language` | 4-letters specification of the locale. |
-| **filterColumns** | _Array_ | [x] | The values that we do not want to show in the chart, for example, the year |
+| **excludeColumns** | _Array_ | [x] | The values that we do not want to show in the chart, for example, the year |
 | **extraLegends** | _Array_ | [] | More x-axes can be added, passing an array with selected values. |
 | **onClick** | _Function_ | - | Rect click callback handler. It receives the `event` and the `datum`. |
 | **tooltip** | _Function_ | [<sup>1</sup>](#1) | Custom HTML content to render in the tooltip on mouseenter. |

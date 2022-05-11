@@ -43,7 +43,6 @@ export default class BarChartStacked extends Base {
       this.setData(data)
       //Gets the columns that give value to each of the parts of the stacked bar chart.
       this.columns = Object.keys(data[0]).filter(column => !this.excludeColumns.includes(column));
-      console.log("this.columns", this.columns);
     }
   }
 
@@ -133,7 +132,7 @@ export default class BarChartStacked extends Base {
         update => update,
         exit => exit.remove()
       )
-      .on("pointermove", function(i, d, _) {
+      .on("pointermove", function(i, d) {
           const { key } = d
           const rects = selectAll('.bar-stacked-rect')
 

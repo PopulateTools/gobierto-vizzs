@@ -1,7 +1,6 @@
 import Base from "../commons/base";
 import { select, selectAll } from 'd3-selection';
-import { min, max } from 'd3-array';
-import { nest } from 'd3-collection';
+import { min, max, group } from 'd3-array';
 import { timeMonth, timeYear } from "d3-time";
 import { timeFormat } from "d3-time-format";
 import { scaleLinear, scaleBand, scaleOrdinal } from 'd3-scale';
@@ -18,8 +17,8 @@ export default class BarChartSplit extends Base {
     this.yAxisProp = options.y;
     this.countProp = options.count;
     this.height = options.height || 600
-    this.arrayOfScales = [];
-    this.arrayOfXaxisProp = [];
+    this.scales = [];
+    this.xAxisProps = [];
 
     this.margin = {
       top: 36,
@@ -52,83 +51,73 @@ export default class BarChartSplit extends Base {
 
   build() {
     this.setScales();
-    this.createArrayOfScales();
 
-    const dataNest = nest()
-      .key((d) => d[this.xAxisProp])
-      .entries(this.data)
-      .map((d) => {
-        return {
-          [this.xAxisProp]: d.key,
-          values: d.values
-      };
-    });
+    const dataGroup = group(this.data, (d) => d[this.xAxisProp])
 
     this.g
       .select(".axis-y")
       .call(this.yAxis.bind(this));
 
     this.g
-      .selectAll('.title')
+      .selectAll(".title")
       .remove()
 
     const gColumn = this.g
-      .selectAll('.column')
-      .data(dataNest)
-      .join('g')
-      .attr('class', 'column')
-      .attr('transform', (d) => `translate(${this.scaleColumn(d[this.xAxisProp])},0)`);
+      .selectAll(".column")
+      .data(dataGroup)
+      .join("g")
+      .attr("class", "column")
+      .attr("transform", ([key]) => `translate(${this.scaleColumn(key)},0)`);
 
     gColumn.append("text")
-      .attr('class', 'title')
-      .text(d => d[this.xAxisProp])
+      .attr("class", "title")
+      .text(([ key ]) => key)
       .call(this.wrap, this.width / [...new Set(this.data.map(d => d[this.xAxisProp]))].length);
 
-    gColumn.selectAll('.bar-chart-small-underlying')
-      .data((d) => d.values)
-      .join('rect')
-      .attr('class', 'bar-chart-small-underlying')
-      .attr('x', 0)
-      .attr('y', (d) => this.scaleY(d[this.yAxisProp]))
-      .attr('width', this.scaleColumn.bandwidth())
-      .attr('height', this.scaleY.bandwidth())
-      .attr('opacity', '.2')
-      .attr('fill', 'var(--gv-grey)');
+    gColumn.selectAll(".bar-chart-small-underlying")
+      .data(([, values]) => values)
+      .join("rect")
+      .attr("class", "bar-chart-small-underlying")
+      .attr("x", 0)
+      .attr("y", (d) => this.scaleY(d[this.yAxisProp]))
+      .attr("width", this.scaleColumn.bandwidth())
+      .attr("height", this.scaleY.bandwidth())
+      .attr("opacity", ".2")
+      .attr("fill", "var(--gv-grey)");
 
-    gColumn.selectAll('.bar-chart-small-overlying')
-      .data((d) => d.values)
-      .join('rect')
-      .attr('class', 'bar-chart-small-overlying')
-      .attr('x', 0)
-      .attr('y', d => this.scaleY(d[this.yAxisProp]))
-      .attr('width', d => this.arrayOfScales[this.arrayOfXaxisProp.findIndex(element => element === d[this.xAxisProp])](d[this.countProp]))
-      .attr('height', this.scaleY.bandwidth())
+    gColumn.selectAll(".bar-chart-small-overlying")
+      .data(([, values]) => values)
+      .join("rect")
+      .attr("class", "bar-chart-small-overlying")
+      .attr("x", 0)
+      .attr("y", d => this.scaleY(d[this.yAxisProp]))
+      .attr("width", d => this.scales[this.xAxisProps.findIndex(element => element === d[this.xAxisProp])](d[this.countProp]))
+      .attr("height", this.scaleY.bandwidth())
       .attr("fill", d => this.scaleColor(d[this.xAxisProp]))
 
     gColumn
-    .selectAll(".label")
-    .data(d => d.values)
-    .join('text')
-    .attr('class', 'label')
-    .text(d => d[this.countProp])
-    .each((d, i, element) => {
-      const xValue = this.arrayOfScales[this.arrayOfXaxisProp.findIndex(element => element === d[this.xAxisProp])](d[this.countProp])
-      const xMax = select(element[i])._groups[0][0].getBBox().width;
-     if (xValue < xMax) {
+      .selectAll(".label")
+      .data(([, values]) => values)
+      .join("text")
+      .attr("class", "label")
+      .text(d => d[this.countProp])
+      .each((d, i, element) => {
+        const xValue = this.scales[this.xAxisProps.findIndex(element => element === d[this.xAxisProp])](d[this.countProp])
+        const xMax = select(element[i])._groups[0][0].getBBox().width;
+       if (xValue < xMax) {
+          select(element[i])
+            .attr("x", xValue + 10)
+            .attr("fill", "var(--gv-black)")
+        } else {
+          select(element[i])
+            .attr("fill", "var(--gv-white)")
+            .attr("x", 0)
+        }
         select(element[i])
-          .attr('x', xValue + 10)
-          .attr("fill","#000")
-      } else {
-        select(element[i])
-          .attr("fill","#fff")
-          .attr('x', 0)
-      }
-      select(element[i])
-        .attr('y', this.scaleY(d[this.yAxisProp]) + this.scaleY.bandwidth() / 2)
-        .attr('dy', '0.33em')
-        .attr('dx', 4);
-    });
-
+          .attr("y", this.scaleY(d[this.yAxisProp]) + this.scaleY.bandwidth() / 2)
+          .attr("dy", "0.33em")
+          .attr("dx", 4);
+      });
   }
 
   yAxis(g) {
@@ -139,14 +128,12 @@ export default class BarChartSplit extends Base {
 
     // remove default formats
     g.attr("font-family", null).attr("font-size", null);
-
-    // change line style defaults
   }
 
   async setData(data) {
     this.rawData = data
     this.data = this.parse(data)
-    this.arrayOfXaxisProp = [...new Set(this.data.map(d => d[this.xAxisProp]))];
+    this.xAxisProps = [...new Set(this.data.map(d => d[this.xAxisProp]))];
 
     // only set the color scale, as of the first time you get the data
     if (!this.scaleColor) {
@@ -157,7 +144,6 @@ export default class BarChartSplit extends Base {
   }
 
   setScales() {
-
     this.svg
       .attr("width", `${this.width + this.margin.left + this.margin.right}`)
       .attr("height", `${this.height + this.margin.top + this.margin.bottom}`);
@@ -170,24 +156,20 @@ export default class BarChartSplit extends Base {
       .domain([...new Set(this.data.map(d => d[this.xAxisProp]))])
       .range([0, this.width]).paddingInner(0.1);
 
-  }
-
-  //Create an array of scales, one scale for each of the columns.
-  createArrayOfScales() {
-    this.arrayOfScales = []
-    for (let scale of this.arrayOfXaxisProp) {
+    this.scales = []
+    //Create an array of scales, one scale for each of the columns.
+    for (let scale of this.xAxisProps) {
       let elementScale = scaleLinear()
         .range([0, this.scaleColumn.bandwidth()])
         .domain([0, max(this.data.filter(element => scale.includes(element[this.xAxisProp])), (d) => d[this.countProp])]).nice();
-        this.arrayOfScales.push(elementScale)
+        this.scales.push(elementScale)
     }
+
   }
 
   parse(data) {
-    // 1. remove those elements with no X axis data
-    // 2. enforces the datatypes:
-    //    - X axis is Date
-    //    - Z axis is Number
+    // Group data by xAxisProp and yAxisProp
+    // Your data can contains
     return [...data.reduce((r, o) => {
         const key = o[this.xAxisProp] + '-' + o[this.yAxisProp];
 
