@@ -21,10 +21,9 @@ export default class BarChartStacked extends Base {
     this.xAxisProp = options.x || "date";
     this.yAxisProp = options.y || "group";
     this.excludeColumns = [...options.excludeColumns || "", this.xAxisProp];
-    this.columns = Object.keys(data[0]).filter(column => !this.excludeColumns.includes(column));
     this.extraLegends = options.extraLegends || [];
     this.showLegend = options.showLegend;
-    this.orientationLegend = options.orientationLegend || 'left';
+    this.orientationLegend = options.orientationLegend || "left";
     this.height = options.height || 400
 
     this.margin = {
@@ -42,6 +41,9 @@ export default class BarChartStacked extends Base {
 
     if (data.length) {
       this.setData(data)
+      //Gets the columns that give value to each of the parts of the stacked bar chart.
+      this.columns = Object.keys(data[0]).filter(column => !this.excludeColumns.includes(column));
+      console.log("this.columns", this.columns);
     }
   }
 
@@ -81,7 +83,7 @@ export default class BarChartStacked extends Base {
       .selectAll("rect")
       .data(d => d)
       .join("rect")
-        .attr("class", "bar-stacked-rect")
+        .attr("class", ({ key }) => `bar-stacked-rect ${key}`)
         .attr("x", d => this.scaleX(d.data[this.xAxisProp]))
         .attr("y", ([y1, y2]) => Math.min(this.scaleY(y1), this.scaleY(y2)))
         .attr("width", this.scaleX.bandwidth())
@@ -102,8 +104,8 @@ export default class BarChartStacked extends Base {
   }
 
   buildLegends() {
-    const positionLengedGroupX = this.orientationLegend === 'left' ? 0 : (this.width + this.margin.left);
-    const positionLengedLabelX = this.orientationLegend === 'left' ? 24 : (positionLengedGroupX + 24);
+    const positionLegendGroupX = this.orientationLegend === 'left' ? 0 : (this.width + this.margin.left);
+    const positionLegendLabelX = this.orientationLegend === 'left' ? 24 : (positionLegendGroupX + 24);
     this.svg
       .selectAll(".bar-stack-label")
       .data(stack().keys(this.columns)(this.data))
@@ -115,14 +117,14 @@ export default class BarChartStacked extends Base {
             .attr("fill", ({ key }) => this.scaleColor(key))
             .attr("transform", (d, i) => `translate(10, ${i * 24})`)
           g.append("rect")
-            .attr("x", positionLengedGroupX)
+            .attr("x", positionLegendGroupX)
             .attr("y", (d, i) => `${this.margin.top + (i * 3)}`)
             .attr("class", "bar-stack-label-rect")
             .attr("width", 16)
             .attr("height", 16)
           g.append("text")
             .attr("class", "bar-stacked-legend-text")
-            .attr("x", positionLengedLabelX)
+            .attr("x", positionLegendLabelX)
             .attr("y", (d, i) => `${this.margin.top + (i * 3) + 14}`)
             .text(({ key }) => key);
 
@@ -133,13 +135,16 @@ export default class BarChartStacked extends Base {
       )
       .on("pointermove", function(i, d, _) {
           const { key } = d
+          const rects = selectAll('.bar-stacked-rect')
 
-          selectAll('.bar-stacked-rect')
-            .style("opacity", .2)
-
-          selectAll(`#${key} .bar-stacked-rect`)
-            .style("opacity", 1)
-        })
+          rects
+            .style("opacity", d =>
+              (Object.entries(d.data).filter(([key, value]) =>
+                value === d[1] - d[0])).flat()[0] === key
+                ? 1
+                : 0.2
+            )
+      })
       .on("pointerout", function(d, i, _) {
         selectAll('.bar-stacked-rect')
           .style("opacity", 1)
@@ -210,7 +215,6 @@ export default class BarChartStacked extends Base {
 
     // change line style defaults
     g.selectAll("line").attr("stroke-dasharray", 1).attr("stroke", "var(--gv-grey)");
-
   }
 
   async setData(data) {
@@ -234,7 +238,6 @@ export default class BarChartStacked extends Base {
   }
 
   setScales() {
-
     const stacked = stack().keys(this.columns)(this.data);
 
     this.svg
@@ -252,7 +255,6 @@ export default class BarChartStacked extends Base {
   }
 
   onPointerMove(event, d) {
-
     const tooltip = this.tooltipContainer.html(this.tooltip(d))
     const [x, y] = this.tooltipPosition(event, this.tooltipContainer.node(), 10);
 
