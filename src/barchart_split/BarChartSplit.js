@@ -7,9 +7,9 @@ import { timeFormat } from "d3-time-format";
 import { scaleLinear, scaleBand, scaleOrdinal } from 'd3-scale';
 import { axisBottom, axisLeft } from 'd3-axis';
 import "d3-transition";
-import "./BarChartMultiple.css"
+import "./BarChartSplit.css"
 
-export default class BarChartMultiple extends Base {
+export default class BarChartSplit extends Base {
   constructor(container, data, options = {}) {
     super(container, data, options)
 
@@ -18,6 +18,8 @@ export default class BarChartMultiple extends Base {
     this.yAxisProp = options.y;
     this.countProp = options.count;
     this.height = options.height || 600
+    this.arrayOfScales = [];
+    this.arrayOfXaxisProp = [];
 
     this.margin = {
       top: 36,
@@ -50,6 +52,7 @@ export default class BarChartMultiple extends Base {
 
   build() {
     this.setScales();
+    this.createArrayOfScales();
 
     const dataNest = nest()
       .key((d) => d[this.xAxisProp])
@@ -65,9 +68,11 @@ export default class BarChartMultiple extends Base {
       .select(".axis-y")
       .call(this.yAxis.bind(this));
 
+    this.g
+      .selectAll('.title')
+      .remove()
+
     const gColumn = this.g
-      .join('g')
-      .attr('class', 'columns')
       .selectAll('.column')
       .data(dataNest)
       .join('g')
@@ -79,58 +84,51 @@ export default class BarChartMultiple extends Base {
       .text(d => d[this.xAxisProp])
       .call(this.wrap, this.width / [...new Set(this.data.map(d => d[this.xAxisProp]))].length);
 
-    gColumn
-      .selectAll(".bars-group")
-      .data(d => d.values)
-      .join(
-        enter => {
-          const g = enter
-            .append("g")
-            .attr('class', 'bars-group')
-          g.append("rect")
-            .attr('class', 'bar-chart-small-underlying')
-            .attr('x', 0)
-            .attr('y', (d) => this.scaleY(d[this.yAxisProp]))
-            .attr('width', this.scaleColumn.bandwidth())
-            .attr('height', this.scaleY.bandwidth())
-            .attr('opacity', '.2')
-            .attr('fill', 'var(--gv-grey)');
-          g.append("rect")
-            .attr('class', 'bar-chart-small-overlying')
-            .attr('x', 0)
-            .attr('y', d => this.scaleY(d[this.yAxisProp]))
-            .attr('width', d => this.calculateScaleXColumn(d[this.xAxisProp])(d[this.countProp]))
-            .attr('height', this.scaleY.bandwidth())
-            .attr("fill", d => this.scaleColor(d[this.xAxisProp]))
+    gColumn.selectAll('.bar-chart-small-underlying')
+      .data((d) => d.values)
+      .join('rect')
+      .attr('class', 'bar-chart-small-underlying')
+      .attr('x', 0)
+      .attr('y', (d) => this.scaleY(d[this.yAxisProp]))
+      .attr('width', this.scaleColumn.bandwidth())
+      .attr('height', this.scaleY.bandwidth())
+      .attr('opacity', '.2')
+      .attr('fill', 'var(--gv-grey)');
 
-          return g;
-        },
-        update => update,
-        exit => exit.remove()
-      )
+    gColumn.selectAll('.bar-chart-small-overlying')
+      .data((d) => d.values)
+      .join('rect')
+      .attr('class', 'bar-chart-small-overlying')
+      .attr('x', 0)
+      .attr('y', d => this.scaleY(d[this.yAxisProp]))
+      .attr('width', d => this.arrayOfScales[this.arrayOfXaxisProp.findIndex(element => element === d[this.xAxisProp])](d[this.countProp]))
+      .attr('height', this.scaleY.bandwidth())
+      .attr("fill", d => this.scaleColor(d[this.xAxisProp]))
 
     gColumn
     .selectAll(".label")
     .data(d => d.values)
     .join('text')
-      .attr('class', 'label')
-      .text(d => d[this.countProp])
-      .each((d, i, element) => {
-        const xValue = this.calculateScaleXColumn(d[this.xAxisProp])(d[this.countProp])
-        const xMax = select(element[i])._groups[0][0].getBBox().width;
-       if (xValue < xMax) {
-          select(element[i])
-            .attr('x', xValue + 10)
-        } else {
-          select(element[i])
-            .attr("fill","#fff")
-            .attr('x', 0)
-        }
+    .attr('class', 'label')
+    .text(d => d[this.countProp])
+    .each((d, i, element) => {
+      const xValue = this.arrayOfScales[this.arrayOfXaxisProp.findIndex(element => element === d[this.xAxisProp])](d[this.countProp])
+      const xMax = select(element[i])._groups[0][0].getBBox().width;
+     if (xValue < xMax) {
         select(element[i])
-          .attr('y', this.scaleY(d[this.yAxisProp]) + this.scaleY.bandwidth() / 2)
-          .attr('dy', '0.33em')
-          .attr('dx', 4);
-      });
+          .attr('x', xValue + 10)
+          .attr("fill","#000")
+      } else {
+        select(element[i])
+          .attr("fill","#fff")
+          .attr('x', 0)
+      }
+      select(element[i])
+        .attr('y', this.scaleY(d[this.yAxisProp]) + this.scaleY.bandwidth() / 2)
+        .attr('dy', '0.33em')
+        .attr('dx', 4);
+    });
+
   }
 
   yAxis(g) {
@@ -148,6 +146,7 @@ export default class BarChartMultiple extends Base {
   async setData(data) {
     this.rawData = data
     this.data = this.parse(data)
+    this.arrayOfXaxisProp = [...new Set(this.data.map(d => d[this.xAxisProp]))];
 
     // only set the color scale, as of the first time you get the data
     if (!this.scaleColor) {
@@ -173,11 +172,15 @@ export default class BarChartMultiple extends Base {
 
   }
 
-  calculateScaleXColumn(key) {
-    return scaleLinear()
-      .range([0, this.scaleColumn.bandwidth()])
-      .domain([0, max(this.data.filter(element => key.includes(element[this.xAxisProp])), (d) => d[this.countProp])]).nice();
-
+  //Create an array of scales, one scale for each of the columns.
+  createArrayOfScales() {
+    this.arrayOfScales = []
+    for (let scale of this.arrayOfXaxisProp) {
+      let elementScale = scaleLinear()
+        .range([0, this.scaleColumn.bandwidth()])
+        .domain([0, max(this.data.filter(element => scale.includes(element[this.xAxisProp])), (d) => d[this.countProp])]).nice();
+        this.arrayOfScales.push(elementScale)
+    }
   }
 
   parse(data) {

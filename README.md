@@ -11,6 +11,8 @@ Reusable visualizations used in Gobierto. Check out [the demo](https://populatet
   + [Gantt examples](#gantt-examples)
 * [BarChartStacked](#barchartstacked)
   + [BarChartStacked examples](#barchartstacked-examples)
+* [BarChartSplit](#barchartsplit)
+    + [BarChartSplit examples](#barchartsplit-examples)
 * [Helpers](#helpers)
   + [toJSON](#tojson)
 * [Styling](#styling)
@@ -517,6 +519,93 @@ const bar_chart_stacked = new BarChartStacked(chart, data, { onClick: (event, da
 In order to render the chart locale-sensitive stuff, enforce the graph language (List of available [locales](https://unpkg.com/browse/d3-time-format/locale/))
 ```js
 const bar_chart_stacked = new BarChartStacked(chart, data, { locale: "it-IT" })
+```
+
+## BarChartSplit
+
+```js
+import { BarChartSplit } from "gobierto-vizzs"
+
+const bar_chart_split = new BarChartSplit(chart, data, options)
+
+// ...update data
+bar_chart_split.setData(newData)
+```
+
+**chart** _(HTMLElement)_: DOM node where put the visualization
+
+**data** _(Array)_: Elements to display
+
+**options** _(Object)_: To custom the defaults presets. Optional. All properties come with setters, that is, once you have the object you can change any property using `setPROP(VALUE)`, i.e. `setX("prop")`, `setMargin({ left: 30 })`, `setOnClick(() => {})` etc...
+
+
+| name | type | default | description |
+|---|---|---|---|
+| **x** | _String_ | "phase" | Property name of the categories along the X-axis. Legend will be depicted by these values |
+| **y** | _String_ | Property name of the categories along the Y-axis. |
+| **count** | _String_ | Property name of the width of the bars. Quantitative value. |
+| **margin** | _Object_ | `{ top: 30, bottom: 0, left: 0, right: 0 }` | Set the margin around the chart. You can pass the properties you want. |
+| **locale** | _String_ | `window.navigator.language` | 4-letters specification of the locale. |
+
+### BarChartStacked examples
+
+```js
+import { BarChartSplit } from "gobierto-vizzs"
+
+const chart = document.body
+const data = [
+  {
+    "amount": 67,
+    "category": "Spain",
+    "group": "Toyota"
+  },
+  {
+    "amount": 45,
+    "category": "Spain",
+    "group": "Seat"
+  },
+  {
+    "amount": 56,
+    "category": "Spain",
+    "group": "Renault"
+  },
+  {
+    "amount": 13,
+    "category": "France",
+    "group": "Toyota"
+  },
+  {
+    "amount": 68,
+    "category": "France",
+    "group": "Seat"
+  },
+  {
+    "amount": 35,
+    "category": "France",
+    "group": "Renault"
+  },
+  {
+    "amount": 87,
+    "category": "Germany",
+    "group": "Toyota"
+  },
+  {
+    "amount": 90,
+    "category": "Germany",
+    "group": "Seat"
+  },
+  {
+    "amount": 39,
+    "category": "Germany",
+    "group": "Renault"
+  },
+  ...
+]
+const bar_chart_split = new BarChartSplit(chart, data, {
+  x: "category",
+  y: "group",
+  count: "amount"
+})
 ```
 
 ## Helpers

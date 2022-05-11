@@ -1,6 +1,6 @@
 export { default as BeeSwarm } from "./beeswarm/BeeSwarm"
 export { default as BarChartStacked } from "./barchart_stacked/BarChartStacked"
-export { default as BarChartMultiple } from "./barchart_multiple/BarChartMultiple"
+export { default as BarChartSplit } from "./barchart_split/BarChartSplit"
 export { default as TreeMap } from "./treemap/TreeMap"
 export { default as Gantt } from "./gantt/Gantt"
 export { default as toJSON } from "./commons/csv"
