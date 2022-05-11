@@ -157,7 +157,6 @@ export default class BarChartSplit extends Base {
       return scaleLinear()
         .range([0, this.scaleColumn.bandwidth()])
         .domain([0, max(this.data.filter(element => scale.includes(element[this.xAxisProp])), (d) => d[this.countProp])]).nice();
-        this.scales.push(elementScale)
     })
   }
 
