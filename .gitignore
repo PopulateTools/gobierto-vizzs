@@ -139,3 +139,6 @@ dist
 .ionide
 
 # End of https://www.toptal.com/developers/gitignore/api/visualstudiocode,node
+
+#macOS
+.DS_Store

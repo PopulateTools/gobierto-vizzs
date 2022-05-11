@@ -9,6 +9,10 @@ Reusable visualizations used in Gobierto. Check out [the demo](https://populatet
   + [TreeMap examples](#treemap-examples)
 * [Gantt](#gantt)
   + [Gantt examples](#gantt-examples)
+* [BarChartStacked](#barchartstacked)
+  + [BarChartStacked examples](#barchartstacked-examples)
+* [BarChartSplit](#barchartsplit)
+    + [BarChartSplit examples](#barchartsplit-examples)
 * [Helpers](#helpers)
   + [toJSON](#tojson)
 * [Styling](#styling)
@@ -412,6 +416,196 @@ const gantt = new Gantt(chart, data, { onClick: (event, datum) => /* custom func
 In order to render the chart locale-sensitive stuff, enforce the graph language (List of available [locales](https://unpkg.com/browse/d3-time-format/locale/))
 ```js
 const gantt = new Gantt(chart, data, { locale: "it-IT" })
+```
+
+## BarChartStacked
+
+```js
+import { BarChartStacked } from "gobierto-vizzs"
+
+const bar_chart_stacked = new BarChartStacked(chart, data, options)
+
+// ...update data
+bar_chart_stacked.setData(newData)
+```
+
+**chart** _(HTMLElement)_: DOM node where put the visualization
+
+**data** _(Array)_: Elements to display
+
+**options** _(Object)_: To custom the defaults presets. Optional. All properties come with setters, that is, once you have the object you can change any property using `setPROP(VALUE)`, i.e. `setX("prop")`, `setMargin({ left: 30 })`, `setOnClick(() => {})` etc...
+
+
+| name | type | default | description |
+|---|---|---|---|
+| **x** | _String_ | "phase" | Property name of the categories along the X-axis. Legend will be depicted by these values |
+| **margin** | _Object_ | `{ top: 30, bottom: 0, left: 0, right: 0 }` | Set the margin around the chart. You can pass the properties you want. |
+| **locale** | _String_ | `window.navigator.language` | 4-letters specification of the locale. |
+| **excludeColumns** | _Array_ | [x] | The values that we do not want to show in the chart, for example, the year |
+| **extraLegends** | _Array_ | [] | More x-axes can be added, passing an array with selected values. |
+| **onClick** | _Function_ | - | Rect click callback handler. It receives the `event` and the `datum`. |
+| **tooltip** | _Function_ | [<sup>1</sup>](#1) | Custom HTML content to render in the tooltip on mouseenter. |
+
+<span id="1"></span>
+```js
+defaultTooltip(d) {
+  let tooltipContent = [];
+  const filteredDataByKey = Object.fromEntries(Object.entries(d.data).filter(([key, value]) => !this.filterColumns.includes(key)));
+  for (const key in filteredDataByKey) {
+    const valueContent = `
+      <div class="tooltip-barchart-stacked-grid">
+        <span style="background-color: ${this.scaleColor(key)}" class="tooltip-barchart-stacked-grid-key-color"></span>
+        <span class="tooltip-barchart-stacked-grid-key">${key}:</span>
+        <span class="tooltip-barchart-stacked-grid-value">${filteredDataByKey[key]}</span>
+      </div>`
+    tooltipContent.push(valueContent);
+  }
+  return `
+    <span class="tooltip-barchart-stacked-title">${d.data[this.xAxisProp].getFullYear()}</span>
+    ${tooltipContent.join("")}
+  `;
+}
+```
+
+### BarChartStacked examples
+
+```js
+import { BarChartStacked } from "gobierto-vizzs"
+
+const chart = document.body
+const data = [
+  {
+    "year": "2010",
+    "enero":"44.6132",
+    "febrero":"41.9763",
+    "marzo":"64.2093",
+    "abril":"12.1696",
+    "mayo":"42.8975",
+    "junio":"33.4536",
+    "julio":"2.59543",
+    "agosto":"86.3578",
+    "septiembre":"88.4577",
+    "total":"221.65",
+    "decada":"232.73"
+  },
+  {
+    "year": "2011",
+    "enero":"86.4595",
+    "febrero":"7.2782",
+    "marzo":"41.1251",
+    "abril":"2.89737",
+    "mayo":"89.8856",
+    "junio":"60.3666",
+    "julio":"43.4598",
+    "agosto":"92.3711",
+    "septiembre":"24.8777",
+    "total":"284.13",
+    "decada":"289.52"
+  },
+  ...
+]
+const bar_chart_stacked = new BarChartStacked(chart, data, {
+  x: "year",
+  filterColumns: ["total", "decada"],
+  extraLegends: ["total","decada"]
+})
+```
+
+Set a custom callback when clicking into a leaf (a node with no children)
+```js
+const bar_chart_stacked = new BarChartStacked(chart, data, { onClick: (event, datum) => /* custom function */ })
+```
+
+In order to render the chart locale-sensitive stuff, enforce the graph language (List of available [locales](https://unpkg.com/browse/d3-time-format/locale/))
+```js
+const bar_chart_stacked = new BarChartStacked(chart, data, { locale: "it-IT" })
+```
+
+## BarChartSplit
+
+```js
+import { BarChartSplit } from "gobierto-vizzs"
+
+const bar_chart_split = new BarChartSplit(chart, data, options)
+
+// ...update data
+bar_chart_split.setData(newData)
+```
+
+**chart** _(HTMLElement)_: DOM node where put the visualization
+
+**data** _(Array)_: Elements to display
+
+**options** _(Object)_: To custom the defaults presets. Optional. All properties come with setters, that is, once you have the object you can change any property using `setPROP(VALUE)`, i.e. `setX("prop")`, `setMargin({ left: 30 })`, `setOnClick(() => {})` etc...
+
+
+| name | type | default | description |
+|---|---|---|---|
+| **x** | _String_ | "phase" | Property name of the categories along the X-axis. Legend will be depicted by these values |
+| **y** | _String_ | Property name of the categories along the Y-axis. |
+| **count** | _String_ | Property name of the width of the bars. Quantitative value. |
+| **margin** | _Object_ | `{ top: 30, bottom: 0, left: 0, right: 0 }` | Set the margin around the chart. You can pass the properties you want. |
+| **locale** | _String_ | `window.navigator.language` | 4-letters specification of the locale. |
+
+### BarChartStacked examples
+
+```js
+import { BarChartSplit } from "gobierto-vizzs"
+
+const chart = document.body
+const data = [
+  {
+    "amount": 67,
+    "category": "Spain",
+    "group": "Toyota"
+  },
+  {
+    "amount": 45,
+    "category": "Spain",
+    "group": "Seat"
+  },
+  {
+    "amount": 56,
+    "category": "Spain",
+    "group": "Renault"
+  },
+  {
+    "amount": 13,
+    "category": "France",
+    "group": "Toyota"
+  },
+  {
+    "amount": 68,
+    "category": "France",
+    "group": "Seat"
+  },
+  {
+    "amount": 35,
+    "category": "France",
+    "group": "Renault"
+  },
+  {
+    "amount": 87,
+    "category": "Germany",
+    "group": "Toyota"
+  },
+  {
+    "amount": 90,
+    "category": "Germany",
+    "group": "Seat"
+  },
+  {
+    "amount": 39,
+    "category": "Germany",
+    "group": "Renault"
+  },
+  ...
+]
+const bar_chart_split = new BarChartSplit(chart, data, {
+  x: "category",
+  y: "group",
+  count: "amount"
+})
 ```
 
 ## Helpers

@@ -66,6 +66,7 @@ export default class TreeMap extends Base {
         .on("pointerenter", (e, d) => d === root && this.onPointerLeave(e, d))
         .on("pointermove", this.onPointerMove.bind(this))
         .attr("cursor", "pointer")
+        .attr("class", (d) => (d === root ? "treemap-breadcrumb" : "treemap-item"))
         .on("click", (e, d) => (d === root ? zoomout(root) : d.height === 0 ? this.onLeafClick(e, d) : zoomin(d)));
 
       node

@@ -6,7 +6,7 @@
     "start": "parcel ./src/index.html ../src/**/* --lazy --open",
     "prebuild": "rm -rf ./dist/* ./.parcel-cache",
     "build": "parcel build ./src/index.html --public-url . --log-level verbose",
-    "postbuild": "gh-pages -d dist -r git@github.com:PopulateTools/gobierto-vizzs"
+    "postbuild": "gh-pages -d dist -r https://github.com/PopulateTools/gobierto-vizzs"
   },
   "author": "",
   "license": "ISC",

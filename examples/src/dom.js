@@ -30,5 +30,5 @@ export default function DOM([key, ChartModule, opts]) {
   const { data = mockJSON(), ...config } = opts
   const module = new ChartModule(chart, data, config)
 
-  btn.addEventListener("click", () => module.setData(mockJSON()))
+  btn.addEventListener("click", () => module.setData(mockJSON(1000)))
 }

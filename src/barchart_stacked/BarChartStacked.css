@@ -1,0 +1,74 @@
+.gv-plot .axis-x {
+  color: var(--gv-grey);
+  font-size: 0.875rem;
+}
+
+.gv-tooltip-bar-stacked {
+  width: max-content;
+}
+
+.gv-plot .axis-y {
+  text-transform: uppercase;
+  font-size: 0.875rem;
+}
+
+.tooltip-barchart-stacked-title {
+  font-weight: bold;
+  border-bottom: 1px solid var(--gv-grey);
+  display: block;
+  padding-bottom: .25rem;
+  margin-bottom: .5rem;
+}
+
+.tooltip-barchart-stacked-grid {
+  display: grid;
+  grid-template-columns: 16px 1fr 1fr;
+  margin-bottom: .5rem;
+  align-items: center;
+}
+
+.tooltip-barchart-stacked-grid-key-color {
+  width: 16px;
+  height: 16px;
+  display: inline-block;
+}
+
+.tooltip-barchart-stacked-grid-key,
+.tooltip-barchart-stacked-grid-value {
+  font-size: 1rem;
+  display: inline-block;
+  padding: 0 .25rem;
+}
+
+.tooltip-barchart-stacked-grid-key {
+  font-weight: bold;
+  text-transform: capitalize;
+  text-align: left;
+}
+
+.tooltip-barchart-stacked-grid-value {
+  text-align: right;
+}
+
+.bar-stacked-legend-text {
+  fill: #828282;
+  font-size: 14px;
+  text-transform: capitalize;
+}
+
+.extra-legend-text,
+.axis-x-legend {
+  font-size: 14px;
+  text-transform: capitalize;
+  font-weight: bold;
+  fill: #828282;
+}
+
+.extra-legend-value {
+  font-size: 14px;
+  fill: #828282;
+}
+
+.bar-stack-label {
+  cursor: pointer;
+}
