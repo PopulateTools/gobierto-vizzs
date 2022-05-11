@@ -1,0 +1,15 @@
+.gv-plot .axis-x {
+  color: var(--gv-grey);
+  font-size: .875rem;
+}
+
+.gv-tooltip-bar-stacked {
+  width: max-content;
+}
+
+.gv-plot .axis-y {
+  text-transform: uppercase;
+  font-size: .875rem;
+}
+
+/*# sourceMappingURL=BarChartMultiple.css.map */
