@@ -18,7 +18,7 @@ export default class BarChartSplit extends Base {
     this.countProp = options.count;
     this.height = options.height || 600
     this.scales = [];
-    this.xAxisProps = [];
+    this.groupAxisProps = [];
 
     this.margin = {
       top: 36,
@@ -58,13 +58,9 @@ export default class BarChartSplit extends Base {
       .select(".axis-y")
       .call(this.yAxis.bind(this));
 
-    this.g
-      .selectAll(".title")
-      .remove()
-
     const gColumn = this.g
       .selectAll(".column")
-      .data(dataGroup)
+      .data(dataGroup, ([key]) => key)
       .join("g")
       .attr("class", "column")
       .attr("transform", ([key]) => `translate(${this.scaleColumn(key)},0)`);
@@ -91,7 +87,7 @@ export default class BarChartSplit extends Base {
       .attr("class", "bar-chart-small-overlying")
       .attr("x", 0)
       .attr("y", d => this.scaleY(d[this.yAxisProp]))
-      .attr("width", d => this.scales[this.xAxisProps.findIndex(element => element === d[this.xAxisProp])](d[this.countProp]))
+      .attr("width", d => this.scales[this.groupAxisProps.findIndex(element => element === d[this.xAxisProp])](d[this.countProp]))
       .attr("height", this.scaleY.bandwidth())
       .attr("fill", d => this.scaleColor(d[this.xAxisProp]))
 
@@ -102,21 +98,21 @@ export default class BarChartSplit extends Base {
       .attr("class", "label")
       .text(d => d[this.countProp])
       .each((d, i, element) => {
-        const xValue = this.scales[this.xAxisProps.findIndex(element => element === d[this.xAxisProp])](d[this.countProp])
-        const xMax = select(element[i])._groups[0][0].getBBox().width;
+        const xValue = this.scales[this.groupAxisProps.findIndex(element => element === d[this.xAxisProp])](d[this.countProp])
+        const xMax = element[i].getBBox().width;
        if (xValue < xMax) {
           select(element[i])
-            .attr("x", xValue + 10)
+            .attr("x", xValue + 5)
             .attr("fill", "var(--gv-black)")
         } else {
           select(element[i])
             .attr("fill", "var(--gv-white)")
             .attr("x", 0)
+            .attr("dx", 4);
         }
         select(element[i])
           .attr("y", this.scaleY(d[this.yAxisProp]) + this.scaleY.bandwidth() / 2)
           .attr("dy", "0.33em")
-          .attr("dx", 4);
       });
   }
 
@@ -133,7 +129,7 @@ export default class BarChartSplit extends Base {
   async setData(data) {
     this.rawData = data
     this.data = this.parse(data)
-    this.xAxisProps = [...new Set(this.data.map(d => d[this.xAxisProp]))];
+    this.groupAxisProps = [...new Set(this.data.map(d => d[this.xAxisProp]))];
 
     // only set the color scale, as of the first time you get the data
     if (!this.scaleColor) {
@@ -156,26 +152,23 @@ export default class BarChartSplit extends Base {
       .domain([...new Set(this.data.map(d => d[this.xAxisProp]))])
       .range([0, this.width]).paddingInner(0.1);
 
-    this.scales = []
     //Create an array of scales, one scale for each of the columns.
-    for (let scale of this.xAxisProps) {
-      let elementScale = scaleLinear()
+    this.scales = this.groupAxisProps.map((scale) => {
+      return scaleLinear()
         .range([0, this.scaleColumn.bandwidth()])
         .domain([0, max(this.data.filter(element => scale.includes(element[this.xAxisProp])), (d) => d[this.countProp])]).nice();
         this.scales.push(elementScale)
-    }
-
+    })
   }
 
   parse(data) {
-    // Group data by xAxisProp and yAxisProp
-    // Your data can contains
+    // Your data can contains multiple elements
+    // with the same xAxisProp and yAxisProp
+    // we need to group them and sum their value of countProp
     return [...data.reduce((r, o) => {
         const key = o[this.xAxisProp] + '-' + o[this.yAxisProp];
 
-        const item = r.get(key) || Object.assign({}, o, {
-          count: 0
-        });
+        const item = r.get(key) || {...o, count: 0};
 
         item.count += +(o[this.countProp]);
 

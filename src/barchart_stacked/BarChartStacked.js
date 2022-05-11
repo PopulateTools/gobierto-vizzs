@@ -82,7 +82,7 @@ export default class BarChartStacked extends Base {
       .selectAll("rect")
       .data(d => d)
       .join("rect")
-        .attr("class", ({ key }) => `bar-stacked-rect ${key}`)
+        .attr("class", "bar-stacked-rect")
         .attr("x", d => this.scaleX(d.data[this.xAxisProp]))
         .attr("y", ([y1, y2]) => Math.min(this.scaleY(y1), this.scaleY(y2)))
         .attr("width", this.scaleX.bandwidth())
@@ -132,20 +132,17 @@ export default class BarChartStacked extends Base {
         update => update,
         exit => exit.remove()
       )
-      .on("pointermove", function(i, d) {
+      .on("pointermove", function(_, d) {
           const { key } = d
-          const rects = selectAll('.bar-stacked-rect')
+          const groups = selectAll('.bar-stacked-group')
 
-          rects
-            .style("opacity", d =>
-              (Object.entries(d.data).filter(([key, value]) =>
-                value === d[1] - d[0])).flat()[0] === key
-                ? 1
-                : 0.2
-            )
+          groups.filter(({ key: k }) => k !== key)
+            .style("opacity", .2)
+          groups.filter(({ key: k }) => k === key)
+            .style("opacity", 1)
       })
-      .on("pointerout", function(d, i, _) {
-        selectAll('.bar-stacked-rect')
+      .on("pointerout", () => {
+        selectAll('.bar-stacked-group')
           .style("opacity", 1)
       })
   }
