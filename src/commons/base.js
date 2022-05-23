@@ -69,6 +69,7 @@ export default class Base {
         line.push(word);
         tspan.text(line.join(" "));
         if (tspan.node().getComputedTextLength() > width) {
+          text.attr("class", "wrap-text")
           line.pop();
           tspan.text(line.join(" "));
           line = [word];

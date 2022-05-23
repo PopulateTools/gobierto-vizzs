@@ -96,7 +96,7 @@ export default class BarChartSplit extends Base {
       .data(([, values]) => values)
       .join("text")
       .attr("class", "label")
-      .text(d => d[this.countProp])
+      .text(d => d[this.countProp].toLocaleString())
       .each((d, i, element) => {
         const xValue = this.scales[this.groupAxisProps.findIndex(element => element === d[this.xAxisProp])](d[this.countProp])
         const xMax = element[i].getBBox().width + 10;

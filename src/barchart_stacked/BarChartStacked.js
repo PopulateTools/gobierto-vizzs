@@ -173,7 +173,7 @@ export default class BarChartStacked extends Base {
       .attr("class", "extra-legend-value")
       .attr("x", d => this.scaleX(d.data[this.xAxisProp]))
       .attr("y", `${this.margin.top + 14}`)
-      .text(([y1, y2]) => (y2 - y1).toFixed(2))
+      .text(([y1, y2]) => ((y2 - y1).toLocaleString(undefined, { minimumFractionDigits: 2,maximumFractionDigits: 2})))
   }
 
   xAxis(g) {
