@@ -58,7 +58,7 @@ export default class BarChartStacked extends Base {
     this.g.append("g").attr("class", "axis axis-x");
     this.g.append("g").attr("class", "axis axis-y");
     this.tooltipContainer = select(this.container).append("div").attr("class", "gv-tooltip gv-tooltip-bar-stacked")
-    this.g.append('text').attr("class", "axis-x-legend").attr("x", (-this.margin.left/3)).attr("y", this.height + 9).attr("dy", "0.71em").attr("text-anchor", "end").text(this.xAxisProp);
+    this.g.append('text').attr("class", "axis-x-legend").attr("x", -60).attr("y", this.height + 9).attr("dy", "0.71em").attr("text-anchor", "end").text(this.xAxisProp);
   }
 
   build() {
@@ -162,7 +162,7 @@ export default class BarChartStacked extends Base {
       .append("text")
       .attr("class", "extra-legend-text")
       .attr("text-anchor", "end")
-      .attr("x", (-this.margin.left / 3))
+      .attr("x", -60)
       .attr("y", (d, i) => `${this.margin.top + (i * 2) + 14}`)
       .text(({ key }) => key);
 
