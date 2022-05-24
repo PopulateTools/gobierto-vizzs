@@ -2,7 +2,7 @@ import Base from "../commons/base";
 import { select, selectAll } from 'd3-selection';
 import { min, max } from 'd3-array';
 import { extent } from "d3-array";
-import { timeMonth, timeYear } from "d3-time";
+import { timeMonth } from "d3-time";
 import { timeFormat } from "d3-time-format";
 import { scaleLinear, scaleOrdinal, scaleBand } from 'd3-scale';
 import { stack } from 'd3-shape';
@@ -23,6 +23,7 @@ export default class BarChartStacked extends Base {
     this.excludeColumns = [...options.excludeColumns || "", this.xAxisProp];
     this.extraLegends = options.extraLegends || [];
     this.showLegend = options.showLegend;
+    this.showYears = options.showYears || true;
     this.orientationLegend = options.orientationLegend || "left";
     this.height = options.height || 400
 
@@ -178,13 +179,12 @@ export default class BarChartStacked extends Base {
 
   xAxis(g) {
     const months = timeMonth.count(...this.scaleX.domain())
-    const showYearOrYears = months > 24 ? timeFormat("%Y") : months < 12 ? timeFormat("%b") : timeFormat("%b-%Y")
-    const ticksValues = months ? showYearOrYears : "";
+    const showYearsOrMonths = this.showYears ? timeFormat("%Y") : timeFormat("%b");
 
     if(months) {
       g.call(
         axisBottom(this.scaleX)
-          .tickFormat(showYearOrYears)
+          .tickFormat(showYearsOrMonths)
       );
     } else {
       g.call(axisBottom(this.scaleX));
@@ -307,7 +307,6 @@ export default class BarChartStacked extends Base {
         </div>`
       tooltipContent.push(valueContent);
     }
-    //TODO: parse data
     return `
       <span class="tooltip-barchart-stacked-title">${titleTooltip}</span>
       ${tooltipContent.join("")}
