@@ -59,8 +59,29 @@ export default class TreeMap extends Base {
     );
 
     const render = (group, root) => {
-      const rootNodes = root.children.length > 1 ? root.children.concat(root) : root.children[0].children
+      if(root === null) {
+        return
+      }
+      this.getGroupItems = [...new Set(this.rawData.map(item => item[this.groupProp[0]]))]
+      let rootNodes = root.children.length > 1 ? root.children.concat(root) : root.children[0].children
       const node = group.selectAll("g").data(rootNodes).join("g");
+      /*Create a "fake" breadcumb, if the group data only contains one value,
+      we filter it to go to the next level, but we lose the breadcrumb title,
+      so in this case we have to add it*/
+      if(root.children.length === 1) {
+        this.svg.append('text')
+          .attr('id', 'first-breadcrumb')
+          .attr('class', 'treemap-breadcrumb')
+          .attr('y', '21px')
+          .attr('x', '0')
+          .style('text-anchor', 'start')
+          .style('font-weight', 'bold')
+          .text(this.getGroupItems[0]);
+      } else {
+        this.svg
+          .select('#first-breadcrumb')
+          .remove()
+      }
 
       node
         .on("touchmove", e => e.preventDefault())
@@ -68,7 +89,14 @@ export default class TreeMap extends Base {
         .on("pointermove", this.onPointerMove.bind(this))
         .attr("cursor", "pointer")
         .attr("class", (d) => (d === root ? "treemap-breadcrumb" : "treemap-item"))
-        .on("click", (e, d) => (d === root ? zoomout(root) : d.height === 0 ? this.onLeafClick(e, d) : zoomin(d)));
+        .on("click", (e, d) => {
+          //Disable the click on breadcrumbs if we are in the first level.
+          if ((d === root) && this.getGroupItems.length === 1 && root.parent.data.title === "root") {
+            return
+          } else {
+            return (d === root ? zoomout(root) : d.height === 0 ? this.onLeafClick(e, d) : zoomin(d))
+          }
+        });
 
       node
         .append("rect")
