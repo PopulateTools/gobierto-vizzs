@@ -59,7 +59,8 @@ export default class TreeMap extends Base {
     );
 
     const render = (group, root) => {
-      const node = group.selectAll("g").data(root.children.concat(root)).join("g");
+      const rootNodes = root.children.length > 1 ? root.children.concat(root) : root.children[0].children
+      const node = group.selectAll("g").data(rootNodes).join("g");
 
       node
         .on("touchmove", e => e.preventDefault())
@@ -277,10 +278,11 @@ export default class TreeMap extends Base {
   }
 
   nodePath(d) {
-    return d
+    const nodes = d
       .ancestors()
       .reverse()
       .map((d) => d.data[this.idProp]);
+    return this.data.children.length > 1 ? nodes : nodes.filter(node => node !== 'root')
   }
 
   defaultBreadcrumb(d) {
