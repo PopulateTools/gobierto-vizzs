@@ -3,7 +3,7 @@ import { select, selectAll } from 'd3-selection';
 import { min, max } from 'd3-array';
 import { extent } from "d3-array";
 import { timeMonth } from "d3-time";
-import { timeFormat } from "d3-time-format";
+import { timeFormat, utcFormat } from "d3-time-format";
 import { scaleLinear, scaleOrdinal, scaleBand } from 'd3-scale';
 import { stack } from 'd3-shape';
 import { axisBottom, axisLeft } from 'd3-axis';
@@ -23,7 +23,7 @@ export default class BarChartStacked extends Base {
     this.excludeColumns = [...options.excludeColumns || "", this.xAxisProp];
     this.extraLegends = options.extraLegends || [];
     this.showLegend = options.showLegend;
-    this.showYears = options.showYears || true;
+    this.xTimeFormat = options.xTimeFormat || (() => timeFormat("%Y"));
     this.orientationLegend = options.orientationLegend || "left";
     this.height = options.height || 400
 
@@ -178,17 +178,10 @@ export default class BarChartStacked extends Base {
   }
 
   xAxis(g) {
-    const months = timeMonth.count(...this.scaleX.domain())
-    const showYearsOrMonths = this.showYears ? timeFormat("%Y") : timeFormat("%b");
-
-    if(months) {
-      g.call(
-        axisBottom(this.scaleX)
-          .tickFormat(showYearsOrMonths)
-      );
-    } else {
-      g.call(axisBottom(this.scaleX));
-    }
+    g.call(
+      axisBottom(this.scaleX)
+        .tickFormat(this.xTimeFormat())
+    );
 
     // remove baseline
     g.select(".domain").remove();
