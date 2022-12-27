@@ -23,7 +23,7 @@ export default class BarChartStacked extends Base {
     this.excludeColumns = [...options.excludeColumns || "", this.xAxisProp];
     this.extraLegends = options.extraLegends || [];
     this.showLegend = options.showLegend;
-    this.xTimeFormat = options.xTimeFormat || (() => timeFormat("%Y"));
+    this.xTimeFormat = options.xTimeFormat || ((d) => timeFormat('%q %Y')(d));
     this.orientationLegend = options.orientationLegend || "left";
     this.height = options.height || 400
 
@@ -180,7 +180,7 @@ export default class BarChartStacked extends Base {
   xAxis(g) {
     g.call(
       axisBottom(this.scaleX)
-        .tickFormat(this.xTimeFormat())
+        .tickFormat(d => this.xTimeFormat(d))
     );
 
     // remove baseline
