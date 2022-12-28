@@ -18,6 +18,7 @@ export default class BarChartSplit extends Base {
     this.countProp = options.count;
     this.height = options.height || 600
     this.moveLabels = options.moveLabels
+    this.valueIsMoney = options.valueIsMoney
     this.scales = [];
     this.groupAxisProps = [];
 
@@ -97,7 +98,7 @@ export default class BarChartSplit extends Base {
       .data(([, values]) => values)
       .join("text")
       .attr("class", "label")
-      .text(d => d[this.countProp].toLocaleString())
+      .text(d => this.valueIsMoney ? new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(d[this.countProp]) : new Intl.NumberFormat('es-ES').format(d[this.countProp]))
       .each((d, i, element) => {
         const xValue = this.scales[this.groupAxisProps.findIndex(element => element === d[this.xAxisProp])](d[this.countProp])
         const xMax = element[i].getBBox().width + 10;
