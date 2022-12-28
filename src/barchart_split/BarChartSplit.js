@@ -17,6 +17,7 @@ export default class BarChartSplit extends Base {
     this.yAxisProp = options.y;
     this.countProp = options.count;
     this.height = options.height || 600
+    this.moveLabels = options.moveLabels
     this.scales = [];
     this.groupAxisProps = [];
 
@@ -100,13 +101,13 @@ export default class BarChartSplit extends Base {
       .each((d, i, element) => {
         const xValue = this.scales[this.groupAxisProps.findIndex(element => element === d[this.xAxisProp])](d[this.countProp])
         const xMax = element[i].getBBox().width + 10;
-       if (xValue < xMax) {
+       if (xValue < xMax && this.moveLabels) {
           select(element[i])
             .attr("x", xValue + 5)
             .attr("fill", "var(--gv-black)")
         } else {
           select(element[i])
-            .attr("fill", "var(--gv-white)")
+            .attr("fill", this.moveLabels ? "var(--gv-white)" : "var(--gv-black)")
             .attr("x", 0)
             .attr("dx", 4);
         }
@@ -178,7 +179,7 @@ export default class BarChartSplit extends Base {
   setColorScale() {
     this.scaleColor = scaleOrdinal()
       .domain(Array.from(new Set(this.data.map((d) => d[this.xAxisProp]))))
-      .range(this.PALETTE)
+      .range(this.moveLabels ? this.PALETTE : this.PALETTE.filter(element => element !== 'var(--gv-color-2)'))
   }
 
   setX(value) {
