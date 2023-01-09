@@ -12,10 +12,10 @@ async function main() {
 
   [
     // [title, Chart, options]
-    ["TreeMap", TreeMap, { group: ["group", "relation"], id: "title" }],
+    /*["TreeMap", TreeMap, { group: ["group", "relation"], id: "title" }],
     ["BeeSwarm", BeeSwarm, { relation: "relation", id: "title" }],
     ["Gantt", Gantt, { id: "title", y: "relation", barHeight: 15 }],
-    ["BarChartStacked", BarChartStacked, { id: "title", data: mockJSON(5), x: "date", excludeColumns: ["relation","title", "group", "id", "phase", "from", "to"], orientationLegend: 'left', showLegend: true }],
+    ["BarChartStacked", BarChartStacked, { id: "title", data: mockJSON(5), x: "date", excludeColumns: ["relation","title", "group", "id", "phase", "from", "to"], orientationLegend: 'left', showLegend: true }],*/
     ["BarChartSplit", BarChartSplit, { id: "title", data: mockJSON(1000), y: "relation", x: "group", count: "value4" }]
 
   ].map(DOM);

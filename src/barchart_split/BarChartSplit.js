@@ -180,7 +180,7 @@ export default class BarChartSplit extends Base {
   setColorScale() {
     this.scaleColor = scaleOrdinal()
       .domain(Array.from(new Set(this.data.map((d) => d[this.xAxisProp]))))
-      .range(this.moveLabels ? this.PALETTE : this.PALETTE.filter(element => element !== 'var(--gv-color-2)'))
+      .range(this.moveLabels ? this.PALETTE : this.PALETTE.filter(element => element !== 'var(--gv-color-6)'))
   }
 
   setX(value) {
