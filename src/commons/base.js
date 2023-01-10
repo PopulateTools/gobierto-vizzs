@@ -58,8 +58,7 @@ export default class Base {
         words = text.text().split(/\s+/).reverse(),
         word,
         line = [],
-        lineNumber = 0,
-        lineHeight = 1.1,
+        lineHeight = 1,
         y = text.attr("y"),
         dy = 0,
         tspan = text
@@ -77,8 +76,7 @@ export default class Base {
           tspan = text
             .append("tspan")
             .attr("x", marginLeft)
-            .attr("y", y)
-            .attr("dy", ++lineNumber * lineHeight + dy + "em")
+            .attr("dy", lineHeight + dy + "em")
             .text(word);
         }
       }
