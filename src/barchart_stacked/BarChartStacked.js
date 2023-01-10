@@ -118,15 +118,16 @@ export default class BarChartStacked extends Base {
             .attr("transform", (d, i) => `translate(10, ${i * 24})`)
           g.append("rect")
             .attr("x", positionLegendGroupX)
-            .attr("y", (d, i) => `${this.margin.top + (i * 3)}`)
+            .attr("y", (d, i) => `${this.margin.top + (i * 24)}`)
             .attr("class", "bar-stack-label-rect")
             .attr("width", 16)
             .attr("height", 16)
           g.append("text")
             .attr("class", "bar-stacked-legend-text")
             .attr("x", positionLegendLabelX)
-            .attr("y", (d, i) => `${this.margin.top + (i * 3) + 14}`)
-            .text(({ key }) => key);
+            .attr("y", (d, i) => `${this.margin.top + (i * 24) + 14}`)
+            .text(({ key }) => key)
+            .call(this.wrap, 150, 20);
 
           return g;
         },
@@ -152,17 +153,18 @@ export default class BarChartStacked extends Base {
       this.svg
         .selectAll(".bar-stack-label")
         .attr("transform", function(d,i) {
-          const previousElement = select(this.previousElementSibling)._groups[0][0].getBoundingClientRect()
-          const element = select(this)._groups[0][0].getBoundingClientRect()
-          if(i > 1) {
-            positionLegend = previousElement.height < 20
-              ? positionLegend + (element.height / 3)
-              : positionLegend + (element.height / 5)
+          const previousElement = select(this.previousElementSibling)._groups[0][0].getBBox()
+          const previousElementText = select(this.previousElementSibling)._groups[0][0].lastChild.lastChild.getBBox()
+          const element = select(this)._groups[0][0].lastChild.lastChild.getBBox()
+          if(i > 0) {
+            positionLegend = previousElement.height > 20
+              ? positionLegend + (element.height / 2) + 4
+              : positionLegend + (element.height / 2)
           }
-          if(i > 1) {
-            return `translate(10, ${positionLegend + previousElement.height})`
+          if(i > 0) {
+            return `translate(10, ${positionLegend + previousElementText.height})`
           } else {
-            return `translate(10, ${i * 24})`
+            return `translate(10, 0)`
           }
 
         })
