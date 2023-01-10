@@ -150,24 +150,12 @@ export default class BarChartStacked extends Base {
       })
 
       if(this.wrapLegends) {
-        let positionLegend = 0
-
         this.svg
           .selectAll(".bar-stack-label")
           .attr("transform", function(d,i) {
             const previousElement = select(this.previousElementSibling)._groups[0][0].getBBox()
             const previousElementText = select(this.previousElementSibling)._groups[0][0].lastChild.lastChild.getBBox()
-            const element = select(this)._groups[0][0].lastChild.lastChild.getBBox()
-            if(i > 0) {
-              positionLegend = positionLegend + (element.height / 2) + 1
-            }
-            if(i > 1) {
-              return `translate(10, ${positionLegend + previousElementText.height})`
-            } else if(i === 1) {
-              return `translate(10, ${previousElementText.y / 1.5})`
-            } else {
-              return `translate(10, 0)`
-            }
+            return previousElement.height > 40 && i > 0 ? `translate(10, ${(i * 9 + previousElementText.height)})` : return `translate(10, ${i * 10})`
           })
       }
 
