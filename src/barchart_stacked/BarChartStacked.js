@@ -155,7 +155,7 @@ export default class BarChartStacked extends Base {
           .attr("transform", function(d,i) {
             const previousElement = select(this.previousElementSibling)._groups[0][0].getBBox()
             const previousElementText = select(this.previousElementSibling)._groups[0][0].lastChild.lastChild.getBBox()
-            return previousElement.height > 40 && i > 0 ? `translate(10, ${(i * 9 + previousElementText.height)})` : return `translate(10, ${i * 10})`
+            return previousElement.height > 40 && i > 0 ? `translate(10, ${(i * 9 + previousElementText.height)})` : `translate(10, ${i * 10})`
           })
       }
 
