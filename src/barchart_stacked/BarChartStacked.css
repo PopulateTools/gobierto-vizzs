@@ -64,7 +64,8 @@
   fill: #828282;
 }
 
-.extra-legend-value {
+.extra-legend-value,
+.wrap-text {
   font-size: 14px;
   fill: #828282;
 }
@@ -72,3 +73,5 @@
 .bar-stack-label {
   cursor: pointer;
 }
+
+

@@ -30,8 +30,8 @@ export default class BarChartStacked extends Base {
     this.margin = {
       top: 12,
       bottom: 160,
-      left: this.orientationLegend === 'left' ? 192 : 84,
-      right: this.orientationLegend === 'left' ? 48 : 192,
+      left: this.orientationLegend === 'left' ? 240 : 84,
+      right: this.orientationLegend === 'left' ? 48 : 240,
       ...options.margin
     };
 
@@ -146,6 +146,26 @@ export default class BarChartStacked extends Base {
         selectAll('.bar-stacked-group')
           .style("opacity", 1)
       })
+
+      let positionLegend = 0
+
+      this.svg
+        .selectAll(".bar-stack-label")
+        .attr("transform", function(d,i) {
+          const previousElement = select(this.previousElementSibling)._groups[0][0].getBoundingClientRect()
+          const element = select(this)._groups[0][0].getBoundingClientRect()
+          if(i > 1) {
+            positionLegend = previousElement.height < 20
+              ? positionLegend + (element.height / 3)
+              : positionLegend + (element.height / 5)
+          }
+          if(i > 1) {
+            return `translate(10, ${positionLegend + previousElement.height})`
+          } else {
+            return `translate(10, ${i * 24})`
+          }
+
+        })
   }
 
   buildExtraAxis() {

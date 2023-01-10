@@ -52,19 +52,20 @@ export default class Base {
     return screen.width < 768
   }
 
-  wrap(text, width) {
+  wrap(text, width, marginLeft = 0) {
     text.each(function () {
       var text = select(this),
         words = text.text().split(/\s+/).reverse(),
         word,
         line = [],
+        lineNumber = 0,
         lineHeight = 1,
         y = text.attr("y"),
         dy = 0,
         tspan = text
           .text(null)
           .append("tspan")
-          .attr("x", 0)
+          .attr("x", marginLeft)
       while ((word = words.pop())) {
         line.push(word);
         tspan.text(line.join(" "));
@@ -75,9 +76,9 @@ export default class Base {
           line = [word];
           tspan = text
             .append("tspan")
-            .attr("x", 0)
+            .attr("x", marginLeft)
             .attr("y", y)
-            .attr("dy", lineHeight + dy + "em")
+            .attr("dy", ++lineNumber * lineHeight + dy + "em")
             .text(word);
         }
       }
