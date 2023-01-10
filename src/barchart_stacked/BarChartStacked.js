@@ -25,7 +25,8 @@ export default class BarChartStacked extends Base {
     this.showLegend = options.showLegend;
     this.xTimeFormat = options.xTimeFormat || ((d) => timeFormat('%q %Y')(d));
     this.orientationLegend = options.orientationLegend || "left";
-    this.height = options.height || 400
+    this.height = options.height || 400;
+    this.wrapLegends = options.wrapLegends;
 
     this.margin = {
       top: 12,
@@ -115,17 +116,17 @@ export default class BarChartStacked extends Base {
             .append("g")
             .attr("class", "bar-stack-label")
             .attr("fill", ({ key }) => this.scaleColor(key))
-            .attr("transform", (d, i) => `translate(10, ${i * 24})`)
+            .attr("transform", (d, i) => `translate(10, ${i * (this.wrapLegends ? 24 : 18)})`)
           g.append("rect")
             .attr("x", positionLegendGroupX)
-            .attr("y", (d, i) => `${this.margin.top + (i * 24)}`)
+            .attr("y", (d, i) => `${this.margin.top + (i * (this.wrapLegends ? 24 : 18))}`)
             .attr("class", "bar-stack-label-rect")
             .attr("width", 16)
             .attr("height", 16)
           g.append("text")
             .attr("class", "bar-stacked-legend-text")
             .attr("x", positionLegendLabelX)
-            .attr("y", (d, i) => `${this.margin.top + (i * 24) + 14}`)
+            .attr("y", (d, i) => `${this.margin.top + (i * (this.wrapLegends ? 24 : 18)) + 14}`)
             .text(({ key }) => key)
             .call(this.wrap, 150, 20);
 
@@ -148,26 +149,28 @@ export default class BarChartStacked extends Base {
           .style("opacity", 1)
       })
 
-      let positionLegend = 0
+      if(this.wrapLegends) {
+        let positionLegend = 0
 
-      this.svg
-        .selectAll(".bar-stack-label")
-        .attr("transform", function(d,i) {
-          const previousElement = select(this.previousElementSibling)._groups[0][0].getBBox()
-          const previousElementText = select(this.previousElementSibling)._groups[0][0].lastChild.lastChild.getBBox()
-          const element = select(this)._groups[0][0].lastChild.lastChild.getBBox()
-          if(i > 0) {
-            positionLegend = previousElement.height > 20
-              ? positionLegend + (element.height / 2) + 4
-              : positionLegend + (element.height / 2)
-          }
-          if(i > 0) {
-            return `translate(10, ${positionLegend + previousElementText.height})`
-          } else {
-            return `translate(10, 0)`
-          }
+        this.svg
+          .selectAll(".bar-stack-label")
+          .attr("transform", function(d,i) {
+            const previousElement = select(this.previousElementSibling)._groups[0][0].getBBox()
+            const previousElementText = select(this.previousElementSibling)._groups[0][0].lastChild.lastChild.getBBox()
+            const element = select(this)._groups[0][0].lastChild.lastChild.getBBox()
+            if(i > 0) {
+              positionLegend = positionLegend + (element.height / 2) + 1
+            }
+            if(i > 1) {
+              return `translate(10, ${positionLegend + previousElementText.height})`
+            } else if(i === 1) {
+              return `translate(10, ${previousElementText.y / 1.5})`
+            } else {
+              return `translate(10, 0)`
+            }
+          })
+      }
 
-        })
   }
 
   buildExtraAxis() {

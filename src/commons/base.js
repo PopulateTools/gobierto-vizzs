@@ -59,7 +59,7 @@ export default class Base {
         word,
         line = [],
         lineNumber = 0,
-        lineHeight = 1,
+        lineHeight = 1.1,
         y = text.attr("y"),
         dy = 0,
         tspan = text
