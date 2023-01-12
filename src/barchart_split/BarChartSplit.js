@@ -19,6 +19,7 @@ export default class BarChartSplit extends Base {
     this.height = options.height || 600
     this.moveLabels = options.moveLabels
     this.valueIsMoney = options.valueIsMoney
+    this.showValueOnHover = options.showValueOnHover
     this.scales = [];
     this.groupAxisProps = [];
 
@@ -54,7 +55,8 @@ export default class BarChartSplit extends Base {
   build() {
     this.setScales();
 
-    const dataGroup = group(this.data, (d) => d[this.xAxisProp])
+    const dataGroup = group(this.data, (d) => d[this.xAxisProp]);
+    const that = this;
 
     this.g
       .select(".axis-y")
@@ -65,6 +67,7 @@ export default class BarChartSplit extends Base {
       .data(dataGroup, ([key]) => key)
       .join("g")
       .attr("class", "column")
+      .attr("id", (d,i) => `column-${d[0].replace(/ /g, '').replace(/[\u00f1-\u036f]/g, '')}`)
       .attr("transform", ([key]) => `translate(${this.scaleColumn(key)},0)`);
 
     gColumn.append("text")
@@ -76,28 +79,64 @@ export default class BarChartSplit extends Base {
       .data(([, values]) => values)
       .join("rect")
       .attr("class", "bar-chart-small-underlying")
+      .attr("id", (d,i) => i)
       .attr("x", 0)
       .attr("y", (d) => this.scaleY(d[this.yAxisProp]))
       .attr("width", this.scaleColumn.bandwidth())
       .attr("height", this.scaleY.bandwidth())
       .attr("opacity", ".2")
-      .attr("fill", "var(--gv-grey)");
+      .attr("fill", "var(--gv-grey)")
+      .style("cursor", () => this.showValueOnHover ? "pointer" : "normal")
+      .on('mouseover', function(event, d) {
+        const { currentTarget: { id } } = event
+        const columnElement = d[that.xAxisProp].replace(/ /g, '').replace(/[\u00f1-\u036f]/g, '');
+        if(that.showValueOnHover) {
+          select(`#column-${columnElement} #label-${id}`).transition().duration(200).style('opacity', 1)
+        }
+      })
+      .on('mouseout', function(event, d) {
+        const { currentTarget: { id } } = event
+        const columnElement = d[that.xAxisProp].replace(/ /g, '').replace(/[\u00f1-\u036f]/g, '');
+        if(that.showValueOnHover) {
+          select(`#column-${columnElement} #label-${id}`).transition().duration(200).style('opacity', 0)
+        }
+      });
 
     gColumn.selectAll(".bar-chart-small-overlying")
       .data(([, values]) => values)
       .join("rect")
       .attr("class", "bar-chart-small-overlying")
+      .attr("id", (d,i) => i)
       .attr("x", 0)
       .attr("y", d => this.scaleY(d[this.yAxisProp]))
       .attr("width", d => this.scales[this.groupAxisProps.findIndex(element => element === d[this.xAxisProp])](d[this.countProp]))
       .attr("height", this.scaleY.bandwidth())
       .attr("fill", d => this.scaleColor(d[this.xAxisProp]))
+      .style("cursor", () => this.showValueOnHover ? "pointer" : "normal")
+      .on('mouseover', function(event, d) {
+        const { currentTarget: { id } } = event
+        const columnElement = d[that.xAxisProp].replace(/ /g, '').replace(/[\u00f1-\u036f]/g, '');
+        if(that.showValueOnHover) {
+          select(`#column-${columnElement} #label-${id}`).transition().duration(200).style('opacity', 1)
+        }
+      })
+      .on('mouseout', function(event, d) {
+        const { currentTarget: { id } } = event
+        const columnElement = d[that.xAxisProp].replace(/ /g, '').replace(/[\u00f1-\u036f]/g, '');
+        if(that.showValueOnHover) {
+          select(`#column-${columnElement} #label-${id}`).transition().duration(200).style('opacity', 0)
+        }
+      });
+
 
     gColumn
       .selectAll(".label")
       .data(([, values]) => values)
       .join("text")
       .attr("class", "label")
+      .attr("id", (d,i) => `label-${i}`)
+      .style("opacity", () => this.showValueOnHover ? 0 : 1)
+      .style("pointer-events","none")
       .text(d => this.valueIsMoney ? new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(d[this.countProp]) : new Intl.NumberFormat('es-ES').format(d[this.countProp]))
       .each((d, i, element) => {
         const xValue = this.scales[this.groupAxisProps.findIndex(element => element === d[this.xAxisProp])](d[this.countProp])
@@ -115,11 +154,10 @@ export default class BarChartSplit extends Base {
         select(element[i])
           .attr("y", this.scaleY(d[this.yAxisProp]) + this.scaleY.bandwidth() / 2)
           .attr("dy", "0.33em")
-      });
+      })
   }
 
   yAxis(g) {
-    g.call(axisLeft(this.scaleY));
     g.call(axisLeft(this.scaleY).tickPadding([5]));
 
     // remove baseline
@@ -149,11 +187,12 @@ export default class BarChartSplit extends Base {
 
     this.scaleY = scaleBand()
       .domain(this.data.map(d => d[this.yAxisProp]).reverse())
-      .range([this.height, 0]).padding(0.4);
+      .range([this.height, 0])
+      .padding(0.4)
 
     this.scaleColumn = scaleBand()
       .domain([...new Set(this.data.map(d => d[this.xAxisProp]))])
-      .range([0, this.width]).paddingInner(0.1);
+      .range([0, this.width]).paddingInner(0.4);
 
     //Create an array of scales, one scale for each of the columns.
     this.scales = this.groupAxisProps.map((scale) => {
