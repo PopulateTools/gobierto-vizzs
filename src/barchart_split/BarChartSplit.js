@@ -120,6 +120,7 @@ export default class BarChartSplit extends Base {
 
   yAxis(g) {
     g.call(axisLeft(this.scaleY));
+    g.call(axisLeft(this.scaleY).tickPadding([5]));
 
     // remove baseline
     g.select(".domain").remove();
