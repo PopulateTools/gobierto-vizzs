@@ -31,7 +31,7 @@ export default class BarChartStacked extends Base {
 
     this.margin = {
       top: 12,
-      bottom: 160,
+      bottom: Array.isArray(this.extraLegends) && this.extraLegends.length ? 160 : 36,
       left: this.orientationLegend === 'left' ? 240 : 84,
       right: this.orientationLegend === 'left' ? 48 : 240,
       ...options.margin
