@@ -25,6 +25,7 @@ export default class BarChartStacked extends Base {
     this.showLegend = options.showLegend;
     this.xTimeFormat = options.xTimeFormat || ((d) => timeFormat('%q %Y')(d));
     this.orientationLegend = options.orientationLegend || "left";
+    this.tickValueProp = options.tickValueProp || 1;
     this.height = options.height || 400;
     this.wrapLegends = options.wrapLegends;
 
@@ -194,6 +195,7 @@ export default class BarChartStacked extends Base {
     g.call(
       axisBottom(this.scaleX)
         .tickFormat(d => this.xTimeFormat(d))
+        .tickValues(this.scaleX.domain().filter((d,i) => !(i % this.tickValueProp)))
     );
 
     // remove baseline

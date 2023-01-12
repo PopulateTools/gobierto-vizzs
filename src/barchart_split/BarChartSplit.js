@@ -67,7 +67,7 @@ export default class BarChartSplit extends Base {
       .data(dataGroup, ([key]) => key)
       .join("g")
       .attr("class", "column")
-      .attr("id", (d,i) => `column-${d[0].replace(/ /g, '').replace(/[\u00f1-\u036f]/g, '').replace(/</g, '').replace(/>/g, '')}`)
+      .attr("id", (d,i) => `column-${d[0].replace(/ /g, '').replace(/[\u00f1-\u036f]/g, '').replace(/</g, '').replace(/>/g, '').replace(/=/g, '')}`)
       .attr("transform", ([key]) => `translate(${this.scaleColumn(key)},0)`);
 
     gColumn.append("text")
@@ -195,7 +195,7 @@ export default class BarChartSplit extends Base {
 
   showValueMouseOver(event, d) {
     const { currentTarget: { id } } = event
-    const columnElement = d[this.xAxisProp].replace(/ /g, '').replace(/[\u00f1-\u036f]/g, '').replace(/</g, '').replace(/>/g, '');
+    const columnElement = d[this.xAxisProp].replace(/ /g, '').replace(/[\u00f1-\u036f]/g, '').replace(/</g, '').replace(/>/g, '').replace(/=/g, '');
     if(this.showValueOnHover) {
       select(`#column-${columnElement} #label-${id}`).transition().duration(200).style('opacity', 1)
     }
@@ -203,7 +203,7 @@ export default class BarChartSplit extends Base {
 
   showValueMouseOut(event, d) {
     const { currentTarget: { id } } = event
-    const columnElement = d[this.xAxisProp].replace(/ /g, '').replace(/[\u00f1-\u036f]/g, '').replace(/</g, '').replace(/>/g, '');
+    const columnElement = d[this.xAxisProp].replace(/ /g, '').replace(/[\u00f1-\u036f]/g, '').replace(/</g, '').replace(/>/g, '').replace(/=/g, '');
     if(this.showValueOnHover) {
       select(`#column-${columnElement} #label-${id}`).transition().duration(200).style('opacity', 0)
     }
