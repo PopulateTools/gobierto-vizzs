@@ -67,7 +67,7 @@ export default class BarChartSplit extends Base {
       .data(dataGroup, ([key]) => key)
       .join("g")
       .attr("class", "column")
-      .attr("id", (d,i) => `column-${d[0].replace(/ /g, '').replace(/[\u00f1-\u036f]/g, '')}`)
+      .attr("id", (d,i) => `column-${d[0].replace(/ /g, '').replace(/[\u00f1-\u036f]/g, '').replace(/</g, '').replace(/>/g, '')}`)
       .attr("transform", ([key]) => `translate(${this.scaleColumn(key)},0)`);
 
     gColumn.append("text")
@@ -87,20 +87,8 @@ export default class BarChartSplit extends Base {
       .attr("opacity", ".2")
       .attr("fill", "var(--gv-grey)")
       .style("cursor", () => this.showValueOnHover ? "pointer" : "normal")
-      .on('mouseover', function(event, d) {
-        const { currentTarget: { id } } = event
-        const columnElement = d[that.xAxisProp].replace(/ /g, '').replace(/[\u00f1-\u036f]/g, '');
-        if(that.showValueOnHover) {
-          select(`#column-${columnElement} #label-${id}`).transition().duration(200).style('opacity', 1)
-        }
-      })
-      .on('mouseout', function(event, d) {
-        const { currentTarget: { id } } = event
-        const columnElement = d[that.xAxisProp].replace(/ /g, '').replace(/[\u00f1-\u036f]/g, '');
-        if(that.showValueOnHover) {
-          select(`#column-${columnElement} #label-${id}`).transition().duration(200).style('opacity', 0)
-        }
-      });
+      .on('mouseover', (event, d) => this.showValueMouseOver(event, d))
+      .on('mouseout', (event, d) => this.showValueMouseOut(event, d));
 
     gColumn.selectAll(".bar-chart-small-overlying")
       .data(([, values]) => values)
@@ -113,20 +101,8 @@ export default class BarChartSplit extends Base {
       .attr("height", this.scaleY.bandwidth())
       .attr("fill", d => this.scaleColor(d[this.xAxisProp]))
       .style("cursor", () => this.showValueOnHover ? "pointer" : "normal")
-      .on('mouseover', function(event, d) {
-        const { currentTarget: { id } } = event
-        const columnElement = d[that.xAxisProp].replace(/ /g, '').replace(/[\u00f1-\u036f]/g, '');
-        if(that.showValueOnHover) {
-          select(`#column-${columnElement} #label-${id}`).transition().duration(200).style('opacity', 1)
-        }
-      })
-      .on('mouseout', function(event, d) {
-        const { currentTarget: { id } } = event
-        const columnElement = d[that.xAxisProp].replace(/ /g, '').replace(/[\u00f1-\u036f]/g, '');
-        if(that.showValueOnHover) {
-          select(`#column-${columnElement} #label-${id}`).transition().duration(200).style('opacity', 0)
-        }
-      });
+      .on('mouseover', (event, d) => this.showValueMouseOver(event, d))
+      .on('mouseout', (event, d) => this.showValueMouseOut(event, d));
 
 
     gColumn
@@ -215,6 +191,22 @@ export default class BarChartSplit extends Base {
 
         return r.set(key, item);
       }, new Map).values()];
+  }
+
+  showValueMouseOver(event, d) {
+    const { currentTarget: { id } } = event
+    const columnElement = d[this.xAxisProp].replace(/ /g, '').replace(/[\u00f1-\u036f]/g, '').replace(/</g, '').replace(/>/g, '');
+    if(this.showValueOnHover) {
+      select(`#column-${columnElement} #label-${id}`).transition().duration(200).style('opacity', 1)
+    }
+  }
+
+  showValueMouseOut(event, d) {
+    const { currentTarget: { id } } = event
+    const columnElement = d[this.xAxisProp].replace(/ /g, '').replace(/[\u00f1-\u036f]/g, '').replace(/</g, '').replace(/>/g, '');
+    if(this.showValueOnHover) {
+      select(`#column-${columnElement} #label-${id}`).transition().duration(200).style('opacity', 0)
+    }
   }
 
   setColorScale() {
