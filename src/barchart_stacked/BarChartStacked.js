@@ -1,7 +1,6 @@
 import Base from "../commons/base";
 import { select, selectAll } from 'd3-selection';
-import { min, max } from 'd3-array';
-import { extent } from "d3-array";
+import { min, max, extent } from 'd3-array';
 import { timeMonth } from "d3-time";
 import { timeFormat, utcFormat } from "d3-time-format";
 import { scaleLinear, scaleOrdinal, scaleBand } from 'd3-scale';
@@ -249,7 +248,8 @@ export default class BarChartStacked extends Base {
       .attr("height", `${this.height + this.margin.top + this.margin.bottom}`);
 
     this.scaleY = scaleLinear()
-      .domain([0, max(stacked[stacked.length - 1], d => d[1])])
+      .domain([0, max(stacked, d => max(d, (d) => d[1]))])
+      .nice()
       .range([this.height, 0]);
 
     this.scaleX = scaleBand()
