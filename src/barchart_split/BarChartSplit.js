@@ -12,6 +12,8 @@ export default class BarChartSplit extends Base {
   constructor(container, data, options = {}) {
     super(container, data, options)
 
+    this.tooltip = options.tooltip || this.defaultTooltip
+
     // main properties to display
     this.xAxisProp = options.x;
     this.yAxisProp = options.y;
@@ -19,7 +21,7 @@ export default class BarChartSplit extends Base {
     this.height = options.height || 600
     this.moveLabels = options.moveLabels
     this.valueIsMoney = options.valueIsMoney
-    this.showValueOnHover = options.showValueOnHover
+    this.showValueOnTooltip = options.showValueOnTooltip
     this.scales = [];
     this.groupAxisProps = [];
 
@@ -48,6 +50,7 @@ export default class BarChartSplit extends Base {
 
   setupElements() {
     this.svg = select(this.container).classed("gv-container", true).append("svg").attr("class", "gv-plot");
+    this.tooltipContainer = select(this.container).append("div").attr("class", "gv-tooltip gv-tooltip-bar-chart-small")
     this.g = this.svg.append("g").attr("transform", `translate(${this.margin.left} ${this.margin.top})`);
     this.g.append("g").attr("class", "axis axis-y");
   }
@@ -56,7 +59,6 @@ export default class BarChartSplit extends Base {
     this.setScales();
 
     const dataGroup = group(this.data, (d) => d[this.xAxisProp]);
-    const that = this;
 
     this.g
       .select(".axis-y")
@@ -67,7 +69,6 @@ export default class BarChartSplit extends Base {
       .data(dataGroup, ([key]) => key)
       .join("g")
       .attr("class", "column")
-      .attr("id", (d,i) => `column-${d[0].replace(/ /g, '').replace(/[\u00f1-\u036f]/g, '').replace(/</g, '').replace(/>/g, '').replace(/=/g, '')}`)
       .attr("transform", ([key]) => `translate(${this.scaleColumn(key)},0)`);
 
     gColumn.append("text")
@@ -75,66 +76,65 @@ export default class BarChartSplit extends Base {
       .text(([ key ]) => key)
       .call(this.wrap, this.width / [...new Set(this.data.map(d => d[this.xAxisProp]))].length);
 
-    gColumn.selectAll(".bar-chart-small-underlying")
+    this.group = gColumn.selectAll(".bar-chart-small-groups")
       .data(([, values]) => values)
-      .join("rect")
-      .attr("class", "bar-chart-small-underlying")
-      .attr("id", (d,i) => i)
-      .attr("x", 0)
-      .attr("y", (d) => this.scaleY(d[this.yAxisProp]))
-      .attr("width", this.scaleColumn.bandwidth())
-      .attr("height", this.scaleY.bandwidth())
-      .attr("opacity", ".2")
-      .attr("fill", "var(--gv-grey)")
-      .style("cursor", () => this.showValueOnHover ? "pointer" : "normal")
-      .on('mouseover', (event, d) => this.showValueMouseOver(event, d))
-      .on('mouseout', (event, d) => this.showValueMouseOut(event, d));
-
-    gColumn.selectAll(".bar-chart-small-overlying")
-      .data(([, values]) => values)
-      .join("rect")
-      .attr("class", "bar-chart-small-overlying")
-      .attr("id", (d,i) => i)
-      .attr("x", 0)
-      .attr("y", d => this.scaleY(d[this.yAxisProp]))
-      .attr("width", d => this.scales[this.groupAxisProps.findIndex(element => element === d[this.xAxisProp])](d[this.countProp]))
-      .attr("height", this.scaleY.bandwidth())
-      .attr("fill", d => this.scaleColor(d[this.xAxisProp]))
-      .style("cursor", () => this.showValueOnHover ? "pointer" : "normal")
-      .on('mouseover', (event, d) => this.showValueMouseOver(event, d))
-      .on('mouseout', (event, d) => this.showValueMouseOut(event, d));
-
-
-    gColumn
-      .selectAll(".label")
-      .data(([, values]) => values)
-      .join("text")
-      .attr("class", "label")
-      .attr("id", (d,i) => `label-${i}`)
-      .style("opacity", () => this.showValueOnHover ? 0 : 1)
-      .style("pointer-events","none")
-      .text(d => this.valueIsMoney ? new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(d[this.countProp]) : new Intl.NumberFormat('es-ES').format(d[this.countProp]))
-      .each((d, i, element) => {
-        const xValue = this.scales[this.groupAxisProps.findIndex(element => element === d[this.xAxisProp])](d[this.countProp])
-        const xMax = element[i].getBBox().width + 10;
-       if (xValue < xMax && this.moveLabels) {
-          select(element[i])
-            .attr("x", xValue + 5)
-            .attr("fill", "var(--gv-black)")
-        } else {
-          select(element[i])
-            .attr("fill", this.moveLabels ? "var(--gv-white)" : "var(--gv-black)")
+      .join(
+        enter => {
+          const g = enter
+            .append("g")
+            .attr("class", "bar-chart-small-groups")
+          g.append("rect")
             .attr("x", 0)
-            .attr("dx", 4);
-        }
-        select(element[i])
-          .attr("y", this.scaleY(d[this.yAxisProp]) + this.scaleY.bandwidth() / 2)
-          .attr("dy", "0.33em")
-      })
+            .attr("y", (d) => this.scaleY(d[this.yAxisProp]))
+            .attr("width", this.scaleColumn.bandwidth())
+            .attr("height", this.scaleY.bandwidth())
+            .attr("opacity", ".2")
+            .attr("fill", "var(--gv-grey)")
+            .attr("class", "bar-chart-small-underlying")
+          g.append("rect")
+            .attr("x", 0)
+            .attr("y", d => this.scaleY(d[this.yAxisProp]))
+            .attr("width", d => this.scales[this.groupAxisProps.findIndex(element => element === d[this.xAxisProp])](d[this.countProp]))
+            .attr("height", this.scaleY.bandwidth())
+            .attr("fill", d => this.scaleColor(d[this.xAxisProp]))
+            .attr("class", "bar-chart-small-overlying")
+          g.append("text")
+            .attr("class", "label")
+            .style("opacity", () => this.showValueOnTooltip ? 0 : 1)
+            .style("pointer-events","none")
+            .text(d => this.valueIsMoney ? new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(d[this.countProp]) : new Intl.NumberFormat('es-ES').format(d[this.countProp]))
+            .each((d, i, element) => {
+              const xValue = this.scales[this.groupAxisProps.findIndex(element => element === d[this.xAxisProp])](d[this.countProp])
+              const xMax = element[i].getBBox().width + 10;
+             if (xValue < xMax && this.moveLabels) {
+                select(element[i])
+                  .attr("x", xValue + 5)
+                  .attr("fill", "var(--gv-black)")
+              } else {
+                select(element[i])
+                  .attr("fill", this.moveLabels ? "var(--gv-white)" : "var(--gv-black)")
+                  .attr("x", 0)
+                  .attr("dx", 4);
+              }
+              select(element[i])
+                .attr("y", this.scaleY(d[this.yAxisProp]) + this.scaleY.bandwidth() / 2)
+                .attr("dy", "0.33em")
+            })
+
+          return g;
+        },
+        update => update,
+        exit => exit.remove()
+      )
+      .on("touchmove", e => e.preventDefault())
+      .on("pointermove", this.onPointerMove.bind(this))
+      .on("pointerout", this.onPointerOut.bind(this))
+      .attr("cursor", this.showValueOnTooltip ? "pointer" : "normal")
+
   }
 
   yAxis(g) {
-    g.call(axisLeft(this.scaleY).tickPadding([5]));
+    g.call(axisLeft(this.scaleY).tickPadding([10]));
 
     // remove baseline
     g.select(".domain").remove();
@@ -178,6 +178,30 @@ export default class BarChartSplit extends Base {
     })
   }
 
+  onPointerMove(event, d) {
+    if(!this.showValueOnTooltip) {
+      return;
+    }
+    const tooltip = this.tooltipContainer.html(this.tooltip(d))
+    const [x, y] = this.tooltipPosition(event, this.tooltipContainer.node(), 10);
+
+    tooltip
+      .style("top", `${y}px`)
+      .style("left", `${x}px`)
+      .style("pointer-events", "auto")
+      .transition()
+      .duration(400)
+      .style("opacity", 1);
+  }
+
+  onPointerOut() {
+    if(!this.showValueOnTooltip) {
+      return;
+    }
+    this.tooltipContainer.style("pointer-events", "none").transition().delay(300).duration(200).style("opacity", 0);
+    selectAll(".bar-chart-small").transition().duration(200).style("opacity", 1);
+  }
+
   parse(data) {
     // Your data can contains multiple elements
     // with the same xAxisProp and yAxisProp
@@ -193,26 +217,20 @@ export default class BarChartSplit extends Base {
       }, new Map).values()];
   }
 
-  showValueMouseOver(event, d) {
-    const { currentTarget: { id } } = event
-    const columnElement = d[this.xAxisProp].replace(/ /g, '').replace(/[\u00f1-\u036f]/g, '').replace(/</g, '').replace(/>/g, '').replace(/=/g, '');
-    if(this.showValueOnHover) {
-      select(`#column-${columnElement} #label-${id}`).transition().duration(200).style('opacity', 1)
-    }
-  }
-
-  showValueMouseOut(event, d) {
-    const { currentTarget: { id } } = event
-    const columnElement = d[this.xAxisProp].replace(/ /g, '').replace(/[\u00f1-\u036f]/g, '').replace(/</g, '').replace(/>/g, '').replace(/=/g, '');
-    if(this.showValueOnHover) {
-      select(`#column-${columnElement} #label-${id}`).transition().duration(200).style('opacity', 0)
-    }
-  }
-
   setColorScale() {
     this.scaleColor = scaleOrdinal()
       .domain(Array.from(new Set(this.data.map((d) => d[this.xAxisProp]))))
       .range(this.moveLabels ? this.PALETTE : this.PALETTE.filter(element => element !== 'var(--gv-color-6)'))
+  }
+
+  defaultTooltip(d) {
+    return `
+      <div class="bar-chart-small-tooltip">
+        <h2 class="bar-chart-small-tooltip-title">${d[this.yAxisProp]}</h2>
+        <span class="bar-chart-small-tooltip-value">${this.valueIsMoney ? new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(d[this.countProp]) : new Intl.NumberFormat('es-ES').format(d[this.countProp])}</span>
+        &nbsp;
+      </div>
+      `;
   }
 
   setX(value) {

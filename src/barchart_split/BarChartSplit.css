@@ -11,3 +11,15 @@
   text-transform: uppercase;
   font-size: 0.875rem;
 }
+
+.bar-chart-small-tooltip-title {
+  text-transform: uppercase;
+  font-size: .75rem;
+  font-weight: bold;
+  border-bottom: 1px solid var(--gv-grey);
+}
+
+.bar-chart-small-tooltip-value {
+  color: var(--gv-black);
+  font-size: .75rem;
+}
