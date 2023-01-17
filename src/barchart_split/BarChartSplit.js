@@ -69,7 +69,7 @@ export default class BarChartSplit extends Base {
       .data(dataGroup, ([key]) => key)
       .join("g")
       .attr("class", "column")
-      .attr("transform", ([key]) => `translate(${this.scaleColumn(key)},0)`);
+      .attr("transform", ([key]) => `translate(${this.scaleColumn(key) + 5},0)`);
 
     gColumn.append("text")
       .attr("class", "title")
