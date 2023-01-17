@@ -44,7 +44,7 @@ export default class BarChartStacked extends Base {
     if (data.length) {
       this.setData(data)
       //Gets the columns that give value to each of the parts of the stacked bar chart.
-      this.columns = [...new Set(data.flatMap(Object.keys))].filter(column => !this.excludeColumns.includes(column));
+      this.columns = options.columns || [...new Set(data.flatMap(Object.keys))].filter(column => !this.excludeColumns.includes(column));
     }
   }
 
