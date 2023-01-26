@@ -22,6 +22,9 @@ export default class BarChartSplit extends Base {
     this.moveLabels = options.moveLabels
     this.valueIsMoney = options.valueIsMoney
     this.showValueOnTooltip = options.showValueOnTooltip
+    this.yTimeFormat = options.yTimeFormat || "";
+    this.showTickValues = options.showTickValues || "";
+    this.sortAxisY = options.sortAxisY || ""
     this.scales = [];
     this.groupAxisProps = [];
 
@@ -64,6 +67,12 @@ export default class BarChartSplit extends Base {
       .select(".axis-y")
       .call(this.yAxis.bind(this));
 
+    this.g
+      .selectAll(".title")
+      .remove()
+      .selectAll(".wrap-text")
+      .remove();
+
     const gColumn = this.g
       .selectAll(".column")
       .data(dataGroup, ([key]) => key)
@@ -74,9 +83,10 @@ export default class BarChartSplit extends Base {
     gColumn.append("text")
       .attr("class", "title")
       .text(([ key ]) => key)
+      .attr("y", -21)
       .call(this.wrap, this.width / [...new Set(this.data.map(d => d[this.xAxisProp]))].length);
 
-    this.group = gColumn.selectAll(".bar-chart-small-groups")
+    gColumn.selectAll(".bar-chart-small-groups")
       .data(([, values]) => values)
       .join(
         enter => {
@@ -85,26 +95,28 @@ export default class BarChartSplit extends Base {
             .attr("class", "bar-chart-small-groups")
           g.append("rect")
             .attr("x", 0)
-            .attr("y", (d) => this.scaleY(d[this.yAxisProp]))
-            .attr("width", this.scaleColumn.bandwidth())
+            .attr("y", (d) => isNaN(this.scaleY(d[this.yAxisProp])) ? 0 : this.scaleY(d[this.yAxisProp]))
+            .attr("width", this.scales.range()[1])
             .attr("height", this.scaleY.bandwidth())
             .attr("opacity", ".2")
             .attr("fill", "var(--gv-grey)")
             .attr("class", "bar-chart-small-underlying")
+            .attr("display", d => this.scaleY(d[this.yAxisProp]) ? "" : "none")
           g.append("rect")
             .attr("x", 0)
-            .attr("y", d => this.scaleY(d[this.yAxisProp]))
-            .attr("width", d => this.scales[this.groupAxisProps.findIndex(element => element === d[this.xAxisProp])](d[this.countProp]))
+            .attr("y", (d) => isNaN(this.scaleY(d[this.yAxisProp])) ? 0 : this.scaleY(d[this.yAxisProp]))
+            .attr("width", d => this.scales(d[this.countProp]))
             .attr("height", this.scaleY.bandwidth())
             .attr("fill", d => this.scaleColor(d[this.xAxisProp]))
             .attr("class", "bar-chart-small-overlying")
+            .attr("display", d => this.scaleY(d[this.yAxisProp]) ? "" : "none")
           g.append("text")
             .attr("class", "label")
             .style("opacity", () => this.showValueOnTooltip ? 0 : 1)
             .style("pointer-events","none")
             .text(d => this.valueIsMoney ? new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(d[this.countProp]) : new Intl.NumberFormat('es-ES').format(d[this.countProp]))
             .each((d, i, element) => {
-              const xValue = this.scales[this.groupAxisProps.findIndex(element => element === d[this.xAxisProp])](d[this.countProp])
+              const xValue = this.scales(d[this.countProp])
               const xMax = element[i].getBBox().width + 10;
              if (xValue < xMax && this.moveLabels) {
                 select(element[i])
@@ -117,9 +129,10 @@ export default class BarChartSplit extends Base {
                   .attr("dx", 4);
               }
               select(element[i])
-                .attr("y", this.scaleY(d[this.yAxisProp]) + this.scaleY.bandwidth() / 2)
+                .attr("y", isNaN(this.scaleY(d[this.yAxisProp])) ? 0 : this.scaleY(d[this.yAxisProp]) + this.scaleY.bandwidth() / 2)
                 .attr("dy", "0.33em")
             })
+            .attr("display", d => this.scaleY(d[this.yAxisProp]) ? "" : "none")
 
           return g;
         },
@@ -134,7 +147,14 @@ export default class BarChartSplit extends Base {
   }
 
   yAxis(g) {
-    g.call(axisLeft(this.scaleY).tickPadding([10]));
+    const tickValues = this.showTickValues ? this.scaleY.domain().filter((d,i) => this.showTickValues.includes(i)) : this.scaleY.domain()
+    g.call(
+     axisLeft(this.scaleY)
+     .tickFormat(d => this.yTimeFormat ? this.yTimeFormat(new Date(d)) : d)
+     .tickPadding(6)
+     .tickSize(10)
+     .tickValues(tickValues)
+    );
 
     // remove baseline
     g.select(".domain").remove();
@@ -146,7 +166,7 @@ export default class BarChartSplit extends Base {
   async setData(data) {
     this.rawData = data
     this.data = this.parse(data)
-    this.groupAxisProps = [...new Set(this.data.map(d => d[this.xAxisProp]))];
+    this.groupAxisProps = [...new Set(this.data.map(d => d[this.xAxisProp]).filter(item => item))];
 
     // only set the color scale, as of the first time you get the data
     if (!this.scaleColor) {
@@ -162,7 +182,7 @@ export default class BarChartSplit extends Base {
       .attr("height", `${this.height + this.margin.top + this.margin.bottom}`);
 
     this.scaleY = scaleBand()
-      .domain(this.data.map(d => d[this.yAxisProp]).reverse())
+      .domain(this.sortAxisY ? this.sortAxisY : [...new Set(this.data.map(d => d[this.yAxisProp]))].reverse())
       .range([this.height, 0])
       .padding(0.4)
 
@@ -170,12 +190,13 @@ export default class BarChartSplit extends Base {
       .domain([...new Set(this.data.map(d => d[this.xAxisProp]))])
       .range([0, this.width]).paddingInner(0.4);
 
-    //Create an array of scales, one scale for each of the columns.
-    this.scales = this.groupAxisProps.map((scale) => {
-      return scaleLinear()
-        .range([0, this.scaleColumn.bandwidth()])
-        .domain([0, max(this.data.filter(element => scale.includes(element[this.xAxisProp])), (d) => d[this.countProp])]).nice();
+    this.scaleXMax = this.groupAxisProps.map((scale) => {
+      return max(this.data.filter(element => scale.includes(element[this.xAxisProp])), (d) => d[this.countProp])
     })
+
+    this.scales = scaleLinear()
+      .range([0, this.scaleColumn.bandwidth()])
+      .domain([0, max(this.scaleXMax)]).nice();
   }
 
   onPointerMove(event, d) {
