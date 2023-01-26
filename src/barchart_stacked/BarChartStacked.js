@@ -24,7 +24,7 @@ export default class BarChartStacked extends Base {
     this.showLegend = options.showLegend;
     this.xTimeFormat = options.xTimeFormat || ((d) => timeFormat('%q %Y')(d));
     this.orientationLegend = options.orientationLegend || "left";
-    this.tickValueProp = options.tickValueProp || 1;
+    this.showTickValues = options.showTickValues || 0;
     this.height = options.height || 400;
     this.wrapLegends = options.wrapLegends;
 
@@ -82,18 +82,19 @@ export default class BarChartStacked extends Base {
         .attr("id", ({ key }) => key)
         .attr("fill", ({ key }) => this.scaleColor(key))
       .selectAll("rect")
+      .on("touchmove", e => e.preventDefault())
+      .on("pointermove", this.onPointerMove.bind(this))
+      .on("pointerout", this.onPointerOut.bind(this))
       .data(d => d)
       .join("rect")
         .attr("class", "bar-stacked-rect")
         .attr("x", d => this.scaleX(d.data[this.xAxisProp]))
-        .attr("y", ([y1, y2]) => Math.min(this.scaleY(y1), this.scaleY(y2)))
         .attr("width", this.scaleX.bandwidth())
-        .attr('height', ([y1, y2]) => Math.abs(this.scaleY(y1) - this.scaleY(y2)))
-      .on("touchmove", e => e.preventDefault())
-      .on("pointermove", this.onPointerMove.bind(this))
-      .on("pointerout", this.onPointerOut.bind(this))
+        .transition()
+        .duration(400)
+        .attr("y", ([y1, y2]) => Math.min(this.scaleY(y1), this.scaleY(isNaN(y2) ? 1 : y2)))
+        .attr('height', ([y1, y2]) => Math.abs(this.scaleY(y1) - this.scaleY(isNaN(y2) ? y1 : y2)))
       .attr("cursor", "pointer")
-      .on("click", (...e) => this.onClick(...e));
 
     if(this.showLegend) {
       this.buildLegends()
@@ -109,6 +110,9 @@ export default class BarChartStacked extends Base {
     const positionLegendLabelX = this.orientationLegend === 'left' ? 24 : (positionLegendGroupX + 24);
     this.svg
       .selectAll(".bar-stack-label")
+      .remove()
+    this.svg
+      .selectAll(".bar-stack-label")
       .data(stack().keys(this.columns)(this.data))
       .join(
         enter => {
@@ -116,10 +120,11 @@ export default class BarChartStacked extends Base {
             .append("g")
             .attr("class", "bar-stack-label")
             .attr("fill", ({ key }) => this.scaleColor(key))
-            .attr("transform", (d, i) => `translate(10, ${i * (this.wrapLegends ? 24 : 18)})`)
+            .attr("transform", (d, i) => `translate(10, ${i * 14})`)
           g.append("rect")
             .attr("x", positionLegendGroupX)
             .attr("y", (d, i) => `${this.margin.top + (i * (this.wrapLegends ? 24 : 18))}`)
+            .attr("rx", 4)
             .attr("class", "bar-stack-label-rect")
             .attr("width", 16)
             .attr("height", 16)
@@ -128,7 +133,7 @@ export default class BarChartStacked extends Base {
             .attr("x", positionLegendLabelX)
             .attr("y", (d, i) => `${this.margin.top + (i * (this.wrapLegends ? 24 : 18)) + 14}`)
             .text(({ key }) => key)
-            .call(this.wrap, 150, 20);
+            .call(this.wrap, 120, 20);
 
           return g;
         },
@@ -153,9 +158,12 @@ export default class BarChartStacked extends Base {
         this.svg
           .selectAll(".bar-stack-label")
           .attr("transform", function(d,i) {
-            const previousElement = select(this.previousElementSibling)._groups[0][0].getBBox()
-            const previousElementText = select(this.previousElementSibling)._groups[0][0].lastChild.lastChild.getBBox()
-            return previousElement.height > 40 && i > 0 ? `translate(10, ${(i * 9 + previousElementText.height)})` : `translate(10, ${i * 10})`
+            const element = select(this)._groups[0][0].getBBox()
+            const elementText = select(this)._groups[0][0].lastChild
+             if(element.height > 30 && i > 0) {
+              elementText.y.baseVal[0].value = elementText.y.baseVal[0].value - 8
+            }
+            return `translate(10, ${i * 14})`
           })
       }
 
@@ -191,10 +199,13 @@ export default class BarChartStacked extends Base {
   }
 
   xAxis(g) {
+    const tickValues = this.showTickValues ? this.scaleX.domain().filter((d,i) => this.showTickValues.includes(i)) : this.scaleX.domain()
     g.call(
       axisBottom(this.scaleX)
-        .tickFormat(d => this.xTimeFormat(d))
-        .tickValues(this.scaleX.domain().filter((d,i) => !(i % this.tickValueProp)))
+        .tickFormat(d => this.xTimeFormat ? this.xTimeFormat(d) : d)
+        .tickPadding(6)
+        .tickSize(10)
+        .tickValues(tickValues)
     );
 
     // remove baseline
@@ -203,8 +214,6 @@ export default class BarChartStacked extends Base {
     // remove default formats
     g.attr("font-family", null).attr("font-size", null);
 
-    // change line style defaults
-    g.selectAll("line").remove();
   }
 
   yAxis(g) {
@@ -255,7 +264,7 @@ export default class BarChartStacked extends Base {
     this.scaleX = scaleBand()
       .domain(this.data.map((d) => d[this.xAxisProp]))
       .paddingInner(0.5)
-      .rangeRound([0, this.width]);
+      .rangeRound([(this.width / this.data.map((d) => d[this.xAxisProp]).length) / 2, this.width - (this.width / this.data.map((d) => d[this.xAxisProp]).length) / 2]);
   }
 
   onPointerMove(event, d) {
@@ -267,13 +276,12 @@ export default class BarChartStacked extends Base {
       .style("left", `${x}px`)
       .style("pointer-events", "auto")
       .transition()
-      .duration(400)
+      .duration(200)
       .style("opacity", 1);
   }
 
   onPointerOut() {
-    this.tooltipContainer.style("pointer-events", "none").transition().delay(300).duration(200).style("opacity", 0);
-    selectAll(".bar-stacked-rect").transition().duration(200).style("opacity", 1);
+    this.tooltipContainer.style("pointer-events", "none").transition().duration(200).style("opacity", 0);
   }
 
   parse(data) {
@@ -323,12 +331,23 @@ export default class BarChartStacked extends Base {
 
   setX(value) {
     this.xAxisProp = value
-    this.setData(this.rawData)
   }
 
   setY(value) {
     this.yAxisProp = value
     this.setData(this.rawData)
+  }
+
+  setTickValues(value) {
+    this.showTickValues = value
+  }
+
+  setColumns(value, data) {
+    this.columns = value || [...new Set(data.flatMap(Object.keys))].filter(column => !this.excludeColumns.includes(column))
+  }
+
+  setExcludeColumns(value) {
+    this.excludeColumns = value
   }
 
   setTooltip(value) {
