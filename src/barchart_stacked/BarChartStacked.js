@@ -24,7 +24,7 @@ export default class BarChartStacked extends Base {
     this.showLegend = options.showLegend;
     this.xTimeFormat = options.xTimeFormat || ((d) => timeFormat('%q %Y')(d));
     this.orientationLegend = options.orientationLegend || "left";
-    this.showTickValues = options.showTickValues || 0;
+    this.showTickValues = options.showTickValues || "";
     this.height = options.height || 400;
     this.wrapLegends = options.wrapLegends;
 

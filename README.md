@@ -442,7 +442,11 @@ bar_chart_stacked.setData(newData)
 | **margin** | _Object_ | `{ top: 30, bottom: 0, left: 0, right: 0 }` | Set the margin around the chart. You can pass the properties you want. |
 | **locale** | _String_ | `window.navigator.language` | 4-letters specification of the locale. |
 | **excludeColumns** | _Array_ | [x] | The values that we do not want to show in the chart, for example, the year |
-| **extraLegends** | _Array_ | [] | More x-axes can be added, passing an array with selected values. |
+| **extraLegends** | _Array_ | [] | More x-axis can be added, passing an array with selected values. |
+| **showLegend** | _Boolean_ | false | Show the legends. |
+| **orientationLegend** | _Stringn_ | "left" | Positioning of legends, supports left and right. |
+| **showTickValues** | _Array_ | [] | Array with the indices of the ticks shown on the x-axis. |
+| **xTimeFormat** | _Function_ | - | Function to format ticks from axis-x. |
 | **onClick** | _Function_ | - | Rect click callback handler. It receives the `event` and the `datum`. |
 | **tooltip** | _Function_ | [<sup>1</sup>](#1) | Custom HTML content to render in the tooltip on mouseenter. |
 
@@ -545,6 +549,12 @@ bar_chart_split.setData(newData)
 | **y** | _String_ | Property name of the categories along the Y-axis. |
 | **count** | _String_ | Property name of the width of the bars. Quantitative value. |
 | **margin** | _Object_ | `{ top: 30, bottom: 0, left: 0, right: 0 }` | Set the margin around the chart. You can pass the properties you want. |
+| **moveLabels** | _Boolean_ | false | Shows the values of the bars on the left. |
+| **sortAxisY** | _Array_ | Array with the values of the ticks of the y-axis. |
+| **yTimeFormat** | _Function_ | - | Function to format ticks from axis-y. |
+| **showTickValues** | _Array_ | [] | Array with the indices of the ticks shown on the y-axis. |
+| **valueIsMoney** | _Boolean_ | false | If countProp is money it formats to show the value correctly. |
+| **showValueOnTooltip** | _Boolean_ | false | Only show the values on tooltip. |
 | **locale** | _String_ | `window.navigator.language` | 4-letters specification of the locale. |
 
 ### BarChartStacked examples

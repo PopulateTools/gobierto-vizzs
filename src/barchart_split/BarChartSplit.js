@@ -25,8 +25,6 @@ export default class BarChartSplit extends Base {
     this.yTimeFormat = options.yTimeFormat || "";
     this.showTickValues = options.showTickValues || "";
     this.sortAxisY = options.sortAxisY || ""
-    this.scales = [];
-    this.groupAxisProps = [];
 
     this.margin = {
       top: 36,
