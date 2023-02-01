@@ -4,7 +4,7 @@ import { min, max, extent } from 'd3-array';
 import { timeMonth } from "d3-time";
 import { timeFormat, utcFormat } from "d3-time-format";
 import { scaleLinear, scaleOrdinal, scaleBand } from 'd3-scale';
-import { stack } from 'd3-shape';
+import { stack, stackOrderReverse } from 'd3-shape';
 import { axisBottom, axisLeft } from 'd3-axis';
 import "d3-transition";
 import "./BarChartStacked.css"
@@ -76,25 +76,26 @@ export default class BarChartStacked extends Base {
 
     this.g
       .selectAll(".bar-stacked-group")
-      .data(stack().keys(this.columns)(this.data))
+      .data(stack().keys(this.columns).order(stackOrderReverse)(this.data))
       .join("g")
         .attr("class", "bar-stacked-group")
         .attr("id", ({ key }) => key)
         .attr("fill", ({ key }) => this.scaleColor(key))
       .selectAll("rect")
-      .on("touchmove", e => e.preventDefault())
-      .on("pointermove", this.onPointerMove.bind(this))
-      .on("pointerout", this.onPointerOut.bind(this))
       .data(d => d)
       .join("rect")
         .attr("class", "bar-stacked-rect")
         .attr("x", d => this.scaleX(d.data[this.xAxisProp]))
-        .attr("width", this.scaleX.bandwidth())
         .transition()
         .duration(400)
+        .attr("width", this.scaleX.bandwidth())
         .attr("y", ([y1, y2]) => Math.min(this.scaleY(y1), this.scaleY(isNaN(y2) ? 1 : y2)))
         .attr('height', ([y1, y2]) => Math.abs(this.scaleY(y1) - this.scaleY(isNaN(y2) ? y1 : y2)))
       .attr("cursor", "pointer")
+      .selection()
+      .on("touchmove", e => e.preventDefault())
+      .on("pointermove", this.onPointerMove.bind(this))
+      .on("pointerout", this.onPointerOut.bind(this))
 
     if(this.showLegend) {
       this.buildLegends()
