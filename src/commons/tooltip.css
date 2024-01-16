@@ -1,0 +1,23 @@
+.gv-container {
+  position: relative;
+}
+
+.gv-tooltip {
+  opacity: 0;
+  z-index: 100;
+  color: var(--gv-black);
+  background-color: var(--gv-white);
+  border: 1px solid var(--gv-grey);
+  border-radius: 4px;
+  height: auto;
+  padding: .5rem;
+  position: absolute;
+  overflow-y: auto;
+  box-shadow: 0 0 3px #0003;
+}
+
+.gv-tooltip:empty {
+  display: none;
+}
+
+/*# sourceMappingURL=tooltip.css.map */

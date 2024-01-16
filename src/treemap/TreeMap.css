@@ -1,0 +1,48 @@
+.treemap-breadcrumb {
+  align-items: center;
+  height: 100%;
+  font-size: .875rem;
+  display: flex;
+}
+
+.treemap-breadcrumb > :last-child {
+  font-weight: bold;
+}
+
+.treemap-item {
+  color: var(--gv-white);
+  box-sizing: border-box;
+  width: max-content;
+  max-width: calc(100% - 2px);
+  padding: .5rem;
+  font-size: .875rem;
+  overflow: hidden;
+}
+
+.treemap-item * {
+  overflow: hidden;
+}
+
+.treemap-tooltip-block:not(:first-child) {
+  padding-top: .5rem;
+}
+
+.treemap-tooltip-block:not(:last-child) {
+  padding-bottom: .5rem;
+}
+
+.treemap-tooltip-block + .treemap-tooltip-block {
+  border-top: 1px solid var(--gv-grey);
+}
+
+.treemap-tooltip-id {
+  text-transform: uppercase;
+  font-size: .875rem;
+  font-weight: bold;
+}
+
+.treemap-tooltip-values {
+  font-size: .875rem;
+}
+
+/*# sourceMappingURL=TreeMap.css.map */
