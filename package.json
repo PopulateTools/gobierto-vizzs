@@ -7,7 +7,9 @@
     "visualizations",
     "beeswarm",
     "treemap",
-    "gantt"
+    "gantt",
+    "bar",
+    "stack"
   ],
   "source": "src/index.js",
   "main": "dist/index.js",

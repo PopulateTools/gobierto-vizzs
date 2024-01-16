@@ -1,10 +1,8 @@
 import Base from "../commons/base";
 import { select, selectAll } from 'd3-selection';
-import { min, max, group } from 'd3-array';
-import { timeMonth, timeYear } from "d3-time";
-import { timeFormat } from "d3-time-format";
+import { max, group } from 'd3-array';
 import { scaleLinear, scaleBand, scaleOrdinal } from 'd3-scale';
-import { axisBottom, axisLeft } from 'd3-axis';
+import { axisLeft } from 'd3-axis';
 import "d3-transition";
 import "./BarChartSplit.css"
 

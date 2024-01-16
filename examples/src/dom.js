@@ -27,8 +27,8 @@ export default function DOM([key, ChartModule, opts]) {
 
   document.body.appendChild(block)
 
-  const { data = mockJSON(), ...config } = opts
-  const module = new ChartModule(chart, data, config)
+  const { length, ...config } = opts
+  const module = new ChartModule(chart, mockJSON(length), config)
 
-  btn.addEventListener("click", () => module.setData(mockJSON(1000)))
+  btn.addEventListener("click", () => module.setData(mockJSON(length)))
 }

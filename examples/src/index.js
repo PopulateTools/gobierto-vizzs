@@ -1,8 +1,7 @@
-import "./index.css"
-import { BeeSwarm, TreeMap, BarChartStacked, Gantt, BarChartSplit } from "../../src/index"
+import "./index.css";
+import { BeeSwarm, TreeMap, BarChartStacked, Gantt, BarChartSplit } from "../../src/index";
 // import { BeeSwarm } from "gobierto-vizzs"
-import DOM from "./dom"
-import { mockJSON } from "./random";
+import DOM from "./dom";
 // import CSV from "url:./data.csv"
 
 async function main() {
@@ -15,11 +14,21 @@ async function main() {
     ["TreeMap", TreeMap, { group: ["group", "relation"], id: "title" }],
     ["BeeSwarm", BeeSwarm, { relation: "relation", id: "title" }],
     ["Gantt", Gantt, { id: "title", y: "relation", barHeight: 15 }],
-    ["BarChartStacked", BarChartStacked, { id: "title", data: mockJSON(5), x: "date", excludeColumns: ["relation","title", "group", "id", "phase", "from", "to"], orientationLegend: 'left', showLegend: true }],
-    ["BarChartSplit", BarChartSplit, { id: "title", data: mockJSON(1000), y: "relation", x: "group", count: "value4" }]
-
+    [
+      "BarChartStacked",
+      BarChartStacked,
+      {
+        id: "title",
+        x: "date",
+        excludeColumns: ["relation", "title", "group", "id", "phase", "from", "to"],
+        orientationLegend: "left",
+        showLegend: true,
+        length: 10,
+      },
+    ],
+    ["BarChartSplit", BarChartSplit, { id: "title", y: "relation", x: "group", count: "value4" }],
   ].map(DOM);
 }
 
 // clear site on startup
-(document.body.replaceChildren() || true) && main()
+(document.body.replaceChildren() || true) && main();

@@ -1,8 +1,7 @@
 import Base from "../commons/base";
 import { select, selectAll } from 'd3-selection';
-import { min, max, extent } from 'd3-array';
-import { timeMonth } from "d3-time";
-import { timeFormat, utcFormat } from "d3-time-format";
+import { max } from 'd3-array';
+import { timeFormat } from "d3-time-format";
 import { scaleLinear, scaleOrdinal, scaleBand } from 'd3-scale';
 import { stack, stackOrderReverse } from 'd3-shape';
 import { axisBottom, axisLeft } from 'd3-axis';

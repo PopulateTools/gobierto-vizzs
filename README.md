@@ -423,10 +423,10 @@ const gantt = new Gantt(chart, data, { locale: "it-IT" })
 ```js
 import { BarChartStacked } from "gobierto-vizzs"
 
-const bar_chart_stacked = new BarChartStacked(chart, data, options)
+const barChartStacked = new BarChartStacked(chart, data, options)
 
 // ...update data
-bar_chart_stacked.setData(newData)
+barChartStacked.setData(newData)
 ```
 
 **chart** _(HTMLElement)_: DOM node where put the visualization
