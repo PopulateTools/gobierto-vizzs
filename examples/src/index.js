@@ -23,7 +23,7 @@ async function main() {
         excludeColumns: ["relation", "title", "group", "id", "phase", "from", "to"],
         orientationLegend: "left",
         showLegend: true,
-        length: 10,
+        length: 15,
       },
     ],
     ["BarChartSplit", BarChartSplit, { id: "title", y: "relation", x: "group", count: "value4" }],
