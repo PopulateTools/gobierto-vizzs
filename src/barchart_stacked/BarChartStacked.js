@@ -21,11 +21,12 @@ export default class BarChartStacked extends Base {
     this.excludeColumns = [...options.excludeColumns || "", this.xAxisProp];
     this.extraLegends = options.extraLegends || [];
     this.showLegend = options.showLegend;
-    this.xTimeFormat = options.xTimeFormat || ((d) => timeFormat('%b-%Y')(d));
+    this.xTimeFormat = options.xTimeFormat || ((d) => (this.isDate(d) ? timeFormat('%b-%Y') : (d => d))(d));
     this.orientationLegend = options.orientationLegend || "left";
     this.showTickValues = options.showTickValues || "";
     this.height = options.height || 400;
     this.wrapLegends = options.wrapLegends;
+    this.sortAxisX = options.sortAxisX;
 
     this.margin = {
       top: 12,
@@ -170,7 +171,6 @@ export default class BarChartStacked extends Base {
   }
 
   buildExtraAxis() {
-
     const extra = this.g
       .selectAll(".extra-legend")
       .data(stack().keys(this.extraLegends)(this.data))
@@ -262,7 +262,7 @@ export default class BarChartStacked extends Base {
       .range([this.height, 0]);
 
     this.scaleX = scaleBand()
-      .domain(this.data.map((d) => d[this.xAxisProp]).sort((a,b) => new Date(a) - new Date(b)))
+      .domain(this.sortAxisX || [...new Set(this.data.map((d) => d[this.xAxisProp]))])
       .paddingInner(0.5)
       .rangeRound([(this.width / this.data.map((d) => d[this.xAxisProp]).length) / 2, this.width - (this.width / this.data.map((d) => d[this.xAxisProp]).length) / 2]);
   }
@@ -302,11 +302,7 @@ export default class BarChartStacked extends Base {
             ]
           : []),
       ];
-    }, []);
-  }
-
-  isDate(value) {
-    return new Date(value) && Object.prototype.toString.call(new Date(value)) === "[object Date]" && !isNaN(new Date(value)) ? true : false
+    }, []).sort(this.sortBy(this.xAxisProp));
   }
 
   defaultTooltip(d) {

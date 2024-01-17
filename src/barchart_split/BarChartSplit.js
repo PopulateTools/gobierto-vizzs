@@ -22,7 +22,7 @@ export default class BarChartSplit extends Base {
     this.showValueOnTooltip = options.showValueOnTooltip
     this.yTimeFormat = options.yTimeFormat || "";
     this.showTickValues = options.showTickValues || "";
-    this.sortAxisY = options.sortAxisY || ""
+    this.sortAxisY = options.sortAxisY
 
     this.margin = {
       top: 36,
@@ -178,7 +178,7 @@ export default class BarChartSplit extends Base {
       .attr("height", `${this.height + this.margin.top + this.margin.bottom}`);
 
     this.scaleY = scaleBand()
-      .domain(this.sortAxisY ? this.sortAxisY : [...new Set(this.data.map(d => d[this.yAxisProp]))].reverse())
+      .domain(this.sortAxisY || [...new Set(this.data.map(d => d[this.yAxisProp]))].reverse())
       .range([this.height, 0])
       .padding(0.4)
 

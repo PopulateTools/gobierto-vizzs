@@ -121,4 +121,8 @@ export default class Base {
   sortBy(prop) {
     return (a, b) => a[prop] > b[prop] ? 1 : -1
   }
+
+  isDate(...value) {
+    return !Number.isNaN(+new Date(...value))
+  }
 }
