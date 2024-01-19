@@ -19,11 +19,10 @@ async function main() {
       BarChartStacked,
       {
         id: "title",
-        x: "date",
-        excludeColumns: ["relation", "title", "group", "id", "phase", "from", "to"],
+        x: "phase",
+        excludeColumns: ["date", "relation", "title", "group", "id", "phase", "from", "to"],
         orientationLegend: "left",
-        showLegend: true,
-        length: 15,
+        showLegend: true
       },
     ],
     ["BarChartSplit", BarChartSplit, { id: "title", y: "relation", x: "group", count: "value4" }],
