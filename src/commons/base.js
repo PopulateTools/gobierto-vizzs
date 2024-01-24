@@ -25,7 +25,7 @@ export default class Base {
     // unpkg does not keep non-regional locales (2-letters code), so it's worthless make the request
     if (this.locale.length > 2) {
       // request the locale when it does not exists by default
-      const i18n = DEFAULT_LOCALES[this.locale] || await fetch(`https://unpkg.com/d3-time-format/locale/${this.locale}.json`).then(r => r.json()).catch(() => {})
+      const i18n = DEFAULT_LOCALES[this.locale] || await fetch(`https://unpkg.com/d3-time-format/locale/${this.locale}.json`).then(r => r.json())
 
       if (i18n) {
         timeFormatDefaultLocale(i18n)

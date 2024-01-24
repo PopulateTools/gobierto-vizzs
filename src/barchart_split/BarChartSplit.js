@@ -139,7 +139,6 @@ export default class BarChartSplit extends Base {
       .on("pointermove", this.onPointerMove.bind(this))
       .on("pointerout", this.onPointerOut.bind(this))
       .attr("cursor", this.showValueOnTooltip ? "pointer" : "normal")
-
   }
 
   yAxis(g) {
@@ -252,12 +251,18 @@ export default class BarChartSplit extends Base {
 
   setX(value) {
     this.xAxisProp = value
-    this.setData(this.rawData)
   }
 
   setY(value) {
     this.yAxisProp = value
-    this.setData(this.rawData)
+  }
+
+  setTickValues(value) {
+    this.showTickValues = value
+  }
+
+  setSortAxisY(value) {
+    this.sortAxisY = value
   }
 
   setMargin(value) {

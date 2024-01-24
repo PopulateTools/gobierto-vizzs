@@ -27,6 +27,7 @@ export default class BarChartStacked extends Base {
     this.height = options.height || 400;
     this.wrapLegends = options.wrapLegends;
     this.sortAxisX = options.sortAxisX;
+    this.columns = options.columns;
 
     this.margin = {
       top: 12,
@@ -43,8 +44,6 @@ export default class BarChartStacked extends Base {
 
     if (data.length) {
       this.setData(data)
-      //Gets the columns that give value to each of the parts of the stacked bar chart.
-      this.columns = options.columns || [...new Set(data.flatMap(Object.keys))].filter(column => !this.excludeColumns.includes(column));
     }
   }
 
@@ -86,23 +85,23 @@ export default class BarChartStacked extends Base {
       .join("rect")
         .attr("class", "bar-stacked-rect")
         .attr("x", d => this.scaleX(d.data[this.xAxisProp]))
+        .attr("width", this.scaleX.bandwidth())
         .transition()
         .duration(400)
-        .attr("width", this.scaleX.bandwidth())
         .attr("y", ([y1, y2]) => Math.min(this.scaleY(y1), this.scaleY(isNaN(y2) ? 1 : y2)))
-        .attr('height', ([y1, y2]) => Math.abs(this.scaleY(y1) - this.scaleY(isNaN(y2) ? y1 : y2)))
-      .attr("cursor", "pointer")
+        .attr("height", ([y1, y2]) => Math.abs(this.scaleY(y1) - this.scaleY(isNaN(y2) ? y1 : y2)))
+        .attr("cursor", "pointer")
       .selection()
       .on("touchmove", e => e.preventDefault())
       .on("pointermove", this.onPointerMove.bind(this))
       .on("pointerout", this.onPointerOut.bind(this))
 
-    if(this.showLegend) {
-      this.buildLegends()
+    if (this.showLegend) {
+      this.buildLegends();
     }
 
-    if(this.extraLegends.length) {
-      this.buildExtraAxis()
+    if (this.extraLegends.length) {
+      this.buildExtraAxis();
     }
   }
 
@@ -112,6 +111,7 @@ export default class BarChartStacked extends Base {
     this.svg
       .selectAll(".bar-stack-label")
       .remove()
+
     this.svg
       .selectAll(".bar-stack-label")
       .data(stack().keys(this.columns)(this.data))
@@ -122,6 +122,7 @@ export default class BarChartStacked extends Base {
             .attr("class", "bar-stack-label")
             .attr("fill", ({ key }) => this.scaleColor(key))
             .attr("transform", (d, i) => `translate(10, ${i * 14})`)
+
           g.append("rect")
             .attr("x", positionLegendGroupX)
             .attr("y", (d, i) => `${this.margin.top + (i * (this.wrapLegends ? 24 : 18))}`)
@@ -129,6 +130,7 @@ export default class BarChartStacked extends Base {
             .attr("class", "bar-stack-label-rect")
             .attr("width", 16)
             .attr("height", 16)
+
           g.append("text")
             .attr("class", "bar-stacked-legend-text")
             .attr("x", positionLegendLabelX)
@@ -238,8 +240,10 @@ export default class BarChartStacked extends Base {
       this.setColorScale();
     }
 
-    // wait for the locales resolution before draw anything
+    this.setColumns(this.columns)
+
     await this.getLocale()
+
     this.build();
   }
 
@@ -338,8 +342,8 @@ export default class BarChartStacked extends Base {
     this.showTickValues = value
   }
 
-  setColumns(value, data) {
-    this.columns = value || [...new Set(data.flatMap(Object.keys))].filter(column => !this.excludeColumns.includes(column))
+  setColumns(value) {
+    this.columns = value || [...new Set(this.rawData.flatMap(Object.keys))].filter(column => !this.excludeColumns.includes(column))
   }
 
   setExcludeColumns(value) {
