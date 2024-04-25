@@ -3,7 +3,7 @@ import { select, selectAll } from 'd3-selection';
 import { max } from 'd3-array';
 import { timeFormat } from "d3-time-format";
 import { scaleLinear, scaleOrdinal, scaleBand } from 'd3-scale';
-import { stack, stackOrderReverse } from 'd3-shape';
+import { stack, stackOrderAscending } from 'd3-shape';
 import { axisBottom, axisLeft } from 'd3-axis';
 import "d3-transition";
 import "./BarChartStacked.css"
@@ -75,7 +75,7 @@ export default class BarChartStacked extends Base {
 
     this.g
       .selectAll(".bar-stacked-group")
-      .data(stack().keys(this.columns).order(stackOrderReverse)(this.data))
+      .data(stack().keys(this.columns).order(stackOrderAscending)(this.data))
       .join("g")
         .attr("class", "bar-stacked-group")
         .attr("id", ({ key }) => key)
@@ -112,9 +112,15 @@ export default class BarChartStacked extends Base {
       .selectAll(".bar-stack-label")
       .remove()
 
+    const sortedColumnKeys = this.columns
+      // to sort the legend we need to calculate the sum of the values for every column
+      .map((key) => [key, this.data.reduce((acc, { [key]: prop = 0 }) => acc + prop, 0)])
+      .sort(([, a], [, b]) => b - a)
+      .map(([key]) => key);
+
     this.svg
       .selectAll(".bar-stack-label")
-      .data(stack().keys(this.columns)(this.data))
+      .data(stack().keys(sortedColumnKeys)(this.data))
       .join(
         enter => {
           const g = enter
@@ -148,7 +154,7 @@ export default class BarChartStacked extends Base {
           const groups = selectAll('.bar-stacked-group')
 
           groups.filter(({ key: k }) => k !== key)
-            .style("opacity", .2)
+            .style("opacity", .1)
           groups.filter(({ key: k }) => k === key)
             .style("opacity", 1)
       })
