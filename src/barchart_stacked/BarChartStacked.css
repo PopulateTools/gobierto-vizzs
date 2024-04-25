@@ -50,12 +50,6 @@
   text-align: right;
 }
 
-.bar-stacked-legend-text {
-  fill: #828282;
-  font-size: 14px;
-  text-transform: capitalize;
-}
-
 .extra-legend-text,
 .axis-x-legend {
   font-size: 14px;
@@ -64,14 +58,40 @@
   fill: #828282;
 }
 
-.extra-legend-value,
-.wrap-text {
+.extra-legend-value {
   font-size: 14px;
   fill: #828282;
 }
 
-.bar-stack-label {
-  cursor: pointer;
+.gv-legend-bar-stacked {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+  max-width: 150px;
 }
 
+.bar-stack-label-rect {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  flex: none;
+}
 
+.bar-stacked-legend-text {
+  fill: #828282;
+  font-size: 14px;
+  text-transform: capitalize;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.bar-stack-label {
+  display: flex;
+  gap: .25rem;
+  align-items: center;
+  cursor: pointer;
+}

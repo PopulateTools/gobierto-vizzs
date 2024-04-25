@@ -25,7 +25,6 @@ export default class BarChartStacked extends Base {
     this.orientationLegend = options.orientationLegend || "left";
     this.showTickValues = options.showTickValues || "";
     this.height = options.height || 400;
-    this.wrapLegends = options.wrapLegends;
     this.sortAxisX = options.sortAxisX;
     this.columns = options.columns;
 
@@ -58,6 +57,7 @@ export default class BarChartStacked extends Base {
     this.g.append("g").attr("class", "axis axis-x");
     this.g.append("g").attr("class", "axis axis-y");
     this.tooltipContainer = select(this.container).append("div").attr("class", "gv-tooltip gv-tooltip-bar-stacked")
+    this.legendContainer = select(this.container).append("div").attr("class", "gv-legend-bar-stacked")
     this.g.append('text').attr("class", "axis-x-legend").attr("x", -60).attr("y", this.height + 9).attr("dy", "0.71em").attr("text-anchor", "end").text(this.xAxisProp);
   }
 
@@ -106,9 +106,7 @@ export default class BarChartStacked extends Base {
   }
 
   buildLegends() {
-    const positionLegendGroupX = this.orientationLegend === 'left' ? 0 : (this.width + this.margin.left);
-    const positionLegendLabelX = this.orientationLegend === 'left' ? 24 : (positionLegendGroupX + 24);
-    this.svg
+    this.legendContainer
       .selectAll(".bar-stack-label")
       .remove()
 
@@ -118,31 +116,23 @@ export default class BarChartStacked extends Base {
       .sort(([, a], [, b]) => b - a)
       .map(([key]) => key);
 
-    this.svg
+    this.legendContainer
       .selectAll(".bar-stack-label")
       .data(stack().keys(sortedColumnKeys)(this.data))
       .join(
         enter => {
           const g = enter
-            .append("g")
+            .append("div")
             .attr("class", "bar-stack-label")
-            .attr("fill", ({ key }) => this.scaleColor(key))
-            .attr("transform", (d, i) => `translate(10, ${i * 14})`)
 
-          g.append("rect")
-            .attr("x", positionLegendGroupX)
-            .attr("y", (d, i) => `${this.margin.top + (i * (this.wrapLegends ? 24 : 18))}`)
-            .attr("rx", 4)
+          g.append("span")
             .attr("class", "bar-stack-label-rect")
-            .attr("width", 16)
-            .attr("height", 16)
+            .attr("style", ({ key }) => `background-color: ${this.scaleColor(key)}`)
 
-          g.append("text")
+          g.append("span")
             .attr("class", "bar-stacked-legend-text")
-            .attr("x", positionLegendLabelX)
-            .attr("y", (d, i) => `${this.margin.top + (i * (this.wrapLegends ? 24 : 18)) + 14}`)
+            .attr("title", ({ key }) => key)
             .text(({ key }) => key)
-            .call(this.wrap, 120, 20);
 
           return g;
         },
@@ -162,20 +152,6 @@ export default class BarChartStacked extends Base {
         selectAll('.bar-stacked-group')
           .style("opacity", 1)
       })
-
-      if(this.wrapLegends) {
-        this.svg
-          .selectAll(".bar-stack-label")
-          .attr("transform", function(d,i) {
-            const element = select(this)._groups[0][0].getBBox()
-            const elementText = select(this)._groups[0][0].lastChild
-             if(element.height > 30 && i > 0) {
-              elementText.y.baseVal[0].value = elementText.y.baseVal[0].value - 8
-            }
-            return `translate(10, ${i * 14})`
-          })
-      }
-
   }
 
   buildExtraAxis() {
