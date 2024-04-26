@@ -1,6 +1,6 @@
 import Base from "../commons/base";
 import { select, selectAll } from 'd3-selection';
-import { max, group } from 'd3-array';
+import { max, group, groupSort } from 'd3-array';
 import { scaleLinear, scaleBand, scaleOrdinal } from 'd3-scale';
 import { axisLeft } from 'd3-axis';
 import "d3-transition";
@@ -76,11 +76,12 @@ export default class BarChartSplit extends Base {
       .attr("class", "column")
       .attr("transform", ([key]) => `translate(${this.scaleColumn(key) + 5},0)`);
 
+    const maxWidthColumn = this.width / [...new Set(this.data.map(d => d[this.xAxisProp]))].length
     gColumn.append("text")
       .attr("class", "title")
       .text(([ key ]) => key)
       .attr("y", -21)
-      .call(this.wrap, this.width / [...new Set(this.data.map(d => d[this.xAxisProp]))].length);
+      .call(this.wrap, maxWidthColumn);
 
     gColumn.selectAll(".bar-chart-small-groups")
       .data(([, values]) => values)
@@ -181,8 +182,11 @@ export default class BarChartSplit extends Base {
       .range([this.height, 0])
       .padding(0.4)
 
+    // https://d3js.org/d3-array/group#groupSort
+    const dataGroupSorted = groupSort(this.data, (D) => -1 * D.reduce((acc, { [this.countProp]: count = 0 }) => acc + count, 0), (d) => d[this.xAxisProp]);
+
     this.scaleColumn = scaleBand()
-      .domain([...new Set(this.data.map(d => d[this.xAxisProp]))])
+      .domain(dataGroupSorted)
       .range([0, this.width]).paddingInner(0.4);
 
     this.scaleXMax = this.groupAxisProps.map((scale) => {
