@@ -441,7 +441,7 @@ barChartStacked.setData(newData)
 | **x** | _String_ | "phase" | Property name of the categories along the X-axis. Legend will be depicted by these values |
 | **margin** | _Object_ | `{ top: 30, bottom: 0, left: 0, right: 0 }` | Set the margin around the chart. You can pass the properties you want. |
 | **locale** | _String_ | `window.navigator.language` | 4-letters specification of the locale. |
-| **excludeColumns** | _Array_ | [x] | The values that we do not want to show in the chart, for example, the year |
+| **columns** | _Array_ | [x] | The values that we want to show in the chart |
 | **extraLegends** | _Array_ | [] | More x-axis can be added, passing an array with selected values. |
 | **showLegend** | _Boolean_ | false | Show the legends. |
 | **orientationLegend** | _Stringn_ | "left" | Positioning of legends, supports left and right. |
@@ -453,19 +453,17 @@ barChartStacked.setData(newData)
 <span id="1"></span>
 ```js
 defaultTooltip(d) {
-  let tooltipContent = [];
-  const filteredDataByKey = Object.fromEntries(Object.entries(d.data).filter(([key, value]) => !this.filterColumns.includes(key)));
-  for (const key in filteredDataByKey) {
-    const valueContent = `
-      <div class="tooltip-barchart-stacked-grid">
-        <span style="background-color: ${this.scaleColor(key)}" class="tooltip-barchart-stacked-grid-key-color"></span>
-        <span class="tooltip-barchart-stacked-grid-key">${key}:</span>
-        <span class="tooltip-barchart-stacked-grid-value">${filteredDataByKey[key]}</span>
-      </div>`
-    tooltipContent.push(valueContent);
-  }
+  const tooltipContent = this.columns.map(key => {
+    return `
+    <div class="tooltip-barchart-stacked-grid">
+      <span style="background-color: ${this.scaleColor(key)}" class="tooltip-barchart-stacked-grid-key-color"></span>
+      <span class="tooltip-barchart-stacked-grid-key">${key}:</span>
+      <span class="tooltip-barchart-stacked-grid-value">${d.data[key]}</span>
+    </div>`
+  });
+
   return `
-    <span class="tooltip-barchart-stacked-title">${d.data[this.xAxisProp].getFullYear()}</span>
+    <span class="tooltip-barchart-stacked-title">${this.xTimeFormat(d.data[this.xAxisProp])}</span>
     ${tooltipContent.join("")}
   `;
 }

@@ -18,7 +18,7 @@ export default class BarChartStacked extends Base {
     // main properties to display
     this.xAxisProp = options.x || "date";
     this.yAxisProp = options.y || "group";
-    this.excludeColumns = [...options.excludeColumns || "", this.xAxisProp];
+    this.columns = options.columns || [];
     this.extraLegends = options.extraLegends || [];
     this.showLegend = options.showLegend;
     this.xTimeFormat = options.xTimeFormat || ((d) => (this.isDate(d) ? timeFormat('%b-%Y') : (d => d))(d));
@@ -26,7 +26,6 @@ export default class BarChartStacked extends Base {
     this.showTickValues = options.showTickValues || "";
     this.height = options.height || 400;
     this.sortAxisX = options.sortAxisX;
-    this.columns = options.columns;
 
     this.margin = {
       top: 12,
@@ -292,18 +291,14 @@ export default class BarChartStacked extends Base {
   }
 
   defaultTooltip(d) {
-    const tooltipContent = [];
-    const filteredDataByKey = Object.fromEntries(Object.entries(d.data).filter(([key]) => !this.excludeColumns.includes(key)));
-
-    for (const key in filteredDataByKey) {
-      const valueContent = `
-        <div class="tooltip-barchart-stacked-grid">
-          <span style="background-color: ${this.scaleColor(key)}" class="tooltip-barchart-stacked-grid-key-color"></span>
-          <span class="tooltip-barchart-stacked-grid-key">${key}:</span>
-          <span class="tooltip-barchart-stacked-grid-value">${filteredDataByKey[key]}</span>
-        </div>`
-      tooltipContent.push(valueContent);
-    }
+    const tooltipContent = this.columns.map(key => {
+      return `
+      <div class="tooltip-barchart-stacked-grid">
+        <span style="background-color: ${this.scaleColor(key)}" class="tooltip-barchart-stacked-grid-key-color"></span>
+        <span class="tooltip-barchart-stacked-grid-key">${key}:</span>
+        <span class="tooltip-barchart-stacked-grid-value">${d.data[key]}</span>
+      </div>`
+    });
 
     return `
       <span class="tooltip-barchart-stacked-title">${this.xTimeFormat(d.data[this.xAxisProp])}</span>
@@ -325,11 +320,7 @@ export default class BarChartStacked extends Base {
   }
 
   setColumns(value) {
-    this.columns = value || [...new Set(this.rawData.flatMap(Object.keys))].filter(column => !this.excludeColumns.includes(column))
-  }
-
-  setExcludeColumns(value) {
-    this.excludeColumns = value
+    this.columns = value
   }
 
   setTooltip(value) {
@@ -339,6 +330,11 @@ export default class BarChartStacked extends Base {
 
   setOnClick(value) {
     this.onClick = value
+    this.build()
+  }
+
+  setPercentage(value) {
+    this.percentage = !!value
     this.build()
   }
 
