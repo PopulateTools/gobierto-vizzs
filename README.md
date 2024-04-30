@@ -441,14 +441,15 @@ barChartStacked.setData(newData)
 | **x** | _String_ | "phase" | Property name of the categories along the X-axis |
 | **y** | _String_ | "group" | Property name of the groups along the Y-axis. Legend will be depicted by these values |
 | **count** | _String_ | - | Property name of a numeric value to sum Y-axis groups. If not specified, it uses the length of each group |
+| **ratio** | _String_ | "absolute|percentage" | Display the bars as percentage. Implies full-height. |
+| **extraLegends** | _Array_ | [] | More X-axis can be added, passing an array with selected values. |
+| **showLegend** | _Boolean_ | false | Show the legend. |
+| **orientationLegend** | _String_ | "left" | Positioning of legends, supports left and right. |
+| **showTickValues** | _Array_ | [] | Array with the indices of the ticks shown on the X-axis. |
+| **xTicksFormat** | _Function_ | - | Function to format ticks from X-axis. |
 | **margin** | _Object_ | `{ top: 30, bottom: 0, left: 0, right: 0 }` | Set the margin around the chart. You can pass the properties you want. |
-| **locale** | _String_ | `window.navigator.language` | 4-letters specification of the locale. |
-| **extraLegends** | _Array_ | [] | More x-axis can be added, passing an array with selected values. |
-| **showLegend** | _Boolean_ | false | Show the legends. |
-| **orientationLegend** | _Stringn_ | "left" | Positioning of legends, supports left and right. |
-| **showTickValues** | _Array_ | [] | Array with the indices of the ticks shown on the x-axis. |
-| **xTicksFormat** | _Function_ | - | Function to format ticks from axis-x. |
 | **onClick** | _Function_ | - | Rect click callback handler. It receives the `event` and the `datum`. |
+| **locale** | _String_ | `window.navigator.language` | 4-letters specification of the locale. |
 | **tooltip** | _Function_ | [<sup>1</sup>](#1) | Custom HTML content to render in the tooltip on mouseenter. |
 
 <span id="1"></span>
@@ -480,38 +481,20 @@ const chart = document.body
 const data = [
   {
     "year": "2010",
-    "enero":"44.6132",
-    "febrero":"41.9763",
-    "marzo":"64.2093",
-    "abril":"12.1696",
-    "mayo":"42.8975",
-    "junio":"33.4536",
-    "julio":"2.59543",
-    "agosto":"86.3578",
-    "septiembre":"88.4577",
-    "total":"221.65",
-    "decada":"232.73"
+    "month": "enero",
+    "value":"44.6132",
   },
   {
-    "year": "2011",
-    "enero":"86.4595",
-    "febrero":"7.2782",
-    "marzo":"41.1251",
-    "abril":"2.89737",
-    "mayo":"89.8856",
-    "junio":"60.3666",
-    "julio":"43.4598",
-    "agosto":"92.3711",
-    "septiembre":"24.8777",
-    "total":"284.13",
-    "decada":"289.52"
+    "year": "2010",
+    "month":"febrero",
+    "value":"7.2782",
   },
   ...
 ]
 const bar_chart_stacked = new BarChartStacked(chart, data, {
   x: "year",
-  filterColumns: ["total", "decada"],
-  extraLegends: ["total","decada"]
+  y: "month",
+  count: "value"
 })
 ```
 

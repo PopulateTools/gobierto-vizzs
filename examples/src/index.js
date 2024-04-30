@@ -1,6 +1,5 @@
 import "./index.css";
 import { BeeSwarm, TreeMap, BarChartStacked, Gantt, BarChartSplit } from "../../src/index";
-// import { BeeSwarm } from "gobierto-vizzs"
 import DOM from "./dom";
 // import CSV from "url:./data.csv"
 
@@ -20,12 +19,13 @@ async function main() {
       {
         id: "title",
         x: "phase",
-        excludeColumns: ["date", "relation", "title", "group", "id", "phase", "from", "to"],
-        orientationLegend: "left",
-        showLegend: true
+        y: "group",
+        count: "value",
+        showLegend: true,
+        ratio: "percentage"
       },
     ],
-    ["BarChartSplit", BarChartSplit, { id: "title", y: "relation", x: "group", count: "value4" }],
+    ["BarChartSplit", BarChartSplit, { id: "title", y: "relation", x: "group", count: "value" }],
   ].map(DOM);
 }
 

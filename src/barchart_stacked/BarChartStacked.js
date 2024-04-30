@@ -2,7 +2,7 @@ import Base from "../commons/base";
 import { select, selectAll } from 'd3-selection';
 import { max, sum, union, group } from 'd3-array';
 import { scaleLinear, scaleOrdinal, scaleBand } from 'd3-scale';
-import { stack, stackOrderAscending } from 'd3-shape';
+import { stack, stackOrderAscending, stackOffsetExpand } from 'd3-shape';
 import { axisBottom, axisLeft } from 'd3-axis';
 import "d3-transition";
 import "./BarChartStacked.css"
@@ -20,6 +20,7 @@ export default class BarChartStacked extends Base {
     this.countProp = options.count;
     this.extraLegends = options.extraLegends || [];
     this.showLegend = options.showLegend;
+    this.ratio = options.ratio || "absolute";
     this.xTicksFormat = options.xTicksFormat || (d => d);
     this.orientationLegend = options.orientationLegend || "left";
     this.showTickValues = options.showTickValues;
@@ -97,7 +98,11 @@ export default class BarChartStacked extends Base {
         .transition()
         .duration(400)
         .attr("y", d => this.scaleY(d[1]))
-        .attr("height", d => this.scaleY(d[0]) - this.scaleY(d[1]))
+        .attr("height", d => {
+          // if (Number.isNaN(this.scaleY(d[0]) - this.scaleY(d[1]))) debugger
+
+          return this.scaleY(d[0]) - this.scaleY(d[1])
+        })
         .attr("cursor", "pointer")
       .selection()
       .on("touchmove", e => e.preventDefault())
@@ -205,7 +210,11 @@ export default class BarChartStacked extends Base {
   }
 
   yAxis(g) {
-    g.call(axisLeft(this.scaleY).tickSize(-this.width));
+    g.call(
+      axisLeft(this.scaleY)
+        .tickSize(-this.width)
+        .tickFormat((d) => this.ratio === "percentage" ? d.toLocaleString(undefined, { style: "percent" }) : d)
+    );
 
     // remove baseline
     g.select(".domain").remove();
@@ -226,18 +235,22 @@ export default class BarChartStacked extends Base {
       this.setColorScale();
     }
 
+    const grouped = group(this.data, d => d[this.xAxisProp], d => d[this.yAxisProp])
     // https://d3js.org/d3-shape/stack#_stack
     this.series = stack()
-      .keys(union(this.data.map(d => d[this.yAxisProp])))
+      .keys(union(this.data.map((d) => d[this.yAxisProp])))
       .value(([, group], key) => {
+        const item = group.get(key)
+        if (!item) return 0
+
+        return !!this.countProp
         // in case countProp is defined, we group using that property
         // otherwise, we count the amount of items
-        return !!this.countProp
-          ? group.get(key)?.reduce((acc, d) => acc + d[this.countProp], 0)
-          : group.get(key)?.length
+          ? item.reduce((acc, d) => acc + d[this.countProp], 0)
+          : item.length;
       })
       .order(stackOrderAscending)
-    (group(this.data, d => d[this.xAxisProp], d => d[this.yAxisProp]));
+      .offset(this.ratio === "percentage" ? stackOffsetExpand : d => d)(grouped);
 
     await this.getLocale()
 
@@ -256,7 +269,7 @@ export default class BarChartStacked extends Base {
       .attr("height", `${this.height + this.margin.top + this.margin.bottom}`);
 
     this.scaleY = scaleLinear()
-      .domain([0, max(this.series, d => max(d, (d) => d[1]))])
+      .domain([0, this.ratio === "percentage" ? 1 : max(this.series, d => max(d, (d) => d[1]))])
       .nice()
       .range([this.height, 0]);
 
@@ -341,8 +354,8 @@ export default class BarChartStacked extends Base {
     this.build()
   }
 
-  setPercentage(value) {
-    this.percentage = !!value
+  setRatio(value) {
+    this.ratio = value
     this.build()
   }
 
