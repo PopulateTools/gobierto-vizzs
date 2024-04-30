@@ -1,7 +1,6 @@
 import Base from "../commons/base";
 import { select, selectAll } from 'd3-selection';
-import { max } from 'd3-array';
-import { timeFormat } from "d3-time-format";
+import { max, sum, union, group } from 'd3-array';
 import { scaleLinear, scaleOrdinal, scaleBand } from 'd3-scale';
 import { stack, stackOrderAscending } from 'd3-shape';
 import { axisBottom, axisLeft } from 'd3-axis';
@@ -18,12 +17,12 @@ export default class BarChartStacked extends Base {
     // main properties to display
     this.xAxisProp = options.x || "date";
     this.yAxisProp = options.y || "group";
-    this.columns = options.columns || [];
+    this.countProp = options.count;
     this.extraLegends = options.extraLegends || [];
     this.showLegend = options.showLegend;
-    this.xTimeFormat = options.xTimeFormat || ((d) => (this.isDate(d) ? timeFormat('%b-%Y') : (d => d))(d));
+    this.xTicksFormat = options.xTicksFormat || (d => d);
     this.orientationLegend = options.orientationLegend || "left";
-    this.showTickValues = options.showTickValues || "";
+    this.showTickValues = options.showTickValues;
     this.height = options.height || 400;
     this.sortAxisX = options.sortAxisX;
 
@@ -55,9 +54,19 @@ export default class BarChartStacked extends Base {
     this.g = this.svg.append("g").attr("transform", `translate(${this.margin.left} ${this.margin.top})`);
     this.g.append("g").attr("class", "axis axis-x");
     this.g.append("g").attr("class", "axis axis-y");
-    this.tooltipContainer = select(this.container).append("div").attr("class", "gv-tooltip gv-tooltip-bar-stacked")
-    this.legendContainer = select(this.container).append("div").attr("class", "gv-legend-bar-stacked")
-    this.g.append('text').attr("class", "axis-x-legend").attr("x", -60).attr("y", this.height + 9).attr("dy", "0.71em").attr("text-anchor", "end").text(this.xAxisProp);
+    this.tooltipContainer = select(this.container).append("div").attr("class", "gv-tooltip gv-tooltip-bar-stacked");
+    this.legendContainer = select(this.container)
+      .append("div")
+      .attr("class", "gv-legend-bar-stacked")
+      .classed("gv-legend-bar-stacked-right", this.orientationLegend === "right");
+    this.g
+      .append("text")
+      .attr("class", "axis-x-legend")
+      .attr("x", this.orientationLegend === "right" ? this.width + 10 : -60)
+      .attr("y", this.height + 9)
+      .attr("dy", "0.71em")
+      .attr("text-anchor", this.orientationLegend === "right" ? "start" : "end")
+      .text(this.xAxisProp);
   }
 
   build() {
@@ -74,7 +83,7 @@ export default class BarChartStacked extends Base {
 
     this.g
       .selectAll(".bar-stacked-group")
-      .data(stack().keys(this.columns).order(stackOrderAscending)(this.data))
+      .data(this.series)
       .join("g")
         .attr("class", "bar-stacked-group")
         .attr("id", ({ key }) => key)
@@ -83,12 +92,12 @@ export default class BarChartStacked extends Base {
       .data(d => d)
       .join("rect")
         .attr("class", "bar-stacked-rect")
-        .attr("x", d => this.scaleX(d.data[this.xAxisProp]))
+        .attr("x", d => this.scaleX(d.data[0]))
         .attr("width", this.scaleX.bandwidth())
         .transition()
         .duration(400)
-        .attr("y", ([y1, y2]) => Math.min(this.scaleY(y1), this.scaleY(isNaN(y2) ? 1 : y2)))
-        .attr("height", ([y1, y2]) => Math.abs(this.scaleY(y1) - this.scaleY(isNaN(y2) ? y1 : y2)))
+        .attr("y", d => this.scaleY(d[1]))
+        .attr("height", d => this.scaleY(d[0]) - this.scaleY(d[1]))
         .attr("cursor", "pointer")
       .selection()
       .on("touchmove", e => e.preventDefault())
@@ -109,15 +118,9 @@ export default class BarChartStacked extends Base {
       .selectAll(".bar-stack-label")
       .remove()
 
-    const sortedColumnKeys = this.columns
-      // to sort the legend we need to calculate the sum of the values for every column
-      .map((key) => [key, this.data.reduce((acc, { [key]: prop = 0 }) => acc + prop, 0)])
-      .sort(([, a], [, b]) => b - a)
-      .map(([key]) => key);
-
     this.legendContainer
       .selectAll(".bar-stack-label")
-      .data(stack().keys(sortedColumnKeys)(this.data))
+      .data(this.series.sort((a, b) => sum(b, d => d[1] - d[0]) - sum(a, d => d[1] - d[0])))
       .join(
         enter => {
           const g = enter
@@ -139,13 +142,13 @@ export default class BarChartStacked extends Base {
         exit => exit.remove()
       )
       .on("pointermove", function(_, d) {
-          const { key } = d
-          const groups = selectAll('.bar-stacked-group')
+        const { key } = d
+        const groups = selectAll('.bar-stacked-group')
 
-          groups.filter(({ key: k }) => k !== key)
-            .style("opacity", .1)
-          groups.filter(({ key: k }) => k === key)
-            .style("opacity", 1)
+        groups.filter(({ key: k }) => k !== key)
+          .style("opacity", .1)
+        groups.filter(({ key: k }) => k === key)
+          .style("opacity", 1)
       })
       .on("pointerout", () => {
         selectAll('.bar-stacked-group')
@@ -182,10 +185,13 @@ export default class BarChartStacked extends Base {
   }
 
   xAxis(g) {
-    const tickValues = this.showTickValues ? this.scaleX.domain().filter((d,i) => this.showTickValues.includes(i)) : this.scaleX.domain()
+    const tickValues = this.showTickValues
+      ? this.scaleX.domain().filter((_, i) => this.showTickValues.includes(i))
+      : this.scaleX.domain();
+
     g.call(
       axisBottom(this.scaleX)
-        .tickFormat(d => this.xTimeFormat(d))
+        .tickFormat(d => this.xTicksFormat(d))
         .tickPadding(6)
         .tickSize(10)
         .tickValues(tickValues)
@@ -196,7 +202,6 @@ export default class BarChartStacked extends Base {
 
     // remove default formats
     g.attr("font-family", null).attr("font-size", null);
-
   }
 
   yAxis(g) {
@@ -221,7 +226,18 @@ export default class BarChartStacked extends Base {
       this.setColorScale();
     }
 
-    this.setColumns(this.columns)
+    // https://d3js.org/d3-shape/stack#_stack
+    this.series = stack()
+      .keys(union(this.data.map(d => d[this.yAxisProp])))
+      .value(([, group], key) => {
+        // in case countProp is defined, we group using that property
+        // otherwise, we count the amount of items
+        return !!this.countProp
+          ? group.get(key)?.reduce((acc, d) => acc + d[this.countProp], 0)
+          : group.get(key)?.length
+      })
+      .order(stackOrderAscending)
+    (group(this.data, d => d[this.xAxisProp], d => d[this.yAxisProp]));
 
     await this.getLocale()
 
@@ -235,14 +251,12 @@ export default class BarChartStacked extends Base {
   }
 
   setScales() {
-    const stacked = stack().keys(this.columns)(this.data);
-
     this.svg
       .attr("width", `${this.width + this.margin.left + this.margin.right}`)
       .attr("height", `${this.height + this.margin.top + this.margin.bottom}`);
 
     this.scaleY = scaleLinear()
-      .domain([0, max(stacked, d => max(d, (d) => d[1]))])
+      .domain([0, max(this.series, d => max(d, (d) => d[1]))])
       .nice()
       .range([this.height, 0]);
 
@@ -270,38 +284,36 @@ export default class BarChartStacked extends Base {
   }
 
   parse(data) {
-    // 1. remove those elements with no X axis data
-    // 2. enforces the datatypes:
-    //    - X axis is Date
-    //    - Z axis is Number
-    return data.reduce((acc, d) => {
-      return [
-        ...acc,
-        // https://2ality.com/2017/04/conditional-literal-entries.html
-        ...(!!d[this.xAxisProp]
-          ? [
-              {
-                ...d,
-                [this.xAxisProp]: this.isDate(d[this.xAxisProp]) ? new Date(d[this.xAxisProp]) : d[this.xAxisProp]
-              },
-            ]
-          : []),
-      ];
+    // 1. remove those elements with no X axis nor Y axis data
+    // 2. enforce numeric type for countProp
+    return data.reduce((acc, item) => {
+      // enforce data object to define X-axis and Y-axis properties
+      if (Object.hasOwnProperty(item, this.xAxisProp) || Object.hasOwnProperty(item, this.yAxisProp)) return acc
+
+      if (this.countProp) {
+        // whenever this property is defined, ensure to be numeric
+        item[this.countProp] = +item[this.countProp] || 0
+      }
+
+      acc.push(item)
+
+      return acc
     }, []).sort(this.sortBy(this.xAxisProp));
   }
 
   defaultTooltip(d) {
-    const tooltipContent = this.columns.map(key => {
+    const tooltipContent = Array.from(d.data[1]).map(([key, values]) => {
+      const value = this.countProp ? values.reduce((acc, item) => acc + item[this.countProp], 0) : values.length;
       return `
       <div class="tooltip-barchart-stacked-grid">
         <span style="background-color: ${this.scaleColor(key)}" class="tooltip-barchart-stacked-grid-key-color"></span>
         <span class="tooltip-barchart-stacked-grid-key">${key}:</span>
-        <span class="tooltip-barchart-stacked-grid-value">${d.data[key]}</span>
+        <span class="tooltip-barchart-stacked-grid-value">${value}</span>
       </div>`
     });
 
     return `
-      <span class="tooltip-barchart-stacked-title">${this.xTimeFormat(d.data[this.xAxisProp])}</span>
+      <span class="tooltip-barchart-stacked-title">${this.xTicksFormat(d.data[0])}</span>
       ${tooltipContent.join("")}
     `;
   }
@@ -317,10 +329,6 @@ export default class BarChartStacked extends Base {
 
   setTickValues(value) {
     this.showTickValues = value
-  }
-
-  setColumns(value) {
-    this.columns = value
   }
 
   setTooltip(value) {

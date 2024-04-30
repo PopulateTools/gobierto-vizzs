@@ -438,32 +438,34 @@ barChartStacked.setData(newData)
 
 | name | type | default | description |
 |---|---|---|---|
-| **x** | _String_ | "phase" | Property name of the categories along the X-axis. Legend will be depicted by these values |
+| **x** | _String_ | "phase" | Property name of the categories along the X-axis |
+| **y** | _String_ | "group" | Property name of the groups along the Y-axis. Legend will be depicted by these values |
+| **count** | _String_ | - | Property name of a numeric value to sum Y-axis groups. If not specified, it uses the length of each group |
 | **margin** | _Object_ | `{ top: 30, bottom: 0, left: 0, right: 0 }` | Set the margin around the chart. You can pass the properties you want. |
 | **locale** | _String_ | `window.navigator.language` | 4-letters specification of the locale. |
-| **columns** | _Array_ | [x] | The values that we want to show in the chart |
 | **extraLegends** | _Array_ | [] | More x-axis can be added, passing an array with selected values. |
 | **showLegend** | _Boolean_ | false | Show the legends. |
 | **orientationLegend** | _Stringn_ | "left" | Positioning of legends, supports left and right. |
 | **showTickValues** | _Array_ | [] | Array with the indices of the ticks shown on the x-axis. |
-| **xTimeFormat** | _Function_ | - | Function to format ticks from axis-x. |
+| **xTicksFormat** | _Function_ | - | Function to format ticks from axis-x. |
 | **onClick** | _Function_ | - | Rect click callback handler. It receives the `event` and the `datum`. |
 | **tooltip** | _Function_ | [<sup>1</sup>](#1) | Custom HTML content to render in the tooltip on mouseenter. |
 
 <span id="1"></span>
 ```js
 defaultTooltip(d) {
-  const tooltipContent = this.columns.map(key => {
+  const tooltipContent = Array.from(d.data[1]).map(([key, values]) => {
+    const agg = values.reduce((acc, item) => acc + item[this.countProp], 0)
     return `
     <div class="tooltip-barchart-stacked-grid">
       <span style="background-color: ${this.scaleColor(key)}" class="tooltip-barchart-stacked-grid-key-color"></span>
       <span class="tooltip-barchart-stacked-grid-key">${key}:</span>
-      <span class="tooltip-barchart-stacked-grid-value">${d.data[key]}</span>
+      <span class="tooltip-barchart-stacked-grid-value">${agg}</span>
     </div>`
   });
 
   return `
-    <span class="tooltip-barchart-stacked-title">${this.xTimeFormat(d.data[this.xAxisProp])}</span>
+    <span class="tooltip-barchart-stacked-title">${this.xTicksFormat(d.data[0])}</span>
     ${tooltipContent.join("")}
   `;
 }

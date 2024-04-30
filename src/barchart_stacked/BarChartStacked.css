@@ -73,6 +73,11 @@
   max-width: 150px;
 }
 
+.gv-legend-bar-stacked-right {
+  left: inherit;
+  right: 10px;
+}
+
 .bar-stack-label-rect {
   width: 16px;
   height: 16px;
