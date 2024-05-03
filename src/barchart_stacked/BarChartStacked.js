@@ -98,11 +98,7 @@ export default class BarChartStacked extends Base {
         .transition()
         .duration(400)
         .attr("y", d => this.scaleY(d[1]))
-        .attr("height", d => {
-          // if (Number.isNaN(this.scaleY(d[0]) - this.scaleY(d[1]))) debugger
-
-          return this.scaleY(d[0]) - this.scaleY(d[1])
-        })
+        .attr("height", d => this.scaleY(d[0]) - this.scaleY(d[1]))
         .attr("cursor", "pointer")
       .selection()
       .on("touchmove", e => e.preventDefault())
@@ -186,7 +182,7 @@ export default class BarChartStacked extends Base {
       .attr("class", "extra-legend-value")
       .attr("x", d => this.scaleX(d.data[this.xAxisProp]))
       .attr("y", `${this.margin.top + 14}`)
-      .text(([y1, y2]) => ((y2 - y1).toLocaleString(undefined, { minimumFractionDigits: 2,maximumFractionDigits: 2})))
+      .text(([y1, y2]) => ((y2 - y1).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })))
   }
 
   xAxis(g) {
@@ -337,7 +333,6 @@ export default class BarChartStacked extends Base {
 
   setY(value) {
     this.yAxisProp = value
-    this.setData(this.rawData)
   }
 
   setTickValues(value) {
@@ -346,17 +341,14 @@ export default class BarChartStacked extends Base {
 
   setTooltip(value) {
     this.tooltip = value
-    this.build()
   }
 
   setOnClick(value) {
     this.onClick = value
-    this.build()
   }
 
   setRatio(value) {
     this.ratio = value
-    this.build()
   }
 
   setMargin(value) {
