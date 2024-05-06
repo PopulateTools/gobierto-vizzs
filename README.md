@@ -447,6 +447,7 @@ barChartStacked.setData(newData)
 | **orientationLegend** | _String_ | "left" | Positioning of legends, supports left and right. |
 | **showTickValues** | _Array_ | [] | Array with the indices of the ticks shown on the X-axis. |
 | **xTicksFormat** | _Function_ | - | Function to format ticks from X-axis. |
+| **yTicksFormat** | _Function_ | - | Function to format ticks from Y-axis. |
 | **margin** | _Object_ | `{ top: 30, bottom: 0, left: 0, right: 0 }` | Set the margin around the chart. You can pass the properties you want. |
 | **onClick** | _Function_ | - | Rect click callback handler. It receives the `event` and the `datum`. |
 | **locale** | _String_ | `window.navigator.language` | 4-letters specification of the locale. |

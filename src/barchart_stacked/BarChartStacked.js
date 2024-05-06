@@ -22,6 +22,7 @@ export default class BarChartStacked extends Base {
     this.showLegend = options.showLegend;
     this.ratio = options.ratio || "absolute";
     this.xTicksFormat = options.xTicksFormat || (d => d);
+    this.yTicksFormat = options.yTicksFormat || (d => d.toLocaleString());
     this.orientationLegend = options.orientationLegend || "left";
     this.showTickValues = options.showTickValues;
     this.height = options.height || 400;
@@ -209,7 +210,7 @@ export default class BarChartStacked extends Base {
     g.call(
       axisLeft(this.scaleY)
         .tickSize(-this.width)
-        .tickFormat((d) => this.ratio === "percentage" ? d.toLocaleString(undefined, { style: "percent" }) : d)
+        .tickFormat((d) => this.ratio === "percentage" ? d.toLocaleString(undefined, { style: "percent" }) : this.yTicksFormat(d))
     );
 
     // remove baseline
