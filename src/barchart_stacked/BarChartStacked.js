@@ -21,11 +21,13 @@ export default class BarChartStacked extends Base {
     this.extraLegends = options.extraLegends || [];
     this.showLegend = options.showLegend;
     this.ratio = options.ratio || "absolute";
-    this.xTicksFormat = options.xTicksFormat || (d => d);
-    this.yTicksFormat = options.yTicksFormat || (d => d.toLocaleString());
+    this.xTickFormat = options.xTickFormat || (d => d);
+    this.yTickFormat = options.yTickFormat || (d => d.toLocaleString());
     this.orientationLegend = options.orientationLegend || "left";
     this.height = options.height || 400;
     this.categories = options.categories;
+    this.xTickValues = options.xTickValues;
+    this.yTickValues = options.yTickValues;
 
     this.margin = {
       top: 12,
@@ -188,7 +190,8 @@ export default class BarChartStacked extends Base {
   xAxis(g) {
     g.call(
       axisBottom(this.scaleX)
-        .tickFormat(d => this.xTicksFormat(d))
+        .tickValues(this.xTickValues)
+        .tickFormat(d => this.xTickFormat(d))
         .tickPadding(6)
         .tickSize(10)
     );
@@ -203,9 +206,9 @@ export default class BarChartStacked extends Base {
   yAxis(g) {
     g.call(
       axisLeft(this.scaleY)
-        .ticks(this.ratio === "percentage" ? 10 : Math.min(this.scaleY.domain()[1], 10))
+        .tickValues(this.yTickValues || this.scaleY.ticks().filter(x => !(this.ratio !== "percentage" && !Number.isInteger(x))))
         .tickSize(-this.width)
-        .tickFormat((d) => this.ratio === "percentage" ? d.toLocaleString(undefined, { style: "percent" }) : this.yTicksFormat(d))
+        .tickFormat((d) => this.ratio === "percentage" ? d.toLocaleString(undefined, { style: "percent" }) : this.yTickFormat(d))
     );
 
     // remove baseline
@@ -318,7 +321,7 @@ export default class BarChartStacked extends Base {
     });
 
     return `
-      <span class="tooltip-barchart-stacked-title">${this.xTicksFormat(d.data[0])}</span>
+      <span class="tooltip-barchart-stacked-title">${this.xTickFormat(d.data[0])}</span>
       ${tooltipContent.join("")}
     `;
   }
@@ -335,8 +338,12 @@ export default class BarChartStacked extends Base {
     this.countProp = value
   }
 
-  setTickValues(value) {
-    this.showTickValues = value
+  setXTickValues(value) {
+    this.xTickValues = value
+  }
+
+  setYTickValues(value) {
+    this.yTickValues = value
   }
 
   setTooltip(value) {

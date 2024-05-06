@@ -445,8 +445,10 @@ barChartStacked.setData(newData)
 | **extraLegends** | _Array_ | [] | More X-axis can be added, passing an array with selected values. |
 | **showLegend** | _Boolean_ | false | Show the legend. |
 | **orientationLegend** | _String_ | "left" | Positioning of legends, supports left and right. |
-| **xTicksFormat** | _Function_ | - | Function to format ticks from X-axis. |
-| **yTicksFormat** | _Function_ | - | Function to format ticks from Y-axis. |
+| **xTickFormat** | _Function_ | - | Function to format ticks from X-axis. |
+| **yTickFormat** | _Function_ | - | Function to format ticks from Y-axis. |
+| **xTickValues** | _Array_ | - | Elements with a tick for the X-axis. |
+| **yTickValues** | _Array_ | - | Elements with a tick for the Y-axis. |
 | **categories** | _Array_ | - | Set the X-axis categories manually. |
 | **margin** | _Object_ | `{ top: 30, bottom: 0, left: 0, right: 0 }` | Set the margin around the chart. You can pass the properties you want. |
 | **onClick** | _Function_ | - | Rect click callback handler. It receives the `event` and the `datum`. |
@@ -467,7 +469,7 @@ defaultTooltip(d) {
   });
 
   return `
-    <span class="tooltip-barchart-stacked-title">${this.xTicksFormat(d.data[0])}</span>
+    <span class="tooltip-barchart-stacked-title">${this.xTickFormat(d.data[0])}</span>
     ${tooltipContent.join("")}
   `;
 }
@@ -535,7 +537,7 @@ bar_chart_split.setData(newData)
 | **margin** | _Object_ | `{ top: 30, bottom: 0, left: 0, right: 0 }` | Set the margin around the chart. You can pass the properties you want. |
 | **moveLabels** | _Boolean_ | false | Shows the values of the bars on the left. |
 | **sortAxisY** | _Array_ | Array with the values of the ticks of the y-axis. |
-| **yTicksFormat** | _Function_ | - | Function to format ticks from axis-y. |
+| **yTickFormat** | _Function_ | - | Function to format ticks from axis-y. |
 | **showTickValues** | _Array_ | [] | Array with the indices of the ticks shown on the y-axis. |
 | **locale** | _String_ | `window.navigator.language` | 4-letters specification of the locale. |
 

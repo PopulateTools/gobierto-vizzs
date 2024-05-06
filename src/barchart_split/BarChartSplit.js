@@ -19,7 +19,7 @@ export default class BarChartSplit extends Base {
     this.ratio = options.ratio || "absolute";
     this.height = options.height || 600
     this.moveLabels = options.moveLabels
-    this.yTicksFormat = options.yTicksFormat || (d => d);
+    this.yTickFormat = options.yTickFormat || (d => d);
     this.showTickValues = options.showTickValues;
     this.sortAxisY = options.sortAxisY
 
@@ -115,7 +115,7 @@ export default class BarChartSplit extends Base {
 
     g.call(
      axisLeft(this.scaleY)
-     .tickFormat(d => this.yTicksFormat(d))
+     .tickFormat(d => this.yTickFormat(d))
      .tickPadding(6)
      .tickSize(10)
      .tickValues(tickValues)
