@@ -24,9 +24,8 @@ export default class BarChartStacked extends Base {
     this.xTicksFormat = options.xTicksFormat || (d => d);
     this.yTicksFormat = options.yTicksFormat || (d => d.toLocaleString());
     this.orientationLegend = options.orientationLegend || "left";
-    this.showTickValues = options.showTickValues;
     this.height = options.height || 400;
-    this.sortAxisX = options.sortAxisX;
+    this.categories = options.categories;
 
     this.margin = {
       top: 12,
@@ -187,16 +186,11 @@ export default class BarChartStacked extends Base {
   }
 
   xAxis(g) {
-    const tickValues = this.showTickValues
-      ? this.scaleX.domain().filter((_, i) => this.showTickValues.includes(i))
-      : this.scaleX.domain();
-
     g.call(
       axisBottom(this.scaleX)
         .tickFormat(d => this.xTicksFormat(d))
         .tickPadding(6)
         .tickSize(10)
-        .tickValues(tickValues)
     );
 
     // remove baseline
@@ -209,6 +203,7 @@ export default class BarChartStacked extends Base {
   yAxis(g) {
     g.call(
       axisLeft(this.scaleY)
+        .ticks(this.ratio === "percentage" ? 10 : Math.min(this.scaleY.domain()[1], 10))
         .tickSize(-this.width)
         .tickFormat((d) => this.ratio === "percentage" ? d.toLocaleString(undefined, { style: "percent" }) : this.yTicksFormat(d))
     );
@@ -271,7 +266,7 @@ export default class BarChartStacked extends Base {
       .range([this.height, 0]);
 
     this.scaleX = scaleBand()
-      .domain(this.sortAxisX || [...new Set(this.data.map((d) => d[this.xAxisProp]))])
+      .domain(this.categories || [...new Set(this.data.map((d) => d[this.xAxisProp]))])
       .paddingInner(0.5)
       .rangeRound([(this.width / this.data.map((d) => d[this.xAxisProp]).length) / 2, this.width - (this.width / this.data.map((d) => d[this.xAxisProp]).length) / 2]);
   }
@@ -336,6 +331,10 @@ export default class BarChartStacked extends Base {
     this.yAxisProp = value
   }
 
+  setCount(value) {
+    this.countProp = value
+  }
+
   setTickValues(value) {
     this.showTickValues = value
   }
@@ -350,6 +349,10 @@ export default class BarChartStacked extends Base {
 
   setRatio(value) {
     this.ratio = value
+  }
+
+  setCategories(value) {
+    this.categories = value
   }
 
   setMargin(value) {
