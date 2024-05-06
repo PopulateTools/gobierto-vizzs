@@ -20,8 +20,8 @@ export default class BarChartSplit extends Base {
     this.height = options.height || 600
     this.moveLabels = options.moveLabels
     this.yTickFormat = options.yTickFormat || (d => d);
-    this.showTickValues = options.showTickValues;
-    this.sortAxisY = options.sortAxisY
+    this.yTickValues = options.yTickValues;
+    this.categories = options.categories
 
     this.margin = {
       top: 36,
@@ -109,16 +109,12 @@ export default class BarChartSplit extends Base {
   }
 
   yAxis(g) {
-    const tickValues = this.showTickValues
-      ? this.scaleY.domain().filter((_, i) => this.showTickValues.includes(i))
-      : this.scaleY.domain();
-
     g.call(
      axisLeft(this.scaleY)
+     .tickValues(this.yTickValues)
      .tickFormat(d => this.yTickFormat(d))
      .tickPadding(6)
      .tickSize(10)
-     .tickValues(tickValues)
     );
 
     // remove baseline
@@ -147,7 +143,7 @@ export default class BarChartSplit extends Base {
       .attr("height", `${this.height + this.margin.top + this.margin.bottom}`);
 
     this.scaleY = scaleBand()
-      .domain(this.sortAxisY || [...new Set(this.data.map(d => d[this.yAxisProp]))].reverse())
+      .domain(this.categories || [...new Set(this.data.map(d => d[this.yAxisProp]))].reverse())
       .range([this.height, 0])
       .padding(0.4)
 
@@ -232,12 +228,20 @@ export default class BarChartSplit extends Base {
     this.yAxisProp = value
   }
 
-  setTickValues(value) {
-    this.showTickValues = value
+  setCount(value) {
+    this.countProp = value
   }
 
-  setSortAxisY(value) {
-    this.sortAxisY = value
+  setYTickValues(value) {
+    this.yTickValues = value
+  }
+
+  setCategories(value) {
+    this.categories = value
+  }
+
+  setTooltip(value) {
+    this.tooltip = value
   }
 
   setMargin(value) {

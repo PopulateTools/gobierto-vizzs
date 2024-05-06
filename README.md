@@ -536,9 +536,9 @@ bar_chart_split.setData(newData)
 | **count** | _String_ | Property name of the width of the bars. Quantitative value. |
 | **margin** | _Object_ | `{ top: 30, bottom: 0, left: 0, right: 0 }` | Set the margin around the chart. You can pass the properties you want. |
 | **moveLabels** | _Boolean_ | false | Shows the values of the bars on the left. |
-| **sortAxisY** | _Array_ | Array with the values of the ticks of the y-axis. |
-| **yTickFormat** | _Function_ | - | Function to format ticks from axis-y. |
-| **showTickValues** | _Array_ | [] | Array with the indices of the ticks shown on the y-axis. |
+| **yTickFormat** | _Function_ | - | Function to format ticks from Y-axis. |
+| **yTickValues** | _Array_ | - | Elements with a tick for the Y-axis. |
+| **categories** | _Array_ | - | Set the Y-axis categories manually. |
 | **locale** | _String_ | `window.navigator.language` | 4-letters specification of the locale. |
 
 ### BarChartStacked examples
