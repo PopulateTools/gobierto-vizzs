@@ -1,6 +1,6 @@
 import Base from "../commons/base";
 import { select, selectAll } from 'd3-selection';
-import { max, group, groupSort } from 'd3-array';
+import { max, group, groupSort, difference } from 'd3-array';
 import { scaleLinear, scaleBand, scaleOrdinal } from 'd3-scale';
 import { axisLeft } from 'd3-axis';
 import "d3-transition";
@@ -22,6 +22,7 @@ export default class BarChartSplit extends Base {
     this.yTickFormat = options.yTickFormat || (d => d);
     this.yTickValues = options.yTickValues;
     this.categories = options.categories
+    this.series = options.series
 
     this.margin = {
       top: 36,
@@ -57,6 +58,11 @@ export default class BarChartSplit extends Base {
     this.setScales();
 
     const dataGroup = group(this.data, (d) => d[this.xAxisProp]);
+
+    // in case series are defined, we add empty groups for each missing key
+    if (this.series) {
+      difference(this.series, dataGroup.keys()).forEach(key => dataGroup.set(key, []))
+    }
 
     this.g
       .select(".axis-y")
@@ -127,7 +133,7 @@ export default class BarChartSplit extends Base {
   async setData(data) {
     this.rawData = data
     this.data = this.parse(data)
-    this.groupAxisProps = [...new Set(this.data.map(d => d[this.xAxisProp]).filter(item => item))];
+    this.groupAxisProps = this.series || [...new Set(this.data.map(d => d[this.xAxisProp]).filter(item => item))];
 
     // only set the color scale, as of the first time you get the data
     if (!this.scaleColor) {
@@ -148,7 +154,7 @@ export default class BarChartSplit extends Base {
       .padding(0.4)
 
     // https://d3js.org/d3-array/group#groupSort
-    const dataGroupSorted = groupSort(this.data, (D) => -1 * D.reduce((acc, { [this.countProp]: count = 0 }) => acc + count, 0), (d) => d[this.xAxisProp]);
+    const dataGroupSorted = this.series || groupSort(this.data, (D) => -1 * D.reduce((acc, { [this.countProp]: count = 0 }) => acc + count, 0), (d) => d[this.xAxisProp]);
 
     this.scaleColumn = scaleBand()
       .domain(dataGroupSorted)
@@ -238,6 +244,10 @@ export default class BarChartSplit extends Base {
 
   setCategories(value) {
     this.categories = value
+  }
+
+  setSeries(value) {
+    this.series = value
   }
 
   setTooltip(value) {
