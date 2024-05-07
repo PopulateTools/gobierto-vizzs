@@ -2,7 +2,7 @@ import Base from "../commons/base";
 import { select, selectAll } from 'd3-selection';
 import { max, sum, union, group } from 'd3-array';
 import { scaleLinear, scaleOrdinal, scaleBand } from 'd3-scale';
-import { stack, stackOrderAscending, stackOffsetExpand } from 'd3-shape';
+import { stack, stackOrderAscending, stackOffsetExpand, stackOrderReverse, stackOffsetNone } from 'd3-shape';
 import { axisBottom, axisLeft } from 'd3-axis';
 import "d3-transition";
 import "./BarChartStacked.css"
@@ -20,12 +20,14 @@ export default class BarChartStacked extends Base {
     this.countProp = options.count;
     this.extraLegends = options.extraLegends || [];
     this.showLegend = options.showLegend;
+    this.sortStack = options.sortStack;
     this.ratio = options.ratio || "absolute";
     this.xTickFormat = options.xTickFormat || (d => d);
     this.yTickFormat = options.yTickFormat || (d => d.toLocaleString());
     this.orientationLegend = options.orientationLegend || "left";
     this.height = options.height || 400;
     this.categories = options.categories;
+    this.series = options.series;
     this.xTickValues = options.xTickValues;
     this.yTickValues = options.yTickValues;
 
@@ -86,7 +88,7 @@ export default class BarChartStacked extends Base {
 
     this.g
       .selectAll(".bar-stacked-group")
-      .data(this.series)
+      .data(this.stack)
       .join("g")
         .attr("class", "bar-stacked-group")
         .attr("id", ({ key }) => key)
@@ -121,9 +123,10 @@ export default class BarChartStacked extends Base {
       .selectAll(".bar-stack-label")
       .remove()
 
+    const items = this.sortStack ? this.stack.sort((a, b) => sum(b, d => d[1] - d[0]) - sum(a, d => d[1] - d[0])) : this.stack
     this.legendContainer
       .selectAll(".bar-stack-label")
-      .data(this.series.sort((a, b) => sum(b, d => d[1] - d[0]) - sum(a, d => d[1] - d[0])))
+      .data(items)
       .join(
         enter => {
           const g = enter
@@ -225,27 +228,30 @@ export default class BarChartStacked extends Base {
     this.rawData = data
     this.data = this.parse(data)
 
+    this.series = this.series || union(this.data.map((d) => d[this.yAxisProp]));
+
     // only set the color scale, as of the first time you get the data
     if (!this.scaleColor) {
       this.setColorScale();
     }
 
     const grouped = group(this.data, d => d[this.xAxisProp], d => d[this.yAxisProp])
+
     // https://d3js.org/d3-shape/stack#_stack
-    this.series = stack()
-      .keys(union(this.data.map((d) => d[this.yAxisProp])))
+    this.stack = stack()
+      .keys(this.series)
       .value(([, group], key) => {
-        const item = group.get(key)
-        if (!item) return 0
+        const item = group.get(key);
+        if (!item) return 0;
 
         return !!this.countProp
-        // in case countProp is defined, we group using that property
-        // otherwise, we count the amount of items
-          ? item.reduce((acc, d) => acc + d[this.countProp], 0)
+          ? // in case countProp is defined, we group using that property
+            // otherwise, we count the amount of items
+            item.reduce((acc, d) => acc + d[this.countProp], 0)
           : item.length;
       })
-      .order(stackOrderAscending)
-      .offset(this.ratio === "percentage" ? stackOffsetExpand : d => d)(grouped);
+      .order(this.sortStack ? stackOrderAscending : stackOrderReverse)
+      .offset(this.ratio === "percentage" ? stackOffsetExpand : stackOffsetNone)(grouped);
 
     await this.getLocale()
 
@@ -254,7 +260,7 @@ export default class BarChartStacked extends Base {
 
   setColorScale() {
     this.scaleColor = scaleOrdinal()
-      .domain(Array.from(new Set(this.data.map((d) => d[this.yAxisProp]))))
+      .domain(this.series)
       .range(this.PALETTE)
   }
 
@@ -264,7 +270,7 @@ export default class BarChartStacked extends Base {
       .attr("height", `${this.height + this.margin.top + this.margin.bottom}`);
 
     this.scaleY = scaleLinear()
-      .domain([0, this.ratio === "percentage" ? 1 : max(this.series, d => max(d, (d) => d[1]))])
+      .domain([0, this.ratio === "percentage" ? 1 : max(this.stack, d => max(d, (d) => d[1]))])
       .nice()
       .range([this.height, 0]);
 
@@ -346,6 +352,10 @@ export default class BarChartStacked extends Base {
     this.yTickValues = value
   }
 
+  setSortStack(value) {
+    this.sortStack = value
+  }
+
   setTooltip(value) {
     this.tooltip = value
   }
@@ -360,6 +370,10 @@ export default class BarChartStacked extends Base {
 
   setCategories(value) {
     this.categories = value
+  }
+
+  setSeries(value) {
+    this.series = value
   }
 
   setMargin(value) {

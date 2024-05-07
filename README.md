@@ -444,12 +444,14 @@ barChartStacked.setData(newData)
 | **ratio** | _String_ | "absolute|percentage" | Display the bars as percentage. Implies full-height. |
 | **extraLegends** | _Array_ | [] | More X-axis can be added, passing an array with selected values. |
 | **showLegend** | _Boolean_ | false | Show the legend. |
+| **sortStack** | _Boolean_ | false | Sort the legend. |
 | **orientationLegend** | _String_ | "left" | Positioning of legends, supports left and right. |
 | **xTickFormat** | _Function_ | - | Function to format ticks from X-axis. |
 | **yTickFormat** | _Function_ | - | Function to format ticks from Y-axis. |
 | **xTickValues** | _Array_ | - | Elements with a tick for the X-axis. |
 | **yTickValues** | _Array_ | - | Elements with a tick for the Y-axis. |
 | **categories** | _Array_ | - | Set the X-axis categories manually. |
+| **series** | _Array_ | - | Set the Y-axis series manually. |
 | **margin** | _Object_ | `{ top: 30, bottom: 0, left: 0, right: 0 }` | Set the margin around the chart. You can pass the properties you want. |
 | **onClick** | _Function_ | - | Rect click callback handler. It receives the `event` and the `datum`. |
 | **locale** | _String_ | `window.navigator.language` | 4-letters specification of the locale. |
