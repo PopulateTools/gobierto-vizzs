@@ -53,8 +53,8 @@
 .extra-legend-text,
 .axis-x-legend {
   font-size: 14px;
-  text-transform: capitalize;
   font-weight: bold;
+  text-transform: capitalize;
   fill: #828282;
 }
 
@@ -88,7 +88,6 @@
 .bar-stacked-legend-text {
   fill: #828282;
   font-size: 14px;
-  text-transform: capitalize;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
