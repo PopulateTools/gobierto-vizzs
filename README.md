@@ -442,7 +442,6 @@ barChartStacked.setData(newData)
 | **y** | _String_ | "group" | Property name of the groups along the Y-axis. Legend will be depicted by these values |
 | **count** | _String_ | - | Property name of a numeric value to sum Y-axis groups. If not specified, it uses the length of each group |
 | **ratio** | _String_ | "absolute|percentage" | Display the bars as percentage. Implies full-height. |
-| **extraLegends** | _Array_ | [] | More X-axis can be added, passing an array with selected values. |
 | **showLegend** | _Boolean_ | false | Show the legend. |
 | **sortStack** | _Boolean_ | false | Sort the legend. |
 | **orientationLegend** | _String_ | "left" | Positioning of legends, supports left and right. |

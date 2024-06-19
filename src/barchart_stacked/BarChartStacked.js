@@ -18,7 +18,6 @@ export default class BarChartStacked extends Base {
     this.xAxisProp = options.x || "date";
     this.yAxisProp = options.y || "group";
     this.countProp = options.count;
-    this.extraLegends = options.extraLegends || [];
     this.showLegend = options.showLegend;
     this.sortStack = options.sortStack;
     this.ratio = options.ratio || "absolute";
@@ -33,7 +32,7 @@ export default class BarChartStacked extends Base {
 
     this.margin = {
       top: 12,
-      bottom: Array.isArray(this.extraLegends) && this.extraLegends.length ? 160 : 36,
+      bottom: 36,
       left: this.orientationLegend === 'left' ? 240 : 84,
       right: this.orientationLegend === 'left' ? 48 : 240,
       ...options.margin
@@ -112,10 +111,6 @@ export default class BarChartStacked extends Base {
     if (this.showLegend) {
       this.buildLegends();
     }
-
-    if (this.extraLegends.length) {
-      this.buildExtraAxis();
-    }
   }
 
   buildLegends() {
@@ -160,34 +155,6 @@ export default class BarChartStacked extends Base {
         selectAll('.bar-stacked-group')
           .style("opacity", 1)
       })
-  }
-
-  buildExtraAxis() {
-    const extra = this.g
-      .selectAll(".extra-legend")
-      .data(stack().keys(this.extraLegends)(this.data))
-      .enter()
-      .append("g")
-      .attr("class", "extra-legend")
-      .attr('transform', (d, i) => `translate(0,${this.height + ((i + 1) * 28)})`)
-
-    extra
-      .append("text")
-      .attr("class", "extra-legend-text")
-      .attr("text-anchor", "end")
-      .attr("x", -60)
-      .attr("y", (d, i) => `${this.margin.top + (i * 2) + 14}`)
-      .text(({ key }) => key);
-
-    extra
-      .selectAll('.extra-legend-value')
-      .data(d => d)
-      .enter()
-      .append("text")
-      .attr("class", "extra-legend-value")
-      .attr("x", d => this.scaleX(d.data[this.xAxisProp]))
-      .attr("y", `${this.margin.top + 14}`)
-      .text(([y1, y2]) => ((y2 - y1).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })))
   }
 
   xAxis(g) {

@@ -50,16 +50,10 @@
   text-align: right;
 }
 
-.extra-legend-text,
 .axis-x-legend {
   font-size: 14px;
   font-weight: bold;
   text-transform: capitalize;
-  fill: #828282;
-}
-
-.extra-legend-value {
-  font-size: 14px;
   fill: #828282;
 }
 
