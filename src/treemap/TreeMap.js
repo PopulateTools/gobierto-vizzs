@@ -101,6 +101,7 @@ export default class TreeMap extends Base {
       node
         .append("rect")
         .attr("id", (d) => (d.leafUid = `tm-leaf-${this.seed()}`))
+        .attr("data-id", (d) => d.data[this.idProp])
         .attr("fill", (d) => {
           if (d === root) return "transparent";
           while (d.depth > 1) d = d.parent;
