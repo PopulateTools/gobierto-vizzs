@@ -1,7 +1,7 @@
 import { select, pointer } from "d3-selection";
 import { timeFormatDefaultLocale } from "d3-time-format";
 import { version } from "../../package.json"
-import { es, ca } from "./locales"
+import { es, ca, gl } from "./locales"
 
 import "./palette.css"
 import "./tooltip.css"
@@ -9,6 +9,7 @@ import "./tooltip.css"
 const DEFAULT_LOCALES = {
   "es-ES": es,
   "ca-ES": ca,
+  "gl-ES": gl,
 }
 
 export default class Base {

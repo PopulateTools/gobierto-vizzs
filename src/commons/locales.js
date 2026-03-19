@@ -19,3 +19,14 @@ export const ca = {
   "months": ["gener", "febrer", "març", "abril", "maig", "juny", "juliol", "agost", "setembre", "octubre", "novembre", "desembre"],
   "shortMonths": ["gen.", "febr.", "març", "abr.", "maig", "juny", "jul.", "ag.", "set.", "oct.", "nov.", "des."]
 }
+
+export const gl = {
+  "dateTime": "%A, %e de %B de %Y, %X",
+  "date": "%d/%m/%Y",
+  "time": "%H:%M:%S",
+  "periods": ["AM", "PM"],
+  "days": ["domingo", "luns", "martes", "mércores", "xoves", "venres", "sábado"],
+  "shortDays": ["dom", "lun", "mar", "mér", "xov", "ven", "sáb"],
+  "months": ["xaneiro", "febreiro", "marzo", "abril", "maio", "xuño", "xullo", "agosto", "setembro", "outubro", "novembro", "decembro"],
+  "shortMonths": ["xan", "feb", "mar", "abr", "mai", "xuñ", "xul", "ago", "set", "out", "nov", "dec"]
+}
