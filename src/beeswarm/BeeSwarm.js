@@ -66,7 +66,13 @@ export default class BeeSwarm extends Base {
       .attr("transform", `translate(${-this.margin.left} ${-this.scaleY.bandwidth() / 2})`)
       .call(this.yAxis.bind(this));
 
-    forceSimulation(this.data)
+    // stop the previous simulation, otherwise every setData/resize leaves one
+    // more running, all of them fighting to position the same circles
+    if (this.simulation) {
+      this.simulation.stop();
+    }
+
+    this.simulation = forceSimulation(this.data)
       .force(
         "x",
         forceX((d) => this.scaleX(d[this.xAxisProp]))
@@ -101,6 +107,13 @@ export default class BeeSwarm extends Base {
       .on("pointerout", this.onPointerOut.bind(this))
       .attr("cursor", "pointer")
       .on("click", (...e) => this.onClick(...e));
+  }
+
+  remove() {
+    if (this.simulation) {
+      this.simulation.stop();
+    }
+    super.remove();
   }
 
   xAxis(g) {
