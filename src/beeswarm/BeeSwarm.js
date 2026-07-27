@@ -227,21 +227,19 @@ export default class BeeSwarm extends Base {
     // 2. enforces the datatypes:
     //    - X axis is Date
     //    - Z axis is Number
-    return data.reduce((acc, d) => {
-      return [
-        ...acc,
-        // https://2ality.com/2017/04/conditional-literal-entries.html
-        ...(!!d[this.xAxisProp]
-          ? [
-              {
-                ...d,
-                [this.xAxisProp]: new Date(d[this.xAxisProp]),
-                [this.valueProp]: +d[this.valueProp],
-              },
-            ]
-          : []),
-      ];
-    }, []);
+    // done in a single pass: spreading the accumulator on every row makes this
+    // O(n²), which freezes the page on datasets of tens of thousands of rows
+    const parsed = [];
+    for (const d of data) {
+      if (d[this.xAxisProp]) {
+        parsed.push({
+          ...d,
+          [this.xAxisProp]: new Date(d[this.xAxisProp]),
+          [this.valueProp]: +d[this.valueProp],
+        });
+      }
+    }
+    return parsed;
   }
 
   defaultTooltip(d) {
