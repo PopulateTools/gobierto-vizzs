@@ -66,8 +66,7 @@ export default class BeeSwarm extends Base {
       .attr("transform", `translate(${-this.margin.left} ${-this.scaleY.bandwidth() / 2})`)
       .call(this.yAxis.bind(this));
 
-    // stop the previous simulation, otherwise every setData/resize leaves one
-    // more running, all of them fighting to position the same circles
+    // only one simulation may be positioning the circles at a time
     if (this.simulation) {
       this.simulation.stop();
     }
@@ -240,8 +239,8 @@ export default class BeeSwarm extends Base {
     // 2. enforces the datatypes:
     //    - X axis is Date
     //    - Z axis is Number
-    // done in a single pass: spreading the accumulator on every row makes this
-    // O(n²), which freezes the page on datasets of tens of thousands of rows
+    // keep this a single pass: it runs on every filter change, over datasets of
+    // tens of thousands of rows
     const parsed = [];
     for (const d of data) {
       if (d[this.xAxisProp]) {

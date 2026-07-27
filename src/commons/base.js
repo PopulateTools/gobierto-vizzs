@@ -125,11 +125,14 @@ export default class Base {
   }
 
   groupBy(arr, key) {
-    // rebuilding each bucket with a spread on every item makes this O(m²) per
-    // group, which is unusable on large datasets
+    // keep this linear: BeeSwarm groups the whole dataset on every rebuild
     const groups = {}
     for (const item of arr) {
-      (groups[item[key]] || (groups[item[key]] = [])).push(item)
+      const value = item[key]
+      if (!groups[value]) {
+        groups[value] = []
+      }
+      groups[value].push(item)
     }
     return groups
   }
