@@ -19,7 +19,10 @@ export default class Base {
     this.locale = options.locale || window.navigator.language
     this.PALETTE = Array.from({ length: 12 }, (_, i) => `var(--gv-color-${i + 1})`)
 
-    window.addEventListener("resize", this.resizeListener.bind(this));
+    // keep the bound handler around: .bind() returns a new function every call,
+    // so binding again on remove() would never match the registered listener
+    this.boundResizeListener = this.resizeListener.bind(this)
+    window.addEventListener("resize", this.boundResizeListener);
   }
 
   async getLocale() {
@@ -52,7 +55,7 @@ export default class Base {
   }
 
   remove() {
-    window.removeEventListener("resize", this.resizeListener.bind(this));
+    window.removeEventListener("resize", this.boundResizeListener);
   }
 
   isSmallDevice() {
@@ -122,7 +125,16 @@ export default class Base {
   }
 
   groupBy(arr, key) {
-    return arr.reduce((acc, item) => ((acc[item[key]] = [...(acc[item[key]] || []), item]), acc), {})
+    // keep this linear: BeeSwarm groups the whole dataset on every rebuild
+    const groups = {}
+    for (const item of arr) {
+      const value = item[key]
+      if (!groups[value]) {
+        groups[value] = []
+      }
+      groups[value].push(item)
+    }
+    return groups
   }
 
   sortBy(prop) {

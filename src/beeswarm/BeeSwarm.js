@@ -66,7 +66,12 @@ export default class BeeSwarm extends Base {
       .attr("transform", `translate(${-this.margin.left} ${-this.scaleY.bandwidth() / 2})`)
       .call(this.yAxis.bind(this));
 
-    forceSimulation(this.data)
+    // only one simulation may be positioning the circles at a time
+    if (this.simulation) {
+      this.simulation.stop();
+    }
+
+    this.simulation = forceSimulation(this.data)
       .force(
         "x",
         forceX((d) => this.scaleX(d[this.xAxisProp]))
@@ -101,6 +106,13 @@ export default class BeeSwarm extends Base {
       .on("pointerout", this.onPointerOut.bind(this))
       .attr("cursor", "pointer")
       .on("click", (...e) => this.onClick(...e));
+  }
+
+  remove() {
+    if (this.simulation) {
+      this.simulation.stop();
+    }
+    super.remove();
   }
 
   xAxis(g) {
@@ -227,21 +239,19 @@ export default class BeeSwarm extends Base {
     // 2. enforces the datatypes:
     //    - X axis is Date
     //    - Z axis is Number
-    return data.reduce((acc, d) => {
-      return [
-        ...acc,
-        // https://2ality.com/2017/04/conditional-literal-entries.html
-        ...(!!d[this.xAxisProp]
-          ? [
-              {
-                ...d,
-                [this.xAxisProp]: new Date(d[this.xAxisProp]),
-                [this.valueProp]: +d[this.valueProp],
-              },
-            ]
-          : []),
-      ];
-    }, []);
+    // keep this a single pass: it runs on every filter change, over datasets of
+    // tens of thousands of rows
+    const parsed = [];
+    for (const d of data) {
+      if (d[this.xAxisProp]) {
+        parsed.push({
+          ...d,
+          [this.xAxisProp]: new Date(d[this.xAxisProp]),
+          [this.valueProp]: +d[this.valueProp],
+        });
+      }
+    }
+    return parsed;
   }
 
   defaultTooltip(d) {

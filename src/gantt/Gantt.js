@@ -151,21 +151,19 @@ export default class Gantt extends Base {
     // 1. remove those elements with no FROM/TO axis data
     // 2. enforces the datatypes: FROM/TO as Dates
     // 3. sort the array by FROM
-    return data.reduce((acc, d) => {
-      return [
-        ...acc,
-        // https://2ality.com/2017/04/conditional-literal-entries.html
-        ...((!!d[this.fromProp] || !!d[this.toProp])
-          ? [
-              {
-                ...d,
-                [this.fromProp]: new Date(d[this.fromProp]),
-                [this.toProp]: new Date(d[this.toProp]),
-              },
-            ]
-          : []),
-      ];
-    }, []).sort(this.sortBy(this.fromProp));
+    // keep this a single pass: it runs on every filter change, over datasets of
+    // tens of thousands of rows
+    const parsed = [];
+    for (const d of data) {
+      if (d[this.fromProp] || d[this.toProp]) {
+        parsed.push({
+          ...d,
+          [this.fromProp]: new Date(d[this.fromProp]),
+          [this.toProp]: new Date(d[this.toProp]),
+        });
+      }
+    }
+    return parsed.sort(this.sortBy(this.fromProp));
   }
 
   legend(data, key) {
