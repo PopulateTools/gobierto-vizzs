@@ -122,7 +122,13 @@ export default class Base {
   }
 
   groupBy(arr, key) {
-    return arr.reduce((acc, item) => ((acc[item[key]] = [...(acc[item[key]] || []), item]), acc), {})
+    // rebuilding each bucket with a spread on every item makes this O(m²) per
+    // group, which is unusable on large datasets
+    const groups = {}
+    for (const item of arr) {
+      (groups[item[key]] || (groups[item[key]] = [])).push(item)
+    }
+    return groups
   }
 
   sortBy(prop) {
