@@ -26,7 +26,8 @@
     "watch": "parcel watch",
     "prebuild": "rm -rf ./dist/* ./.parcel-cache",
     "build": "parcel build",
-    "postversion": "npm run build && git push --follow-tags"
+    "prepack": "npm run build",
+    "postversion": "git push --follow-tags"
   },
   "author": "populate",
   "license": "ISC",
