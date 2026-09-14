@@ -152,18 +152,21 @@ export default class TreeMap extends Base {
 
           const node = nodes[ix]
           if (node && node.parentNode) {
-            let { width: w, height: h } = node.getBoundingClientRect()
             const { width: pW, height: pH } = node.parentNode.getBoundingClientRect()
 
-            // if the template does not fit in the parent
-            if ((w > pW) || (h > pH)) {
-              while ((w > pW) || (h > pH)) {
-                if (node.lastChild) {
-                  // remove children one by one, until the template fits
-                  node.lastChild.remove();
-                  ({ width: w, height: h } = node.getBoundingClientRect())
-                } else break
-              }
+            // The cell has no layout box yet: a hidden/collapsed tab, or a page
+            // restored from the bfcache before the browser has laid it out. Every
+            // measurement would read 0, so the loop below would strip every child
+            // of every node while forcing a synchronous reflow per removal. Bail.
+            if (pW <= 0 || pH <= 0) return
+
+            let { width: w, height: h } = node.getBoundingClientRect()
+
+            // remove children one by one, until the template fits the parent
+            while ((w > pW) || (h > pH)) {
+              if (!node.lastChild) break
+              node.lastChild.remove();
+              ({ width: w, height: h } = node.getBoundingClientRect())
             }
           }
         })
