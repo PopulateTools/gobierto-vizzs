@@ -147,26 +147,6 @@ export default class TreeMap extends Base {
             .duration(TRANSITION_DURATION)
             .style("opacity", 1)
         )
-        .on("end", (d, ix, nodes) => {
-          if (d === root) return null
-
-          const node = nodes[ix]
-          if (node && node.parentNode) {
-            let { width: w, height: h } = node.getBoundingClientRect()
-            const { width: pW, height: pH } = node.parentNode.getBoundingClientRect()
-
-            // if the template does not fit in the parent
-            if ((w > pW) || (h > pH)) {
-              while ((w > pW) || (h > pH)) {
-                if (node.lastChild) {
-                  // remove children one by one, until the template fits
-                  node.lastChild.remove();
-                  ({ width: w, height: h } = node.getBoundingClientRect())
-                } else break
-              }
-            }
-          }
-        })
     };
 
     const zoomin = (d) => {
