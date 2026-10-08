@@ -26,7 +26,7 @@
     "watch": "parcel watch",
     "prebuild": "rm -rf ./dist/* ./.parcel-cache",
     "build": "parcel build",
-    "test": "node --test test/",
+    "test": "node --test",
     "prepack": "npm run build",
     "postversion": "git push --follow-tags"
   },
